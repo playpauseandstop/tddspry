@@ -47,12 +47,15 @@ Also you can retrieve fresh version of tddspry from GitHub_:
 What's next?
 ------------
 
+We using **tddspry** to test Django projects and applications with nose and
+twill libraries. Some samples are below.
+
 Using tddspry to test Django with nosetests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sorry, no explanation yet, just code:
 
-**test_simple.py**
+**test_simple.py**::
 
     from nose.tools import assert_equal
     from tddspry.django.db_mock import DbMock
@@ -79,7 +82,7 @@ Sorry, no explanation yet, just code:
             except UserProfile.DoesNotExists:
                 assert False, 'Profile was not created for %r.' % user
 
-Now execute this test, by:
+Now execute this test, by::
 
     DJANGO_SETTINGS_MODULE=project.settings nosetests test_simple.py
 
@@ -88,7 +91,7 @@ Using tddspry to test Django with nosetests and twill
 
 Yeah, no explanation again :( But, there's code:
 
-**test_login_logout.py**
+**test_login_logout.py**::
 
     from tddspry.django.djangohelper import USERNAME, PASSWORD, create_user
     from tddspry.django.twill_mock import *
@@ -127,6 +130,6 @@ Yeah, no explanation again :( But, there's code:
             go(SITE + reverse('auth_logout'))
             code(200)
 
-Now execute this test, by:
+Now execute this test, by::
 
     DJANGO_SETTINGS_MODULE=project.settings nosetests test_login_logout.py
