@@ -5,7 +5,7 @@ tddspry
 1. Introduction_
 2. Requirements_
 3. Installation_
-4. What's next?_
+4. `What's next?`_
 
 Introduction
 ------------
@@ -55,7 +55,9 @@ Using tddspry to test Django with nosetests
 
 Sorry, no explanation yet, just code:
 
-**test_simple.py**::
+**test_simple.py**
+
+::
 
     from nose.tools import assert_equal
     from tddspry.django.db_mock import DbMock
@@ -91,7 +93,9 @@ Using tddspry to test Django with nosetests and twill
 
 Yeah, no explanation again :( But, there's code:
 
-**test_login_logout.py**::
+**test_login_logout.py**
+
+::
 
     from tddspry.django.djangohelper import USERNAME, PASSWORD, create_user
     from tddspry.django.twill_mock import *
