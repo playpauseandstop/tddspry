@@ -1,5 +1,3 @@
-# Copyright (C) 2007-2009 KDS Software Group http://www.kds.com.ua
-
 import mock
 
 
