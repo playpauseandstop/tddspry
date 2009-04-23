@@ -20,59 +20,66 @@ __all__ = ('DatabaseTestCase', 'HttpTestCase')
 
 class BaseDatabaseTestCase(NoseTestCase):
 
-    def setup(self, database_name=None, database_flush=None):
+    """
+    Additional arguments
+    --------------------
+
+    database_name
+      Use ``None`` or ``':memory'`` to creates sqlite3 database in memory.
+      (Default case of Django TestCases).
+
+      Use ``':original:'`` to test in your current projects
+      ``settings.DATABASE_NAME``.
+
+      Use custom name to creates test database with current
+      ``settings.DATABASE_ENGINE``.
+
+    database_flush
+      Flush database if it exists while ``True``, any changes to database on
+      ``False`` and recreates it while ``None``.
+
+      **Note:** Please, do not use ``database_flush=True``, on
+      ``database_name=':original:'``, it's flushes all data in your
+      original (that exists in ``settings.DATABASE_NAME``) database.
+
+    """
+
+    database_name = None
+    database_flush = None
+
+    def setup(self):
         """
         Creates or sets up test database name and mocks ``SMTPConnection``
         class from ``django.core.mail``.
-
-        Additional arguments
-        --------------------
-
-        database_name
-          Use ``None`` or ``':memory'`` to creates sqlite3 database in
-          memory. (Default case of Django TestCases).
-
-          Use ``':original:'`` to test in your current projects
-          ``settings.DATABASE_NAME``.
-
-          Use custom name to creates test database with current
-          ``settings.DATABASE_ENGINE``.
-
-        database_flush
-          Flush database if it exists while ``True``, any changes to database
-          on ``False`` and recreates it while ``None``.
-
-          **Note:** Please, do not use ``database_flush=True``, on
-          ``database_name=':original:'``, it's flushes all data in your
-          original (that exists in ``settings.DATABASE_NAME``) database.
-
         """
         # Creates test database
-        self._OLD_DATABASE_NAME = settings.DATABASE_NAME
+        settings.original_DATABASE_ENGINE = settings.DATABASE_ENGINE
+        settings.original_DATABASE_NAME = settings.DATABASE_NAME
 
-        if database_name == ':original:':
-            database_name = settings.DATABASE_NAME
+        if self.database_name is None or self.database_name == ':memory:':
+            settings.DATABASE_ENGINE = 'sqlite3'
+        elif self.database_name == ':original:':
+            self.database_name = settings.DATABASE_NAME
 
-            if database_flush is None:
-                database_flush = False
+            if self.database_flush is None:
+                self.database_flush = False
 
-        self._database_name = database_name or ':memory:'
-        self._database_flush = database_flush
+        self.database_name = self.database_name or ':memory:'
 
-        if database_flush is not None:
-            settings.DATABASE_NAME = database_name
+        if self.database_flush is not None:
+            settings.DATABASE_NAME = self.database_name
             tables = connection.introspection.table_names()
 
             if not tables:
-                settings.TEST_DATABASE_NAME = database_name
-                self._database_name = \
+                settings.TEST_DATABASE_NAME = self.database_name
+                self.database_name = \
                     connection.creation.create_test_db(autoclobber=True)
 
-            if database_flush and tables:
+            if self.database_flush and tables:
                 call_command('flush', interactive=False)
         else:
-            settings.TEST_DATABASE_NAME = database_name
-            self._database_name = \
+            settings.TEST_DATABASE_NAME = self.database_name
+            self.database_name = \
                 connection.creation.create_test_db(autoclobber=True)
 
         # Mock original SMTPConnection
@@ -83,10 +90,11 @@ class BaseDatabaseTestCase(NoseTestCase):
 
     def teardown(self):
         # Destroys test database
-        if self._database_flush is None:
-            connection.creation.destroy_test_db(self._database_name)
+        if self.database_flush is None:
+            connection.creation.destroy_test_db(self.database_name)
 
-        settings.DATABASE_NAME = self._OLD_DATABASE_NAME
+        settings.DATABASE_ENGINE = settings.original_DATABASE_ENGINE
+        settings.DATABASE_NAME = settings.original_DATABASE_NAME
 
         # Unmock original SMTPConnection
         mail.SMTPConnection = mail.original_SMTPConnection
