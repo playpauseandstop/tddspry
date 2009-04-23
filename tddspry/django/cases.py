@@ -237,9 +237,9 @@ class DatabaseTestCase(BaseDatabaseTestCase):
 class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
 
     def __new__(cls, name, bases, attrs):
-        for name, value in attrs.items():
-            if 'test' in name and callable(value):
-                attrs[name] = show_on_error(value)
+        for attr_name, attr_value in attrs.items():
+            if 'test' in attr_name and callable(attr_value):
+                attrs[attr_name] = show_on_error(attr_value, clsname=name)
 
         super_new = super(HttpTestCaseMetaclass, cls).__new__
         return super_new(cls, name, bases, attrs)
