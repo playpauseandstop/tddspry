@@ -117,6 +117,8 @@ class TestHTTP(HttpTestCase):
         self.url('/')
 
     def test_show_on_error_save_output(self):
+        old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
+
         dirname = os.path.dirname(os.tempnam())
         os.environ['TWILL_ERROR_DIR'] = dirname
 
@@ -128,6 +130,9 @@ class TestHTTP(HttpTestCase):
         contents = os.listdir(dirname)
         found = False
         filename = '%s.%s-' % (self.__module__, 'dummy_error')
+
+        if old_dirname is not None:
+            os.environ['TWILL_ERROR_DIR'] = dirname
 
         for name in contents:
             if name.startswith(filename):
