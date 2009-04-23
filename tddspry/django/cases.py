@@ -7,7 +7,8 @@ from django.core.servers.basehttp import AdminMediaHandler
 from django.db import connection
 from django.test.utils import TestSMTPConnection
 
-from tddspry import NoseTestCase
+from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
+from tddspry.django.decorators import show_on_error
 
 from twill import add_wsgi_intercept, commands
 from twill.errors import TwillAssertionError
@@ -99,13 +100,9 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
     IP = '127.0.0.1'
     PORT = 8088
 
-    def setup(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.SITE = 'http://%s:%s' % (self.IP, self.PORT)
-
-        super(BaseHttpTestCase, self).setup(*args, **kwargs)
-
-        app = AdminMediaHandler(WSGIHandler())
-        add_wsgi_intercept(self.IP, self.PORT, lambda: app)
+        super(BaseHttpTestCase, self).__init__(*args, **kwargs)
 
         for attr in commands.__all__:
             if attr in ('find', 'go', 'url'):
@@ -116,6 +113,12 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
             setattr(self, name, getattr(commands, attr))
 
         setattr(self, 'check_links', check_links)
+
+    def setup(self, *args, **kwargs):
+        super(BaseHttpTestCase, self).setup(*args, **kwargs)
+
+        app = AdminMediaHandler(WSGIHandler())
+        add_wsgi_intercept(self.IP, self.PORT, lambda: app)
 
     def disable_redirect(self):
         """
@@ -223,7 +226,20 @@ class DatabaseTestCase(BaseDatabaseTestCase):
         return upd_instance
 
 
+class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
+
+    def __new__(cls, name, bases, attrs):
+        for name, value in attrs.items():
+            if 'test' in name and callable(value):
+                attrs[name] = show_on_error(value)
+
+        super_new = super(HttpTestCaseMetaclass, cls).__new__
+        return super_new(cls, name, bases, attrs)
+
+
 class HttpTestCase(BaseHttpTestCase):
+
+    __metaclass__ = HttpTestCaseMetaclass
 
     def find(self, what, flags='', flat=False):
         """
