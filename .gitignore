@@ -1,5 +1,6 @@
 build/*
 dist/*
+*.db-journal
 *.pyc
 *.pyo
 MANIFEST
