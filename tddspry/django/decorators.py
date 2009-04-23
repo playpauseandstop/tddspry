@@ -1,8 +1,5 @@
 import os
-
-from datetime import datetime
-from random import choice
-from string import digits, letters
+import time
 
 from twill.commands import get_browser, show
 from twill.errors import TwillAssertionError
@@ -11,7 +8,7 @@ from twill.errors import TwillAssertionError
 __all__ = ('show_on_error', )
 
 
-def show_on_error(func):
+def show_on_error(func, clsname=None):
     """
     On ``TwillAssertionError``, show last page got by twill.
 
@@ -37,10 +34,16 @@ def show_on_error(func):
                         showed = True
 
                 if not showed:
-                    random = \
-                        ''.join([choice(letters + digits) for i in range(8)])
+                    timestamp = int(time.time())
 
-                    filename = '%s-%s.html' % (func.__name__, random)
+                    if clsname is None:
+                        filename = '%s.%s' % (func.__module__, func.__name__)
+                    else:
+                        filename = '%s.%s.%s' % (func.__module__,
+                                                 clsname,
+                                                 func.__name__)
+
+                    filename = '%s-%d.html' % (filename, timestamp)
                     filename = os.path.join(dirname, filename)
 
                     try:
