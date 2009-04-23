@@ -109,21 +109,11 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
     PORT = 8088
 
     def __init__(self, *args, **kwargs):
-        self.SITE = 'http://%s:%s' % (self.IP, self.PORT)
         super(BaseHttpTestCase, self).__init__(*args, **kwargs)
+        self.SITE = 'http://%s:%s' % (self.IP, self.PORT)
 
-        for attr in commands.__all__:
-            if attr in ('find', 'go', 'url'):
-                name = '_' + attr
-            else:
-                name = attr
-
-            setattr(self, name, getattr(commands, attr))
-
-        setattr(self, 'check_links', check_links)
-
-    def setup(self, *args, **kwargs):
-        super(BaseHttpTestCase, self).setup(*args, **kwargs)
+    def setup(self):
+        super(BaseHttpTestCase, self).setup()
 
         app = AdminMediaHandler(WSGIHandler())
         add_wsgi_intercept(self.IP, self.PORT, lambda: app)
@@ -237,9 +227,22 @@ class DatabaseTestCase(BaseDatabaseTestCase):
 class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
 
     def __new__(cls, name, bases, attrs):
+        def method(func):
+            return lambda _, *args, **kwargs: func(*args, **kwargs)
+
         for attr_name, attr_value in attrs.items():
             if 'test' in attr_name and callable(attr_value):
                 attrs[attr_name] = show_on_error(attr_value, clsname=name)
+
+        for attr in commands.__all__:
+            if attr in ('find', 'go', 'notfind', 'url'):
+                attr_name = '_' + attr
+            else:
+                attr_name = attr
+
+            attrs.update({attr_name: method(getattr(commands, attr))})
+
+        attrs.update({'check_links': method(check_links)})
 
         super_new = super(HttpTestCaseMetaclass, cls).__new__
         return super_new(cls, name, bases, attrs)
@@ -255,8 +258,8 @@ class HttpTestCase(BaseHttpTestCase):
         to search content on web-page by standart Python ``what in html``
         expression.
 
-        If this expression was not found on page it's raises
-        ``TwillAssertionError`` as in ``twill.commands.find`` method.
+        If this expression was not True (was not found on page) it's raises
+        ``TwillAssertionError`` as in ``twill.commands.notfind`` method.
         """
         if not flat:
             return self._find(what, flags)
@@ -264,6 +267,24 @@ class HttpTestCase(BaseHttpTestCase):
         html = self.get_browser().get_html()
         if not what in html:
             raise TwillAssertionError, 'No match to %r' % what
+
+        return True
+
+    def notfind(self, what, flags='', flat=False):
+        """
+        Twill used regexp for searching content on web-page. Use ``flat=True``
+        to search content on web-page by standart Python ``not what in html``
+        expression.
+
+        If this expression was not True (was found on page) it's raises
+        ``TwillAssertionError`` as in ``twill.commands.notfind`` method.
+        """
+        if not flat:
+            return self._notfind(what, flags)
+
+        html = self.get_browser().get_html()
+        if what in html:
+            raise TwillAssertionError, 'Match to %r' % what
 
         return True
 

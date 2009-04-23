@@ -27,8 +27,9 @@ Custom methods
 HttpTestCase
 ------------
 
-Depends on ``NoseTestCase``. On ``setup`` ``HttpTestCase`` creates test database
-via ``django.test.create_test_db`` and on ``teardown`` removes it.
+Depends on ``DatabaseTestCase``. On ``setup`` ``HttpTestCase`` creates test
+database via ``django.db.connection.creation.create_test_db`` and on
+``teardown`` removes it.
 
 Also this ``TestCase`` consists of all twill_ functions as class methods.
 
@@ -40,6 +41,11 @@ Custom methods
 * find(what, flags='', flat=False)
 
   Use ``flat=True`` to disable regexp matching and use raw ``what in html``
+  expression.
+
+* notfind(what, flags='', flat=False)
+
+  Use ``flat=True`` to disable regexp matching and use raw ``not what in html``
   expression.
 
 More custom helpers for http tests you can find in Helpers_ section.
