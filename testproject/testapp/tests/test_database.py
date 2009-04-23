@@ -1,5 +1,8 @@
+import os
+
 from tddspry.django import DatabaseTestCase
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from testproject.testapp.models import UserProfile
@@ -11,8 +14,10 @@ TEST_NEW_BIO = u'Another something text'
 
 class TestModelsCustomDatabase(DatabaseTestCase):
 
+    database_name = os.path.join(settings.DIRNAME, 'test.db')
+
     def setup(self):
-        super(TestModelsCustomDatabase, self).setup(database_name='test.db')
+        super(TestModelsCustomDatabase, self).setup()
         self.user = User.objects.create_user(username='username',
                                              password='password',
                                              email='email@domain.com')
@@ -44,11 +49,11 @@ class TestModelsCustomDatabase(DatabaseTestCase):
 
 class TestModelsCustomDatabaseWithFlush(DatabaseTestCase):
 
+    database_name = os.path.join(settings.DIRNAME, 'test.db')
+    database_flush = True
+
     def setup(self):
-        super(TestModelsCustomDatabaseWithFlush, self).setup(
-            database_name='test.db',
-            database_flush=True,
-        )
+        super(TestModelsCustomDatabaseWithFlush, self).setup()
 
         try:
             self.user = User.objects.get(username='username')
@@ -86,11 +91,11 @@ class TestModelsCustomDatabaseWithFlush(DatabaseTestCase):
 
 class TestModelsCustomDatabaseWithoutFlush(DatabaseTestCase):
 
+    database_name = os.path.join(settings.DIRNAME, 'test.db')
+    database_flush = False
+
     def setup(self):
-        super(TestModelsCustomDatabaseWithoutFlush, self).setup(
-            database_name='test.db',
-            database_flush=False,
-        )
+        super(TestModelsCustomDatabaseWithoutFlush, self).setup()
 
         try:
             self.user = User.objects.create_user(username='username',
@@ -166,10 +171,10 @@ class TestModelsMemoryDatabase(DatabaseTestCase):
 
 class TestModelsOriginalDatabase(DatabaseTestCase):
 
+    database_name = ':original:'
+
     def setup(self):
-        super(TestModelsOriginalDatabase, self).setup(
-            database_name=':original:',
-        )
+        super(TestModelsOriginalDatabase, self).setup()
 
         try:
             self.user = User.objects.create_user(username='username',
