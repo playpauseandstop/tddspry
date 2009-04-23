@@ -1,7 +1,7 @@
 import os
 import time
 
-from twill.commands import get_browser, show
+from twill.commands import save_html, show
 from twill.errors import TwillAssertionError
 
 
@@ -47,9 +47,7 @@ def show_on_error(func, clsname=None):
                     filename = os.path.join(dirname, filename)
 
                     try:
-                        file = open(filename, 'w')
-                        file.write(get_browser().get_html())
-                        file.close()
+                        save_html(filename)
                     except:
                         print 'Cannot write to file at %r.' % filename
                         show()
