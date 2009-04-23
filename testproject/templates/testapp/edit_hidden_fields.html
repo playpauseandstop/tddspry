@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Edit hidden fields' %}{% endblock %}
+
+{% block content %}
+
+{% if POST %}<pre>{% for name, value in POST.items %}{{ name }}: '{{ value }}'
+{% endfor %}</pre>{% endif %}
+
+<form action="" method="post">
+    <fieldset>
+        <legend>{% trans 'Form contains hidden fields' %}</legend>
+
+        <p><label for="id_some_field_1">{% trans 'Some field 1' %}:</label>
+        <input type="text" name="some_field_1" id="id_some_field_1" /></p>
+
+        <p><label for="id_some_field_2">{% trans 'Some field 2' %}:</label>
+        <input type="text" name="some_field_2" id="id_some_field_2" /></p>
+
+        <p><input type="hidden" name="hidden_field_1" />
+        <input type="hidden" name="hidden_field_2" />
+        <input type="submit" value="Submit" /></p>
+    </fieldset>
+</form>
+
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}

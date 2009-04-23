@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% blocktrans with user_.username as username %}User &rsaquo; {{ username }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+
+<h2>{% trans 'User info' %}</h2>
+
+<pre>{% trans 'Username' %}: {{ user_.username }}
+{% trans 'Email' %}: {{ user_.email }}
+{% trans 'Bio' %}: {{ user_.get_profile.bio }}</pre>
+
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Users' %}{% endblock %}
+
+{% block content %}
+
+{% if users %}
+<h2>{% trans 'Users' %}</h2>
+
+<ul>{% for user_ in users %}
+    <li><a href="{% url user user_.username %}">{{ user_.username }}</a></li>
+{% endfor %}</ul>
+{% else %}
+<h2>{% trans 'No users exist in database yet.' %}</h2>
+{% endif %}
+
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}

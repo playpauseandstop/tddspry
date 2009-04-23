@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Index' %}{% endblock %}
+
+{% block content %}
+
+<h2>{% trans 'Pages' %}</h2>
+
+<ul>
+    <li><a href="{% url edit_hidden_fields %}">{% trans 'Edit hidden fields' %}</a></li>
+    <li><a href="{% url redirect %}">{% trans 'Redirect' %}</a></li>
+    <li><a href="{% url users %}">{% trans 'Users list' %}</a></li>
+</ul>
+
+<pre>{% trans 'c++ is good, but python - better ;)' %}</pre>
+
+{% endblock content %}

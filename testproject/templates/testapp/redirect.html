@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Redirect to index page' %}{% endblock %}
+
+{% block extra_head %}<meta http-equiv="Refresh" content="5; url={% url index %}" />{% endblock %}
+{% block content %}
+
+<p>{% trans 'You would be auto-redirected to main page after 5 seconds.' %}</p>
+<p><small><a href="{% url index %}">{% trans 'Click here to manually redirect to main page.' %}</a></small></p>
+
+{% endblock %}
