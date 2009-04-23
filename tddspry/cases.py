@@ -4,7 +4,12 @@ from nose import tools
 __all__ = ('NoseTestCase', )
 
 
-class TestCaseMetaclass(type):
+class BaseTestCase(object):
+
+    pass
+
+
+class NoseTestCaseMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         def func(attr):
@@ -22,11 +27,6 @@ class TestCaseMetaclass(type):
         return type.__new__(cls, name, bases, attrs)
 
 
-class BaseTestCase(object):
-
-    pass
-
-
 class NoseTestCase(BaseTestCase):
 
-    __metaclass__ = TestCaseMetaclass
+    __metaclass__ = NoseTestCaseMetaclass
