@@ -1,10 +1,12 @@
+import os
+
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
 from django.core.servers.basehttp import AdminMediaHandler
-from django.db import connection
+from django.db import connection, models
 from django.test.utils import TestSMTPConnection
 
 from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
@@ -46,11 +48,12 @@ class BaseDatabaseTestCase(NoseTestCase):
 
     database_name = None
     database_flush = None
+    fixtures = []
 
     def setup(self):
         """
-        Creates or sets up test database name and mocks ``SMTPConnection``
-        class from ``django.core.mail``.
+        Creates or sets up test database name, loads fixtures and mocks
+        ``SMTPConnection`` class from ``django.core.mail``.
         """
         # Creates test database
         settings.original_DATABASE_ENGINE = settings.DATABASE_ENGINE
@@ -81,6 +84,10 @@ class BaseDatabaseTestCase(NoseTestCase):
             settings.TEST_DATABASE_NAME = self.database_name
             self.database_name = \
                 connection.creation.create_test_db(autoclobber=True)
+
+        # Load data from fixtures
+        if self.fixtures:
+            call_command('loaddata', *self.fixtures)
 
         # Mock original SMTPConnection
         mail.original_SMTPConnection = mail.SMTPConnection
