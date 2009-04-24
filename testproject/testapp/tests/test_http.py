@@ -3,6 +3,7 @@ import re
 
 from tddspry.django import HttpTestCase
 from tddspry.django.decorators import *
+from tddspry.django.helpers import *
 from twill.errors import TwillAssertionError
 
 from django.conf import settings
@@ -25,16 +26,13 @@ class TestHTTP(HttpTestCase):
     def test_edit_hidden_fields(self):
         self.enable_edit_hidden_fields()
 
-        self.go('/edit_hidden_fields/')
-        self.code(200)
+        self.go200('/edit_hidden_fields/')
 
         self.formvalue(1, 'hidden_field_1', 'Value')
         self.formvalue(1, 'hidden_field_2', 'Value')
         self.formvalue(1, 'some_field_1', 'Value')
 
-        self.submit()
-        self.code(200)
-        self.url('/edit_hidden_fields/')
+        self.submit200(url='/edit_hidden_fields/')
 
         self.find("hidden_field_1: 'Value'")
         self.find("hidden_field_1: 'Value'")
@@ -42,16 +40,13 @@ class TestHTTP(HttpTestCase):
 
         self.disable_edit_hidden_fields()
 
-        self.go('/edit_hidden_fields/')
-        self.code(200)
+        self.go200('/edit_hidden_fields/')
 
         self.formvalue(1, 'hidden_field_1', 'Value')
         self.formvalue(1, 'hidden_field_2', 'Value')
         self.formvalue(1, 'some_field_1', 'Value')
 
-        self.submit()
-        self.code(200)
-        self.url('/edit_hidden_fields/')
+        self.submit200(url='/edit_hidden_fields/')
 
         self.find("hidden_field_1: ''")
         self.notfind("hidden_field_1: 'Value'")
@@ -60,8 +55,7 @@ class TestHTTP(HttpTestCase):
         self.find("some_field_1: 'Value'")
 
     def test_index(self):
-        self.go('/')
-        self.code(200)
+        self.go200('/')
         self.url('/')
 
         self.find('Index')
@@ -77,6 +71,48 @@ class TestHTTP(HttpTestCase):
         except TwillAssertionError:
             pass
 
+    def test_login(self):
+        self.go200('/profile/')
+        self.url('/login/')
+
+        user = create_user()
+        self.login(USERNAME, PASSWORD)
+
+        self.go200('/profile/')
+        self.find(user.username)
+        self.find(user.email)
+
+    def test_login_to_admin_staff(self):
+        staff = create_staff()
+        self.login_to_admin(USERNAME, PASSWORD)
+
+    def test_login_to_admin_superuser(self):
+        superuser = create_superuser()
+        self.login_to_admin(USERNAME, PASSWORD)
+
+        self.go200('/admin/testapp/userprofile/')
+        self.find('Testapp')
+        self.find('User profiles')
+        self.find('Add user profile')
+
+    @HttpTestCase.raises(TwillAssertionError)
+    def test_login_to_admin_regular_user(self):
+        user = create_user()
+        self.login_to_admin(USERNAME, PASSWORD)
+
+    def test_logout(self):
+        user = create_user()
+        self.login(USERNAME, PASSWORD)
+
+        self.go200('/profile/')
+        self.find(user.username)
+        self.find(user.email)
+
+        self.logout()
+
+        self.go200('/profile/')
+        self.url('/login/')
+
     def test_pages(self):
         profiles, users = [], []
 
@@ -90,8 +126,7 @@ class TestHTTP(HttpTestCase):
             users.append(user)
             profiles.append(profile)
 
-        self.go('/users/')
-        self.code(200)
+        self.go200('/users/')
 
         for i, user in enumerate(users):
             profile = profiles[i]
@@ -107,14 +142,27 @@ class TestHTTP(HttpTestCase):
 
     def test_redirect(self):
         self.disable_redirect()
-        self.go('/redirect/')
-        self.info()
+        self.go200('/redirect/')
         self.url('/redirect/')
 
         self.enable_redirect()
-        self.go('/redirect/')
-        self.info()
+        self.go200('/redirect/')
         self.url('/')
+
+    def test_reversed_urls(self):
+        self.go200('index')
+        self.find('Index')
+
+        user = create_user()
+        profile = create_profile(user, UserProfile)
+
+        self.go200('user', args=[user.username])
+        self.find(user.username)
+        self.find(user.email)
+
+        self.go200('user', kwargs={'username': user.username})
+        self.find(user.username)
+        self.find(user.email)
 
     def test_show_on_error_save_output(self):
         old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
