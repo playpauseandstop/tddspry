@@ -5,7 +5,7 @@ tddspry
 1. Introduction_
 2. Requirements_
 3. Installation_
-4. `What's next?`_
+4. Usage_
 
 Introduction
 ============
@@ -13,17 +13,17 @@ Introduction
 **tddspry** is collection of utilities for testing Django applications with
 nosetests_ library.
 
-**NOTE: tddspry still in hardly development. Use tddspry with your own risk!**
-
 .. _nosetests: http://code.google.com/p/python-nose/
 
 Requirements
 ============
 
+- Django_ == 1.0 (1.1 version not tested yet)
 - mock_ >= 0.5.0
 - nose_ >= 0.10.3
 - twill_ >= 0.9
 
+.. _Django: http://www.djangoproject.com/download/
 .. _mock: http://pypi.python.org/pypi/mock/
 .. _nose: http://pypi.python.org/pypi/nose/
 .. _twill: http://pypi.python.org/pypi/twill/
@@ -46,97 +46,58 @@ Also you can retrieve fresh version of tddspry from GitHub_:
 .. _easy_install: http://pypi.python.org/pypi/setuptools/
 .. _GitHub: http://github.com/
 
-What's next?
-============
+Usage
+=====
 
-We using **tddspry** to test Django projects and applications with nose and
-twill libraries. Some samples are below.
-
-Using tddspry to test Django with nosetests
--------------------------------------------
-
-Sorry, no explanation yet, just code:
-
-**test_simple.py**
-
-::
-
-    from tddspry.django import DatabaseTestCase
-
-    from django.contrib.auth.models import User
-
-    from project.accounts.models import UserProfile
-
-
-    class TestAutoCreateProfile(DatabaseTestCase):
-
-        def test_auto_create_profile(self):
-            old_counter = UserProfile.objects.count()
-
-            user = User.objects.create_user(username='username',
-                                            password='password',
-                                            email='email@domain.com')
-
-            new_counter = UserProfile.objects.count()
-
-            self.assert_equal(new_counter - 1, old_counter)
-
-            try:
-                profile = UserProfile.objects.get(user=user)
-            except UserProfile.DoesNotExists:
-                assert False, 'Profile was not created for %r.' % user
-
-Now execute this test, by::
-
-    DJANGO_SETTINGS_MODULE=project.settings nosetests test_simple.py
-
-Using tddspry to test Django with nosetests and twill
------------------------------------------------------
-
-Yeah, no explanation again :( But, there's code:
-
-**test_login_logout.py**
-
-::
+We create **tddspry** to easying testing Django projects and applications.
+Okay, let's see, to test login and logout pages in your Django project, you
+need only::
 
     from tddspry.django import HttpTestCase
-    from tddspry.django.helpers import USERNAME, PASSWORD, create_user
+    from tddspry.django.helpers import create_user
 
     from django.conf import settings
-    from django.core.urlresolvers import reverse
 
 
-    class TestLoginLogout(HttpTestCase):
-
-        def setup(self):
-            super(TestLoginLogout, self).setup()
-            self.user = create_user(USERNAME, PASSWORD)
+    class TestLoginPage(HttpTestCase):
 
         def test_login(self):
-            self.go(reverse('auth_login'))
-            self.code(200)
-
-            self.find('Username')
-            self.find('Password')
-
-            self.formvalue(1, 'id_username', USERNAME)
-            self.formvalue(1, 'id_password', PASSWORD)
-            self.submit()
-
-            self.code(200)
+            user = create_user('username', 'password')
+            self.login('username', 'password')
             self.url(settings.LOGIN_REDIRECT_URL)
 
         def test_logout(self):
-            self.go(reverse('auth_login'))
-            self.code(200)
+            user = create_user('username', 'password')
+            self.login('username', 'password')
+            self.logout()
+            self.url('/')
 
-            self.formvalue(1, 'id_username', USERNAME)
-            self.formvalue(1, 'id_password', PASSWORD)
-            self.submit()
+That's all ;) But really for ``test_login``,
 
-            self.go(SITE + reverse('auth_logout'))
-            self.code(200)
+* First, ``HttpTestCase`` creates test ``sqlite3`` database in memory and
+  starts Django WSGI-server.
 
-Now execute this test, by::
+* Then, we creates test user by ``create_user`` helper. This user by default
+  uses ``USERNAME`` and ``PASSWORD``
 
-    DJANGO_SETTINGS_MODULE=project.settings nosetests test_login_logout.py
+* Next, twill browser goes to your ``'auth_login'`` page and checks that
+  response code is 200.
+
+* Next, twill browser fill out login form with ``USERNAME`` and ``PASSWORD``
+  values and submits it. Also here twill browser again checks that response
+  code is 200.
+
+* And finally, we check that current url after success login is our
+  ``LOGIN_REDIRECT_URL`` that set in projects settings.
+
+And for ``test_logout`` we repeate these steps and adding logging out from
+current Django session and simple check that after logout we go to index page.
+
+Easy? No? Okay, create new issue on GitHub_ and say how exactly create easy
+tests for Django applications :)
+
+**ps.** More examples how-to usage **tddspry** exist in tests for
+``testproject`` project in `tddspry repository`_.
+
+_GitHub: http://github.com/playpauseandstop/tddspry/issues
+_`tddspry repository`: http://github.com/playpauseandstop/tddspry
