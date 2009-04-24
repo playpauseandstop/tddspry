@@ -77,8 +77,7 @@ That's all ;) But really for ``test_login``,
 * First, ``HttpTestCase`` creates test ``sqlite3`` database in memory and
   starts Django WSGI-server.
 
-* Then, we creates test user by ``create_user`` helper. This user by default
-  uses ``USERNAME`` and ``PASSWORD``
+* Then, we creates test user by ``create_user`` helper.
 
 * Next, twill browser goes to your ``'auth_login'`` page and checks that
   response code is 200.
