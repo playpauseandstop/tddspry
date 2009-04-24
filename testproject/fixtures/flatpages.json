@@ -1,0 +1,32 @@
+[
+    {
+        "pk": 1,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "url": "/page1/",
+            "title": "Page 1",
+            "content": "Some content for page 1",
+            "sites": [1]
+        }
+    },
+    {
+        "pk": 2,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "url": "/page2/",
+            "title": "Page 2",
+            "content": "Some content for page 2",
+            "sites": [1]
+        }
+    },
+    {
+        "pk": 3,
+        "model": "flatpages.flatpage",
+        "fields": {
+            "url": "/page3/",
+            "title": "Page 3",
+            "content": "Some content for page 3",
+            "sites": [1]
+        }
+    }
+]

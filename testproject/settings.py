@@ -32,9 +32,16 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.flatpages',
     'django.contrib.sessions',
+    'django.contrib.sites',
 
     'testproject.testapp',
+)
+
+# Fixture directories
+FIXTURE_DIRS = (
+    os.path.join(DIRNAME, 'fixtures'),
 )
 
 # Media files settings
@@ -65,6 +72,7 @@ TEMPLATE_DIRS = (
 # Other **Django** settings
 ROOT_URLCONF = 'testproject.urls'
 SECRET_KEY = 'set proper value in ``settings_local.py`` file'
+SITE_ID = 1
 
 # Try to loading settings from ``settings_local.py`` file
 try:

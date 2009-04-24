@@ -1,0 +1,92 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "username1",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email1@domain.com"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.user",
+        "fields": {
+            "username": "username2",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email2@domain.com"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.user",
+        "fields": {
+            "username": "username3",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email3@domain.com"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.user",
+        "fields": {
+            "username": "username4",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email4@domain.com"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "auth.user",
+        "fields": {
+            "username": "username5",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email5@domain.com"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "auth.user",
+        "fields": {
+            "username": "username6",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email6@domain.com"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "auth.user",
+        "fields": {
+            "username": "username7",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email7@domain.com"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "auth.user",
+        "fields": {
+            "username": "username8",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email8@domain.com"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "auth.user",
+        "fields": {
+            "username": "username9",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email9@domain.com"
+        }
+    },
+    {
+        "pk": 10,
+        "model": "auth.user",
+        "fields": {
+            "username": "username10",
+            "password": "sha1$076da$34d8088d052c0b437ccddd4c70f3dc75bf12fd51",
+            "email": "email10@domain.com"
+        }
+    }
+]
