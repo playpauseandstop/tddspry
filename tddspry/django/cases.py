@@ -44,6 +44,10 @@ class BaseDatabaseTestCase(NoseTestCase):
       ``database_name=':original:'``, it's flushes all data in your
       original (that exists in ``settings.DATABASE_NAME``) database.
 
+    fixtures
+      List or tuple with fixtures names to load. See
+      ``./manage.py loaddata --help`` in your project to more details.
+
     """
 
     database_name = None
