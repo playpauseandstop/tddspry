@@ -1,8 +1,12 @@
 build/*
 dist/*
+
 *.db-journal
 *.pyc
 *.pyo
+
+.coverage
+Makefile.def
 MANIFEST
 test.db
 testproject.db
