@@ -1,0 +1,9 @@
+{% load i18n %}{% trans 'Hello, our new user!' %}
+
+{% trans 'Your activation link' %}: http://{{ site.domain }}{% url registration_activate activation_key %}
+
+{% blocktrans %}Please, activate your account in {{ expiration_days }} days.{% endblocktrans %}
+
+--
+
+{% trans 'Staff' %}

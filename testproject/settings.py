@@ -6,8 +6,9 @@ import sys
 DIRNAME = os.path.dirname(__file__)
 BASEDIR = os.path.abspath(os.path.join(DIRNAME, '..'))
 
-# Inserts base directory to ``sys.path``
+# Inserts base and current directories to ``sys.path``
 sys.path.insert(0, BASEDIR)
+sys.path.insert(0, DIRNAME)
 
 # Debug settings
 DEBUG = True
@@ -35,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'django.contrib.sessions',
     'django.contrib.sites',
+
+    'registration',
 
     'testproject.testapp',
 )
@@ -73,6 +76,9 @@ TEMPLATE_DIRS = (
 ROOT_URLCONF = 'testproject.urls'
 SECRET_KEY = 'set proper value in ``settings_local.py`` file'
 SITE_ID = 1
+
+# ``django-registration`` settings
+ACCOUNT_ACTIVATION_DAYS = 30
 
 # Try to loading settings from ``settings_local.py`` file
 try:

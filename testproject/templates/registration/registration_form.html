@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Sign in' %}{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+    <fieldset>
+        <legend>{% trans 'Registration' %}</legend>
+
+        {% if form.errors %}<h3>{% trans 'Please, cover errors listed below' %}</h3>{% endif %}
+
+        {% for f in form %}<p><label for="{{ f.auto_id }}">{{ f.label }}</label>:
+        {{ f }}{% if f.errors %}<br />&bull; {{ f.errors|join:", " }}{% endif %}</p>{% endfor %}
+
+        <p><input type="submit" value="{% trans 'Sign in' %}" /></p>
+    </fieldset>
+</form>
+
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}

@@ -6,6 +6,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'^accounts/', include('registration.urls')),
     (r'^', include('testproject.testapp.urls')),
     url(r'^admin/(.*)', admin.site.root),
 )
