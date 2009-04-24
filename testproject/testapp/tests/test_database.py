@@ -3,7 +3,8 @@ import os
 from tddspry.django import DatabaseTestCase
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
+from django.contrib.flatpages.models import FlatPage
 
 from testproject.testapp.models import UserProfile
 
@@ -12,12 +13,12 @@ TEST_BIO = u'Something text'
 TEST_NEW_BIO = u'Another something text'
 
 
-class TestModelsCustomDatabase(DatabaseTestCase):
+class TestCustomDatabase(DatabaseTestCase):
 
     database_name = os.path.join(settings.DIRNAME, 'test.db')
 
     def setup(self):
-        super(TestModelsCustomDatabase, self).setup()
+        super(TestCustomDatabase, self).setup()
         self.user = User.objects.create_user(username='username',
                                              password='password',
                                              email='email@domain.com')
@@ -47,13 +48,13 @@ class TestModelsCustomDatabase(DatabaseTestCase):
         self.check_update(profile, bio=TEST_NEW_BIO)
 
 
-class TestModelsCustomDatabaseWithFlush(DatabaseTestCase):
+class TestCustomDatabaseWithFlush(DatabaseTestCase):
 
     database_name = os.path.join(settings.DIRNAME, 'test.db')
     database_flush = True
 
     def setup(self):
-        super(TestModelsCustomDatabaseWithFlush, self).setup()
+        super(TestCustomDatabaseWithFlush, self).setup()
 
         try:
             self.user = User.objects.get(username='username')
@@ -89,13 +90,13 @@ class TestModelsCustomDatabaseWithFlush(DatabaseTestCase):
         self.check_update(profile, bio=TEST_NEW_BIO)
 
 
-class TestModelsCustomDatabaseWithoutFlush(DatabaseTestCase):
+class TestCustomDatabaseWithoutFlush(DatabaseTestCase):
 
     database_name = os.path.join(settings.DIRNAME, 'test.db')
     database_flush = False
 
     def setup(self):
-        super(TestModelsCustomDatabaseWithoutFlush, self).setup()
+        super(TestCustomDatabaseWithoutFlush, self).setup()
 
         try:
             self.user = User.objects.create_user(username='username',
@@ -136,10 +137,38 @@ class TestModelsCustomDatabaseWithoutFlush(DatabaseTestCase):
         self.check_update(profile, bio=TEST_NEW_BIO)
 
 
-class TestModelsMemoryDatabase(DatabaseTestCase):
+class TestDatabaseWithFixtures(DatabaseTestCase):
+
+    fixtures = ['users.json', 'userprofiles.json', 'groups.json',
+                'flatpages.json']
+
+    def test_data(self):
+        # Users loaded from ``testapp/fixtures/users.json``
+        self.assert_equal(User.objects.count(), 10)
+
+        # UserProfiles loaded from ``testapp/fixtures/userprofiles.json``
+        self.assert_equal(UserProfile.objects.count(), 10)
+
+        # Groups loaded from ``fixtures/groups.json``
+        self.assert_equal(Group.objects.count(), 3)
+
+        # FlatPages loaded from ``fixtures/flatpages.json``
+        self.assert_equal(FlatPage.objects.count(), 3)
+
+
+class TestDatabaseWithoutFixtures(DatabaseTestCase):
+
+    def test_data(self):
+        self.assert_equal(User.objects.count(), 0)
+        self.assert_equal(UserProfile.objects.count(), 0)
+        self.assert_equal(Group.objects.count(), 0)
+        self.assert_equal(FlatPage.objects.count(), 0)
+
+
+class TestMemoryDatabase(DatabaseTestCase):
 
     def setup(self):
-        super(TestModelsMemoryDatabase, self).setup()
+        super(TestMemoryDatabase, self).setup()
         self.user = User.objects.create_user(username='username',
                                              password='password',
                                              email='email@domain.com')
@@ -169,12 +198,12 @@ class TestModelsMemoryDatabase(DatabaseTestCase):
         self.check_update(profile, bio=TEST_NEW_BIO)
 
 
-class TestModelsOriginalDatabase(DatabaseTestCase):
+class TestOriginalDatabase(DatabaseTestCase):
 
     database_name = ':original:'
 
     def setup(self):
-        super(TestModelsOriginalDatabase, self).setup()
+        super(TestOriginalDatabase, self).setup()
 
         try:
             self.user = User.objects.create_user(username='username',
