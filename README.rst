@@ -93,11 +93,11 @@ That's all ;) But really for ``test_login``,
 And for ``test_logout`` we repeate these steps and adding logging out from
 current Django session and simple check that after logout we go to index page.
 
-Easy? No? Okay, create new issue on GitHub_ and say how exactly create easy
+Easy? No? Okay, `create new issue`_ on GitHub and say how exactly create easy
 tests for Django applications :)
 
 **ps.** More examples how-to usage **tddspry** exist in tests for
 ``testproject`` project in `tddspry repository`_.
 
-.. _GitHub: http://github.com/playpauseandstop/tddspry/issues
+.. _`create new issue`: http://github.com/playpauseandstop/tddspry/issues
 .. _`tddspry repository`: http://github.com/playpauseandstop/tddspry
