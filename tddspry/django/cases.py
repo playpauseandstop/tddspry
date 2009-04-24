@@ -6,6 +6,7 @@ from django.core import mail
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
 from django.core.servers.basehttp import AdminMediaHandler
+from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import connection, models
 from django.test.utils import TestSMTPConnection
 
@@ -281,6 +282,70 @@ class HttpTestCase(BaseHttpTestCase):
 
         return True
 
+    def go(self, url, args=None, kwargs=None):
+        """
+        Twill needs to set full URL of web-page to loading. This helper
+        auto-prepends ``SITE`` value if needed.
+
+        You can also give urlpattern name and function tries to ``reverse``
+        it to real URL.
+        """
+        if not url.startswith(self.SITE):
+            if not url.startswith('/'):
+                args = args
+                kwargs = kwargs
+
+                try:
+                    url = reverse(url, args=args, kwargs=kwargs)
+                except NoReverseMatch:
+                    pass
+
+            url = self.SITE + '/' + url.lstrip('/')
+        return self._go(url)
+
+    def go200(self, url, args=None, kwargs=None, check_links=False):
+        """
+        Go to url and check that response code is 200.
+        """
+        self.go(url, args, kwargs)
+        self.code(200)
+
+        if check_links:
+            self.check_links()
+
+    def login(self, username, password, url=None, formid=None):
+        """
+        Login to Django using ``username`` and ``password``.
+        """
+        formid = formid or 1
+        url = url or 'auth_login'
+
+        self.go200(url)
+
+        self.formvalue(formid, 'username', username)
+        self.formvalue(formid, 'password', password)
+
+        self.submit200()
+
+    def login_to_admin(self, username, password):
+        """
+        Login to Django admin CRUD using ``username`` and ``password``.
+        """
+        self.go200('/admin/')
+
+        self.formvalue(1, 'username', username)
+        self.formvalue(1, 'password', password)
+
+        self.submit200()
+        self.notfind('<input type="hidden" name="this_is_the_login_form" ' \
+                     'value="1" />')
+
+    def logout(self, url=None):
+        """
+        Logout from current Django session.
+        """
+        self.go200(url or 'auth_logout')
+
     def notfind(self, what, flags='', flat=False):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
@@ -299,19 +364,22 @@ class HttpTestCase(BaseHttpTestCase):
 
         return True
 
-    def go(self, url):
+    def submit200(self, submit_button=None, url=None, check_links=False):
         """
-        Twill needs to set full URL of web-page to loading. This helper
-        auto-prepends ``SITE`` value if needed.
+        Submit form and checks that response code is 200.
         """
-        if not url.startswith(self.SITE):
-            url = self.SITE + '/' + url.lstrip('/')
-        return self._go(url)
+        self.submit(submit_button)
+        self.code(200)
+
+        if url is not None:
+            self.url(url)
+
+        if check_links:
+            self.check_links()
 
     def url(self, should_be):
         """
-        Helper auto-prepernds ``SITE`` value to ``should_be`` url value if
-        needed.
+        Auto-prepernds ``SITE`` value to ``should_be`` value if needed.
         """
         if not should_be.startswith(self.SITE):
             should_be = self.SITE + '/' + should_be.lstrip('/')
