@@ -99,5 +99,5 @@ tests for Django applications :)
 **ps.** More examples how-to usage **tddspry** exist in tests for
 ``testproject`` project in `tddspry repository`_.
 
-_GitHub: http://github.com/playpauseandstop/tddspry/issues
-_`tddspry repository`: http://github.com/playpauseandstop/tddspry
+.. _GitHub: http://github.com/playpauseandstop/tddspry/issues
+.. _`tddspry repository`: http://github.com/playpauseandstop/tddspry
