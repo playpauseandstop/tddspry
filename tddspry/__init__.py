@@ -22,4 +22,4 @@ Base ``TestCase`` in ``tddspry``. The main advantages with standart Python's
 from tddspry.cases import *
 
 
-VERSION = (0, 2, 1)
+VERSION = (0, 2, 2)
