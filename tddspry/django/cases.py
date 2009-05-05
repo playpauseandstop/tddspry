@@ -38,8 +38,8 @@ class BaseDatabaseTestCase(NoseTestCase):
       ``settings.DATABASE_ENGINE``.
 
     database_flush
-      Flush database if it exists while ``True``, any changes to database on
-      ``False`` and recreates it while ``None``.
+      Flush database if it exists while ``True`` and any changes to database on
+      ``False``.
 
       **Note:** Please, do not use ``database_flush=True``, on
       ``database_name=':original:'``, it's flushes all data in your
@@ -67,23 +67,27 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         if self.database_name is None or self.database_name == ':memory:':
             settings.DATABASE_ENGINE = 'sqlite3'
+
+            if self.database_flush is None:
+                self.database_flush = True
         elif self.database_name == ':original:':
             is_original_database = True
             self.database_name = settings.DATABASE_NAME
 
-            if self.database_flush is None:
-                self.database_flush = False
-
+        if self.database_flush is None:
+            self.database_flush = False
         self.database_name = self.database_name or ':memory:'
 
+        settings.DATABASE_NAME = self.database_name
         settings.TEST_DATABASE_NAME = self.database_name
 
-        if not is_original_database:
-            self.database_name = \
-                connection.creation.create_test_db(autoclobber=True)
         tables = connection.introspection.table_names()
 
-        if self.database_flush != False and tables:
+        if not tables:
+            self.database_name = \
+                connection.creation.create_test_db(autoclobber=True)
+
+        if self.database_flush:
             call_command('flush', interactive=False)
 
         # Load data from fixtures
@@ -98,7 +102,7 @@ class BaseDatabaseTestCase(NoseTestCase):
 
     def teardown(self):
         # Destroys test database
-        if self.database_flush is None:
+        if self.database_name != settings.original_DATABASE_NAME:
             connection.creation.destroy_test_db(self.database_name)
 
         settings.DATABASE_ENGINE = settings.original_DATABASE_ENGINE
