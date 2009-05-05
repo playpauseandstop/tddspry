@@ -18,7 +18,7 @@ nosetests_ library.
 Requirements
 ============
 
-- Django_ == 1.0 (1.1 version not tested yet)
+- Django_ => 1.0
 - mock_ >= 0.5.0
 - nose_ >= 0.10.3
 - twill_ >= 0.9
@@ -82,7 +82,7 @@ That's all ;) But really for ``test_login``,
 * Next, twill browser goes to your ``'auth_login'`` page and checks that
   response code is 200.
 
-* Next, twill browser fill out login form with ``USERNAME`` and ``PASSWORD``
+* Next, twill browser fill out login form with ``username`` and ``password``
   values and submits it. Also here twill browser again checks that response
   code is 200.
 

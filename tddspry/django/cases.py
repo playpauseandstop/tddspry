@@ -61,12 +61,14 @@ class BaseDatabaseTestCase(NoseTestCase):
         ``SMTPConnection`` class from ``django.core.mail``.
         """
         # Creates test database
+        is_original_database = False
         settings.original_DATABASE_ENGINE = settings.DATABASE_ENGINE
         settings.original_DATABASE_NAME = settings.DATABASE_NAME
 
         if self.database_name is None or self.database_name == ':memory:':
             settings.DATABASE_ENGINE = 'sqlite3'
         elif self.database_name == ':original:':
+            is_original_database = True
             self.database_name = settings.DATABASE_NAME
 
             if self.database_flush is None:
@@ -74,21 +76,15 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         self.database_name = self.database_name or ':memory:'
 
-        if self.database_flush is not None:
-            settings.DATABASE_NAME = self.database_name
-            tables = connection.introspection.table_names()
+        settings.TEST_DATABASE_NAME = self.database_name
 
-            if not tables:
-                settings.TEST_DATABASE_NAME = self.database_name
-                self.database_name = \
-                    connection.creation.create_test_db(autoclobber=True)
-
-            if self.database_flush and tables:
-                call_command('flush', interactive=False)
-        else:
-            settings.TEST_DATABASE_NAME = self.database_name
+        if not is_original_database:
             self.database_name = \
                 connection.creation.create_test_db(autoclobber=True)
+        tables = connection.introspection.table_names()
+
+        if self.database_flush != False and tables:
+            call_command('flush', interactive=False)
 
         # Load data from fixtures
         if self.fixtures:
