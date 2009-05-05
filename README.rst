@@ -18,7 +18,7 @@ nosetests_ library.
 Requirements
 ============
 
-- Django_ => 1.0
+- Django_ >= 1.0
 - mock_ >= 0.5.0
 - nose_ >= 0.10.3
 - twill_ >= 0.9
