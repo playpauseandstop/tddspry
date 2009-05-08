@@ -9,6 +9,7 @@ from django.test.utils import TestSMTPConnection
 
 from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
 from tddspry.django.decorators import show_on_error
+from tddspry.django.utils import get_db_connection, flush
 
 from twill import add_wsgi_intercept, commands
 from twill.errors import TwillAssertionError
@@ -58,33 +59,43 @@ class BaseDatabaseTestCase(NoseTestCase):
         ``SMTPConnection`` class from ``django.core.mail``.
         """
         # Creates test database
-        is_original_database = False
+        create_test_db = True
+
         settings.original_DATABASE_ENGINE = settings.DATABASE_ENGINE
         settings.original_DATABASE_NAME = settings.DATABASE_NAME
 
         if self.database_name is None or self.database_name == ':memory:':
+            # Closes current database connection and changes
+            # ``DATABASE_ENGINE`` to ``'sqlite3'``
+            connection.close()
             settings.DATABASE_ENGINE = 'sqlite3'
 
-            if self.database_flush is None:
-                self.database_flush = True
+            settings.TEST_DATABASE_NAME = ':memory:'
+            create_test_db = True
+
+            # Flushes in-memory database if it exists
+            if get_db_connection(settings.TEST_DATABASE_NAME):
+                flush()
         elif self.database_name == ':original:':
-            is_original_database = True
             self.database_name = settings.DATABASE_NAME
 
-        if self.database_flush is None:
-            self.database_flush = False
-        self.database_name = self.database_name or ':memory:'
+            # If original database not exist - tries to create it
+            tables = connection.introspection.table_names()
+            if not tables:
+                settings.TEST_DATABASE_NAME = self.database_name
+            # If else, do not create test database - use current connection
+            else:
+                create_test_db = True
+        else:
+            settings.TEST_DATABASE_NAME = self.database_name
 
-        settings.DATABASE_NAME = self.database_name
-        settings.TEST_DATABASE_NAME = self.database_name
-
-        tables = connection.introspection.table_names()
-
-        if not tables:
+        if create_test_db:
             self.database_name = \
                 connection.creation.create_test_db(autoclobber=True)
 
-        if self.database_flush:
+        tables = connection.introspection.table_names()
+
+        if self.database_flush and tables:
             call_command('flush', interactive=False)
 
         # Load data from fixtures
@@ -99,6 +110,9 @@ class BaseDatabaseTestCase(NoseTestCase):
 
     def teardown(self):
         # Destroys test database
+        if self.database_name == ':memory:':
+            flush()
+
         if self.database_name != settings.original_DATABASE_NAME:
             connection.creation.destroy_test_db(self.database_name)
 
