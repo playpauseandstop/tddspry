@@ -1,13 +1,10 @@
-import os
-
 from django.conf import settings
-from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
 from django.core.servers.basehttp import AdminMediaHandler
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.db import connection, models
+from django.db import connection
 from django.test.utils import TestSMTPConnection
 
 from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
@@ -122,7 +119,7 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
 
     def __init__(self, *args, **kwargs):
         super(BaseHttpTestCase, self).__init__(*args, **kwargs)
-        self.SITE = 'http://%s:%s' % (self.IP, self.PORT)
+        self.SITE = 'http://%s:%s/' % (self.IP, self.PORT)
 
     def setup(self):
         super(BaseHttpTestCase, self).setup()
@@ -290,17 +287,7 @@ class HttpTestCase(BaseHttpTestCase):
         You can also give urlpattern name and function tries to ``reverse``
         it to real URL.
         """
-        if not url.startswith(self.SITE):
-            if not url.startswith('/'):
-                args = args
-                kwargs = kwargs
-
-                try:
-                    url = reverse(url, args=args, kwargs=kwargs)
-                except NoReverseMatch:
-                    pass
-
-            url = self.SITE + '/' + url.lstrip('/')
+        url = self._get_url(url, args, kwargs)
         return self._go(url)
 
     def go200(self, url, args=None, kwargs=None, check_links=False):
@@ -318,9 +305,8 @@ class HttpTestCase(BaseHttpTestCase):
         Login to Django using ``username`` and ``password``.
         """
         formid = formid or 1
-        url = url or 'auth_login'
 
-        self.go200(url)
+        self.go200(url or 'auth_login')
 
         self.formvalue(formid, 'username', username)
         self.formvalue(formid, 'password', password)
@@ -377,10 +363,24 @@ class HttpTestCase(BaseHttpTestCase):
         if check_links:
             self.check_links()
 
-    def url(self, should_be):
+    def url(self, url, args=None, kwargs=None):
         """
-        Auto-prepernds ``SITE`` value to ``should_be`` value if needed.
+        Assert that current URL matches the given regexp.
         """
-        if not should_be.startswith(self.SITE):
-            should_be = self.SITE + '/' + should_be.lstrip('/')
+        should_be = self._get_url(url, args, kwargs)
         return self._url(should_be)
+
+    def _get_url(self, url, args=None, kwargs=None):
+        """
+        Helper to reverses ``url`` if possible and auto-prepends ``SITE`` to
+        it if needed.
+        """
+        if url.startswith(self.SITE):
+            return url
+
+        try:
+            url = reverse(url, args=args or [], kwargs=kwargs or {})
+        except NoReverseMatch:
+            pass
+
+        return self.SITE + url.lstrip('/')
