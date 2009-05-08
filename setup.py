@@ -35,4 +35,4 @@ setup(name='tddspry',
         'Topic :: Software Development :: Testing',
       ],
       keywords='django mock nose tdd testing tests twill',
-      requires=['mock>=0.5.0', 'nose>=0.10.3', 'twill>=0.9'])
+      requires=['mock (>=0.5.0)', 'nose (>=0.10.3)', 'twill (>=0.9)'])
