@@ -1,3 +1,5 @@
+_sources/*
+_static/*
 build/*
 dist/*
 docs/_build/*
