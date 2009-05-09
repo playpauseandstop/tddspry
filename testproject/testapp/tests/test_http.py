@@ -3,11 +3,11 @@ import re
 
 from tddspry.django import HttpTestCase
 from tddspry.django.decorators import *
-from tddspry.django.helpers import *
-from twill.errors import TwillAssertionError
+from tddspry.django.helpers import PASSWORD, USERNAME
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from twill.errors import TwillAssertionError
 
 from testproject.testapp.models import UserProfile
 
@@ -23,6 +23,34 @@ def dummy_error(obj):
 
 class TestHTTP(HttpTestCase):
 
+    def test_build_url(self):
+        user = self.helper('create_user')
+
+        self.assert_equal(self.build_url('index'), '/')
+        self.assert_equal(self.build_url('user', args=[user.username]),
+                          '/user/' + user.username + '/')
+        self.assert_equal(self.build_url('user',
+                                         kwargs={'username': user.username}),
+                          '/user/' + user.username + '/')
+
+    def test_client(self):
+        # ``GET`` request
+        client = self.client
+
+        response = client.get('/')
+        self.assert_equal(response.status_code, 200)
+
+        # ``POST`` request
+        client = self.client
+
+        post = {
+            'hidden_field_1': 'Value',
+            'hidden_field_2': 'Value',
+            'some_field_1': 'Value,'
+        }
+        response = client.post('/edit_hidden_fields/', post)
+        self.assert_equal(response.status_code, 200)
+
     def test_edit_hidden_fields(self):
         self.enable_edit_hidden_fields()
 
@@ -35,7 +63,7 @@ class TestHTTP(HttpTestCase):
         self.submit200(url='/edit_hidden_fields/')
 
         self.find("hidden_field_1: 'Value'")
-        self.find("hidden_field_1: 'Value'")
+        self.find("hidden_field_2: 'Value'")
         self.find("some_field_1: 'Value'")
 
         self.disable_edit_hidden_fields()
@@ -75,7 +103,7 @@ class TestHTTP(HttpTestCase):
         self.go200('/profile/')
         self.url('/login/')
 
-        user = create_user()
+        user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
 
         self.go200('/profile/')
@@ -83,11 +111,11 @@ class TestHTTP(HttpTestCase):
         self.find(user.email)
 
     def test_login_to_admin_staff(self):
-        staff = create_staff()
+        staff = self.helper('create_staff')
         self.login_to_admin(USERNAME, PASSWORD)
 
     def test_login_to_admin_superuser(self):
-        superuser = create_superuser()
+        superuser = self.helper('create_superuser')
         self.login_to_admin(USERNAME, PASSWORD)
 
         self.go200('/admin/testapp/userprofile/')
@@ -97,11 +125,11 @@ class TestHTTP(HttpTestCase):
 
     @HttpTestCase.raises(TwillAssertionError)
     def test_login_to_admin_regular_user(self):
-        user = create_user()
+        user = self.helper('create_user')
         self.login_to_admin(USERNAME, PASSWORD)
 
     def test_logout(self):
-        user = create_user()
+        user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
 
         self.go200('/profile/')
@@ -153,8 +181,8 @@ class TestHTTP(HttpTestCase):
         self.go200('index')
         self.find('Index')
 
-        user = create_user()
-        profile = create_profile(user, UserProfile)
+        user = self.helper('create_user')
+        profile = self.helper('create_profile', user, UserProfile)
 
         self.go200('user', args=[user.username])
         self.find(user.username)

@@ -1,54 +1,48 @@
-from django.contrib.auth.models import User
+"""
+``DatabaseTestCase`` and ``HttpTestCase`` can call additional helpers by
+``helper(name, *args, **kwargs)`` method. Now ``tddspry.django.helpers``
+provides:
+
+.. autofunction :: create_profile
+.. autofunction :: create_staff
+.. autofunction :: create_superuser
+.. autofunction :: create_user
+.. autofunction :: registration
+
+Usage
+-----
+
+For create new non-active user in test case use next snippet::
+
+    from tddspry.django import DatabaseTestCase
 
 
-__all__ = ('EMAIL', 'PASSWORD', 'USERNAME', 'create_profile', 'create_staff',
-           'create_superuser', 'create_user')
+    class TestNonActiveUser(DatabaseTestCase):
+
+        def test_active(self):
+            user = self.helper('create_user', active=False)
+            self.assert_false(user.is_active)
+
+Also you can to access any additional helper function or var directly by
+``helpers`` attribute. For example, to access default values for ``username``,
+``password`` and ``email`` user fields use next snippet::
+
+    from tddspry.django import DatabaseTestCase
 
 
-EMAIL = 'test_email@domain.com'
-PASSWORD = 'test_password'
-USERNAME = 'test_username'
+    class TestHelpersVars(DatabaseTestCase):
 
+        def test_default_values(self):
+            user = self.helper('create_user', raw=True)
+            self.assert_equal(user.username, self.helpers.USERNAME)
+            self.assert_equal(user.password, self.helpers.PASSWORD)
+            self.assert_equal(user.email, self.helpers.EMAIL)
 
-def create_profile(user, klass, **kwargs):
-    """
-    Create profile for given user.
-    """
-    kwargs.update({'user': user})
-    return klass.objects.create(**kwargs)
+**Note:** You don't need to send ``obj`` argument to additional helper via
+``helper`` method. But if you want to call additional helper directly you must
+send ``DatabaseTestCase`` or ``HttpTestCase`` object as first argument.
 
+"""
 
-def create_staff(username=None, password=None, email=None, raw=False):
-    """
-    Create Django user with staff rights.
-    """
-    return create_user(username, password, email, staff=True, raw=raw)
-
-
-def create_superuser(username=None, password=None, email=None, raw=False):
-    """
-    Create Django user with superuser and staff rights.
-    """
-    return create_user(username, password, email, staff=True, superuser=True,
-                       raw=raw)
-
-
-def create_user(username=None, password=None, email=None, active=True,
-                staff=False, superuser=False, raw=False):
-    """
-    Create Django user with given names or with default if absent.
-    """
-    user = User(username=username or USERNAME,
-                email=email or EMAIL)
-
-    user.is_active = active
-    user.is_staff = staff
-    user.is_superuser = superuser
-
-    if raw:
-        user.password = password or PASSWORD
-    else:
-        user.set_password(password or PASSWORD)
-
-    user.save()
-    return user
+from tddspry.django.helpers.auth import *
+from tddspry.django.helpers.registration import *

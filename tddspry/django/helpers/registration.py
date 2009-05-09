@@ -9,11 +9,11 @@ from tddspry.django.helpers import EMAIL, PASSWORD, USERNAME
 __all__ = ('registration', )
 
 
-def activate(cls, word='activate', url='registration_activate'):
+def activate(obj, word='activate', url='registration_activate'):
     """
     For registered user get activation code from mailbox.
     """
-    cls.assert_equal(len(mail.outbox), 1)
+    obj.assert_equal(len(mail.outbox), 1)
 
     body = mail.outbox[0].body
     match = re.search('.*%s/(.*)' % word, body)
@@ -22,10 +22,10 @@ def activate(cls, word='activate', url='registration_activate'):
           'Failed to find proper activation link in the mail: %s' % body
 
     code = match.groups()[0]
-    cls.go200(url, args=[code[:-1]])
+    obj.go200(url, args=[code[:-1]])
 
 
-def registration(cls, username=None, email=None, password=None,
+def registration(obj, username=None, email=None, password=None,
                  verbosity=False,
                  registration_url='registration_register',
                  registration_formid=1,
@@ -35,40 +35,45 @@ def registration(cls, username=None, email=None, password=None,
                  login_url='auth_login',
                  login_formid=1):
     """
-    Register new user, activate it and login.
+    Register new user, activate it and login. Registers new user, activates it
+    and tries to log in. Helper covers all registration process provided by
+    `django-registration`_.
+
+    .. _`django-registration`: http://code.google.com/p/django-registration/
+
     """
     # Go to registration page
-    cls.go200(registration_url)
-    cls.find('<input id="id_username" type="text" class="required" ' \
+    obj.go200(registration_url)
+    obj.find('<input id="id_username" type="text" class="required" ' \
              'name="username"')
 
-    submit(cls, username, email, password, registration_formid,
+    submit(obj, username, email, password, registration_formid,
            registration_tos)
 
     if verbosity:
-        cls.show()
+        obj.show()
 
     # Get created user
     user = User.objects.get(username=USERNAME)
 
     # Created user should not be active
-    cls.assert_false(user.is_active,
+    obj.assert_false(user.is_active,
                      'User is already activated and should not.')
 
-    activate(cls, activate_word, activation_url)
+    activate(obj, activate_word, activation_url)
 
     if verbosity:
-        cls.show()
+        obj.show()
 
     # Test user exists and is_active
     user = User.objects.get(username=USERNAME)
-    cls.assert_true(user.is_active, 'User is not activated yet.')
+    obj.assert_true(user.is_active, 'User is not activated yet.')
 
     # Test login
-    cls.login(USERNAME, PASSWORD, login_url, login_formid)
+    obj.login(USERNAME, PASSWORD, login_url, login_formid)
 
 
-def submit(cls, username=None, email=None, password=None, formid=None,
+def submit(obj, username=None, email=None, password=None, formid=None,
            tos=False):
     """
     Submit form for register new user. Note - if you have captcha
@@ -76,12 +81,12 @@ def submit(cls, username=None, email=None, password=None, formid=None,
     """
     formid = formid or 1
 
-    cls.formvalue(formid, 'username', username or USERNAME)
-    cls.formvalue(formid, 'email', email or EMAIL)
-    cls.formvalue(formid, 'password1', password or PASSWORD)
-    cls.formvalue(formid, 'password2', password or PASSWORD)
+    obj.formvalue(formid, 'username', username or USERNAME)
+    obj.formvalue(formid, 'email', email or EMAIL)
+    obj.formvalue(formid, 'password1', password or PASSWORD)
+    obj.formvalue(formid, 'password2', password or PASSWORD)
 
     if tos:
-        cls.formvalue(formid, 'tos', 'on')
+        obj.formvalue(formid, 'tos', 'on')
 
-    cls.submit200()
+    obj.submit200()
