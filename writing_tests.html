@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Writing tests &mdash; tddspry v0.3 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="tddspry v0.3 documentation" href="index.html" />
+    <link rel="next" title="Running tests" href="running_tests.html" />
+    <link rel="prev" title="Testing with tddspry" href="index.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="running_tests.html" title="Running tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Testing with tddspry"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+
+  <div class="section" id="writing-tests">
+<h1>Writing tests<a class="headerlink" href="#writing-tests" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tddspry">
+<h2>Functional tests<a class="headerlink" href="#module-tddspry" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">tddspry</span></tt> provides <tt class="docutils literal"><span class="pre">NoseTestCase</span></tt> class to base functional testing.</p>
+<dl class="class">
+<dt id="tddspry.NoseTestCase">
+<em class="property">
+class </em><tt class="descclassname">tddspry.</tt><tt class="descname">NoseTestCase</tt><a class="headerlink" href="#tddspry.NoseTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>For convenience this class consist of all functions exists in <a class="reference" href="http://somethingaboutorange.com/mrl/projects/nose/0.11.0/testing_tools.html">nose.tools</a>
+module.</p>
+<p>So, if you have functions, like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">addititon</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">+</span> <span class="n">second</span>
+
+<span class="k">def</span> <span class="nf">division</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">second</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">/</span> <span class="n">second</span>
+
+<span class="k">def</span> <span class="nf">multiplication</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">*</span> <span class="n">second</span>
+
+<span class="k">def</span> <span class="nf">subtraction</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">first</span> <span class="o">-</span> <span class="n">second</span>
+</pre></div>
+</div>
+<p>You can write simple <tt class="docutils literal"><span class="pre">TestFunctions</span></tt> class to test its:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tddspry</span> <span class="kn">import</span> <span class="n">NoseTestCase</span>
+
+
+<span class="k">class</span> <span class="nc">TestFunctions</span><span class="p">(</span><span class="n">NoseTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_addition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">addititon</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_not_equal</span><span class="p">(</span><span class="n">addititon</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_division</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">division</span><span class="p">(</span><span class="mf">4</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_not_equal</span><span class="p">(</span><span class="n">division</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="mf">2</span><span class="p">,</span> <span class="mf">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_multiplication</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">multiplication</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_not_equal</span><span class="p">(</span><span class="n">multiplication</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">),</span> <span class="mf">3</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_subtraction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">subtraction</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="mf">1</span><span class="p">),</span> <span class="mf">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">subtraction</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="mf">1</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tddspry.django">
+<h2>Django related tests<a class="headerlink" href="#module-tddspry.django" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">tddspry.django</span></tt> provides <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> and <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> classes
+to testing Django applications.</p>
+<div class="section" id="database-tests-with-databasetestcase">
+<h3>Database tests with <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt><a class="headerlink" href="#database-tests-with-databasetestcase" title="Permalink to this headline">¶</a></h3>
+<p>For testing Django model classes and anything objects that needed database
+connection you should be used <tt class="docutils literal"><span class="pre">tddspry.django.DatabaseTestCase</span></tt>. This
+test-case inherits <tt class="docutils literal"><span class="pre">tddspry.TestCase</span></tt>, so consists of all nose tools
+functions and decorators.</p>
+<p>At <tt class="docutils literal"><span class="pre">setup</span></tt> <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> creates test database or flushes it if
+needed and loading fixtures if possible (<tt class="docutils literal"><span class="pre">database_name</span></tt>,
+<tt class="docutils literal"><span class="pre">database_flush</span></tt> and <tt class="docutils literal"><span class="pre">fixtures</span></tt> attributes).</p>
+<p>Also for convenience <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> has additional helpers:</p>
+<dl class="class">
+<dt id="tddspry.django.DatabaseTestCase">
+<em class="property">
+class </em><tt class="descclassname">tddspry.django.</tt><tt class="descname">DatabaseTestCase</tt><a class="headerlink" href="#tddspry.django.DatabaseTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="tddspry.django.DatabaseTestCase.assert_count">
+<tt class="descname">assert_count</tt><big>(</big><em>model</em>, <em>number</em><big>)</big><a class="headerlink" href="#tddspry.django.DatabaseTestCase.assert_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper counts all <tt class="docutils literal"><span class="pre">model</span></tt> objects and <tt class="docutils literal"><span class="pre">assert_equals</span></tt> it with given
+<tt class="docutils literal"><span class="pre">number</span></tt>.</p>
+<p>Also you can to put <tt class="docutils literal"><span class="pre">number</span></tt> argument as <tt class="docutils literal"><span class="pre">tuple</span></tt> and <tt class="docutils literal"><span class="pre">list</span></tt> and
+<tt class="docutils literal"><span class="pre">assert_count</span></tt> checks all of its values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.DatabaseTestCase.assert_create">
+<tt class="descname">assert_create</tt><big>(</big><em>model</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#tddspry.django.DatabaseTestCase.assert_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper tries to create new <tt class="docutils literal"><span class="pre">instance</span></tt> of <tt class="docutils literal"><span class="pre">model</span></tt> class with given
+<tt class="docutils literal"><span class="pre">**kwargs</span></tt> and checks that <tt class="docutils literal"><span class="pre">instance</span></tt> really created.</p>
+<p><tt class="docutils literal"><span class="pre">assert_create</span></tt> returns created <tt class="docutils literal"><span class="pre">instance</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.DatabaseTestCase.assert_delete">
+<tt class="descname">assert_delete</tt><big>(</big><em>instance</em><big>)</big><a class="headerlink" href="#tddspry.django.DatabaseTestCase.assert_delete" title="Permalink to this definition">¶</a></dt>
+<dd>Helper tries to delete <tt class="docutils literal"><span class="pre">instance</span></tt> and checks that it correctly
+deleted.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.DatabaseTestCase.assert_read">
+<tt class="descname">assert_read</tt><big>(</big><em>model</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#tddspry.django.DatabaseTestCase.assert_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper tries to filter <tt class="docutils literal"><span class="pre">model</span></tt> instances by <tt class="docutils literal"><span class="pre">**kwargs</span></tt> lookup.</p>
+<p><tt class="docutils literal"><span class="pre">assert_read</span></tt> returns QuerySet with filtered instances or simple
+instance if resulted QuerySet count is <tt class="docutils literal"><span class="pre">1</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.DatabaseTestCase.assert_update">
+<tt class="descname">assert_update</tt><big>(</big><em>instance</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#tddspry.django.DatabaseTestCase.assert_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper tries to update given <tt class="docutils literal"><span class="pre">instance</span></tt> with <tt class="docutils literal"><span class="pre">**kwargs</span></tt> and checks
+that all of <tt class="docutils literal"><span class="pre">**kwargs</span></tt> values was correctly saved to <tt class="docutils literal"><span class="pre">instance</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">assert_update</span></tt> returns updated <tt class="docutils literal"><span class="pre">instance</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Note:</strong> Also <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> can call additional helper by
+<cite>helper`</cite> method. <a class="reference" href="`Additionalhelpers`">See below</a> how use it.</p>
+<div class="section" id="usage">
+<h4>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h4>
+<p>So, for testing <a class="reference" href="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> of <tt class="docutils literal"><span class="pre">django.contrib.auth.models.Group</span></tt> model you can
+write next test case:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tddspry.django</span> <span class="kn">import</span> <span class="n">DatabaseTestCase</span>
+
+<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">Group</span>
+
+
+<span class="n">NEW_NAME</span> <span class="o">=</span> <span class="s">&#39;Super-Test Group&#39;</span>
+<span class="n">TEST_NAME</span> <span class="o">=</span> <span class="s">&#39;Test Group&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">TestGroup</span><span class="p">(</span><span class="n">DatabaseTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_create</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TEST_NAME</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_create</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TEST_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_delete</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_create</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TEST_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_read</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TEST_NAME</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_create</span><span class="p">(</span><span class="n">Group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">TEST_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_update</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">NEW_NAME</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="server-side-tests-with-httptestcase">
+<h3>Server-side tests with <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt><a class="headerlink" href="#server-side-tests-with-httptestcase" title="Permalink to this headline">¶</a></h3>
+<p>In addition to <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> <tt class="docutils literal"><span class="pre">tddspry.django</span></tt> provides
+<tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> class to testing HTTP responses with <a class="reference" href="http://twill.idyll.org/">Twill browser</a> and
+<a class="reference" href="http://docs.djangoproject.com/en/dev/topics/testing/#module-django.test.client">django.test.Client</a>.</p>
+<p>At setup <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> run Django WSGI server and connects it with
+twill browser.</p>
+<p>For historical reasons <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> was developed for testing Django
+applications with Twill browser, so its consists of all functions exists
+in <a class="reference" href="http://twill.idyll.org/commands.html">twill.commands</a> module as class methods.</p>
+<p>And for convenience several twill methods was simplifying and rewriting, there
+are:</p>
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.find">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">find</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Twill used regexp for searching content on web-page. Use <tt class="docutils literal"><span class="pre">flat=True</span></tt>
+to search content on web-page by standart Python <tt class="docutils literal"><span class="pre">what</span> <span class="pre">in</span> <span class="pre">html</span></tt>
+expression.</p>
+<p>If this expression was not True (was not found on page) it&#8217;s raises
+<tt class="docutils literal"><span class="pre">TwillAssertionError</span></tt> as in <tt class="docutils literal"><span class="pre">twill.commands.find</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.go">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">go</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Twill needs to set full URL of web-page to loading. This helper
+auto-prepends <tt class="docutils literal"><span class="pre">SITE</span></tt> value if needed.</p>
+<p>You can also give urlpattern name and function tries to <tt class="docutils literal"><span class="pre">reverse</span></tt>
+it to real URL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.notfind">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">notfind</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.notfind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Twill used regexp for searching content on web-page. Use <tt class="docutils literal"><span class="pre">flat=True</span></tt>
+to search content on web-page by standart Python <tt class="docutils literal"><span class="pre">not</span> <span class="pre">what</span> <span class="pre">in</span> <span class="pre">html</span></tt>
+expression.</p>
+<p>If this expression was not True (was found on page) it&#8217;s raises
+<tt class="docutils literal"><span class="pre">TwillAssertionError</span></tt> as in <tt class="docutils literal"><span class="pre">twill.commands.notfind</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.url">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.url" title="Permalink to this definition">¶</a></dt>
+<dd>Assert that current URL matches the given regexp.</dd></dl>
+
+<p>And from <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.3">0.3 release</a> of <tt class="docutils literal"><span class="pre">tddspry</span></tt> <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> consist of <tt class="docutils literal"><span class="pre">client</span></tt>
+attribute that stores instance of <tt class="docutils literal"><span class="pre">django.test.Client</span></tt> class.</p>
+<p>Also, <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> provides next methods:</p>
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.build_url">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">build_url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>prepend=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.build_url" title="Permalink to this definition">¶</a></dt>
+<dd>Helper reverses <tt class="docutils literal"><span class="pre">url</span></tt> if possible and auto-prepends <tt class="docutils literal"><span class="pre">SITE</span></tt> to
+it if <tt class="docutils literal"><span class="pre">prepend=True</span></tt>.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.disable_edit_hidden_fields">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">disable_edit_hidden_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable editing hidden fields (<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type=&quot;hidden&quot;</span> <span class="pre">...</span> <span class="pre">/&gt;</span></tt>) by
+Twill browser (as by default in twill).</p>
+<p>To enable use <tt class="docutils literal"><span class="pre">HttpTestCase.enable_edit_hidden_fields</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.disable_redirect">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">disable_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_redirect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable auto-redirects in Twill tests.</p>
+<p>To enable use <tt class="docutils literal"><span class="pre">HttpTestCase.enable_redirect</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.enable_edit_hidden_fields">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">enable_edit_hidden_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable editing hidden fields (<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type=&quot;hidden&quot;</span> <span class="pre">...</span> <span class="pre">/&gt;</span></tt>) by
+Twill browser.</p>
+<p>To disable use <tt class="docutils literal"><span class="pre">HttpTestCase.disable_edit_hidden_fields</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.enable_redirect">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">enable_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_redirect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable auto-redirects in Twill tests (as by default in twill).</p>
+<p>To disable use <tt class="docutils literal"><span class="pre">HttpTestCase.disable_redirect</span></tt> method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.go200">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">go200</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go200" title="Permalink to this definition">¶</a></dt>
+<dd>Go to url and check that response code is 200.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.login">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">login</tt><big>(</big><em>username</em>, <em>password</em>, <em>url=None</em>, <em>formid=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login" title="Permalink to this definition">¶</a></dt>
+<dd>Login to Django using <tt class="docutils literal"><span class="pre">username</span></tt> and <tt class="docutils literal"><span class="pre">password</span></tt>.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.login_to_admin">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">login_to_admin</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login_to_admin" title="Permalink to this definition">¶</a></dt>
+<dd>Login to Django admin CRUD using <tt class="docutils literal"><span class="pre">username</span></tt> and <tt class="docutils literal"><span class="pre">password</span></tt>.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.logout">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">logout</tt><big>(</big><em>url=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.logout" title="Permalink to this definition">¶</a></dt>
+<dd>Logout from current Django session.</dd></dl>
+
+<dl class="method">
+<dt id="tddspry.django.HttpTestCase.submit200">
+<tt class="descclassname">HttpTestCase.</tt><tt class="descname">submit200</tt><big>(</big><em>submit_button=None</em>, <em>url=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.submit200" title="Permalink to this definition">¶</a></dt>
+<dd>Submit form and checks that response code is 200.</dd></dl>
+
+<div class="section" id="id2">
+<h4>Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>So, for testing login/logout process in your project you can write next
+test-case:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tddspry.django</span> <span class="kn">import</span> <span class="n">HttpTestCase</span>
+
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+
+<span class="k">class</span> <span class="nc">TestLoginPage</span><span class="p">(</span><span class="n">HttpTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helper</span><span class="p">(</span><span class="s">&#39;create_user&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">LOGIN_REDIRECT_URL</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helper</span><span class="p">(</span><span class="s">&#39;create_user&#39;</span><span class="p">,</span> <span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="module-tddspry.django.helpers">
+<h3>Additional helpers<a class="headerlink" href="#module-tddspry.django.helpers" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> and <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> can call additional helpers by
+<tt class="docutils literal"><span class="pre">helper(name,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></tt> method. Now <tt class="docutils literal"><span class="pre">tddspry.django.helpers</span></tt>
+provides:</p>
+<dl class="function">
+<dt id="tddspry.django.helpers.create_profile">
+<tt class="descclassname">tddspry.django.helpers.</tt><tt class="descname">create_profile</tt><big>(</big><em>obj</em>, <em>user</em>, <em>klass</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#tddspry.django.helpers.create_profile" title="Permalink to this definition">¶</a></dt>
+<dd>Create profile for given user.</dd></dl>
+
+<dl class="function">
+<dt id="tddspry.django.helpers.create_staff">
+<tt class="descclassname">tddspry.django.helpers.</tt><tt class="descname">create_staff</tt><big>(</big><em>obj</em>, <em>username=None</em>, <em>password=None</em>, <em>email=None</em>, <em>raw=False</em><big>)</big><a class="headerlink" href="#tddspry.django.helpers.create_staff" title="Permalink to this definition">¶</a></dt>
+<dd>Create Django user with staff rights.</dd></dl>
+
+<dl class="function">
+<dt id="tddspry.django.helpers.create_superuser">
+<tt class="descclassname">tddspry.django.helpers.</tt><tt class="descname">create_superuser</tt><big>(</big><em>obj</em>, <em>username=None</em>, <em>password=None</em>, <em>email=None</em>, <em>raw=False</em><big>)</big><a class="headerlink" href="#tddspry.django.helpers.create_superuser" title="Permalink to this definition">¶</a></dt>
+<dd>Create Django user with superuser and staff rights.</dd></dl>
+
+<dl class="function">
+<dt id="tddspry.django.helpers.create_user">
+<tt class="descclassname">tddspry.django.helpers.</tt><tt class="descname">create_user</tt><big>(</big><em>obj</em>, <em>username=None</em>, <em>password=None</em>, <em>email=None</em>, <em>active=True</em>, <em>staff=False</em>, <em>superuser=False</em>, <em>raw=False</em><big>)</big><a class="headerlink" href="#tddspry.django.helpers.create_user" title="Permalink to this definition">¶</a></dt>
+<dd>Create Django user with given names or with default if absent.</dd></dl>
+
+<dl class="function">
+<dt id="tddspry.django.helpers.registration">
+<tt class="descclassname">tddspry.django.helpers.</tt><tt class="descname">registration</tt><big>(</big><em>obj</em>, <em>username=None</em>, <em>email=None</em>, <em>password=None</em>, <em>verbosity=False</em>, <em>registration_url='registration_register'</em>, <em>registration_formid=1</em>, <em>registration_tos=False</em>, <em>activate_word='activate'</em>, <em>activation_url='registration_activate'</em>, <em>login_url='auth_login'</em>, <em>login_formid=1</em><big>)</big><a class="headerlink" href="#tddspry.django.helpers.registration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register new user, activate it and login. Registers new user, activates it
+and tries to log in. Helper covers all registration process provided by
+<a class="reference" href="http://code.google.com/p/django-registration/">django-registration</a>.</p>
+</dd></dl>
+
+<div class="section" id="id3">
+<h4>Usage<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>For create new non-active user in test case use next snippet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tddspry.django</span> <span class="kn">import</span> <span class="n">DatabaseTestCase</span>
+
+
+<span class="k">class</span> <span class="nc">TestNonActiveUser</span><span class="p">(</span><span class="n">DatabaseTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helper</span><span class="p">(</span><span class="s">&#39;create_user&#39;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_false</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also you can to access any additional helper function or var directly by
+<tt class="docutils literal"><span class="pre">helpers</span></tt> attribute. For example, to access default values for <tt class="docutils literal"><span class="pre">username</span></tt>,
+<tt class="docutils literal"><span class="pre">password</span></tt> and <tt class="docutils literal"><span class="pre">email</span></tt> user fields use next snippet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">tddspry.django</span> <span class="kn">import</span> <span class="n">DatabaseTestCase</span>
+
+
+<span class="k">class</span> <span class="nc">TestHelpersVars</span><span class="p">(</span><span class="n">DatabaseTestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_default_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helper</span><span class="p">(</span><span class="s">&#39;create_user&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">USERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">PASSWORD</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">EMAIL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> You don&#8217;t need to send <tt class="docutils literal"><span class="pre">obj</span></tt> argument to additional helper via
+<tt class="docutils literal"><span class="pre">helper</span></tt> method. But if you want to call additional helper directly you must
+send <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> or <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> object as first argument.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Writing tests</a><ul>
+<li><a class="reference" href="#module-tddspry">Functional tests</a></li>
+<li><a class="reference" href="#module-tddspry.django">Django related tests</a><ul>
+<li><a class="reference" href="#database-tests-with-databasetestcase">Database tests with <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt></a><ul>
+<li><a class="reference" href="#usage">Usage</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#server-side-tests-with-httptestcase">Server-side tests with <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt></a><ul>
+<li><a class="reference" href="#id2">Usage</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#module-tddspry.django.helpers">Additional helpers</a><ul>
+<li><a class="reference" href="#id3">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Testing with tddspry</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="running_tests.html"
+                                  title="next chapter">Running tests</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/writing_tests.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="running_tests.html" title="Running tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Testing with tddspry"
+             >previous</a> |</li>
+        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Igor Davydenko.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+    </div>
+  </body>
+</html>
