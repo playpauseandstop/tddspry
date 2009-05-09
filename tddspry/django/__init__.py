@@ -1,74 +1,129 @@
 """
-==============
-tddspry.django
-==============
+``tddspry.django`` provides ``DatabaseTestCase`` and ``HttpTestCase`` classes
+to testing Django applications.
 
-TestCases
-=========
+Database tests with ``DatabaseTestCase``
+----------------------------------------
 
-``tddspry.django`` serves several custom ``TestCase``'s for test your Django's
-applications.
+For testing Django model classes and anything objects that needed database
+connection you should be used ``tddspry.django.DatabaseTestCase``. This
+test-case inherits ``tddspry.TestCase``, so consists of all nose tools
+functions and decorators.
 
-DatabaseTestCase
-----------------
+At ``setup`` ``DatabaseTestCase`` creates test database or flushes it if
+needed and loading fixtures if possible (``database_name``,
+``database_flush`` and ``fixtures`` attributes).
 
-Depends on ``NoseTestCase``. On ``setup`` ``DatabaseTestCase`` creates test
-``sqlite3`` database in ``:memory:`` and on ``teardown`` removes it.
+Also for convenience ``DatabaseTestCase`` has additional helpers:
 
-Custom methods
-~~~~~~~~~~~~~~
+.. autoclass :: tddspry.django.DatabaseTestCase
+   :members:
 
-* check_create(model, \*\*kwargs)
+**Note:** Also ``DatabaseTestCase`` can call additional helper by
+`helper`` method. `See below`_ how use it.
 
-* check_delete(instance)
+Usage
+~~~~~
 
-* check_update(instance, \*\*kwargs)
+So, for testing CRUD_ of ``django.contrib.auth.models.Group`` model you can
+write next test case::
 
-HttpTestCase
-------------
+    from tddspry.django import DatabaseTestCase
 
-Depends on ``DatabaseTestCase``. On ``setup`` ``HttpTestCase`` creates test
-database via ``django.db.connection.creation.create_test_db`` and on
-``teardown`` removes it.
+    from django.contrib.auth.models import Group
 
-Also this ``TestCase`` consists of all twill_ functions as class methods.
 
-.. _twill: http://twill.idyll.org/commands.html
+    NEW_NAME = 'Super-Test Group'
+    TEST_NAME = 'Test Group'
 
-Custom methods
-~~~~~~~~~~~~~~
 
-* find(what, flags='', flat=False)
+    class TestGroup(DatabaseTestCase):
 
-  Use ``flat=True`` to disable regexp matching and use raw ``what in html``
-  expression.
+        def test_create(self):
+            self.assert_create(Group, name=TEST_NAME)
 
-* notfind(what, flags='', flat=False)
+        def test_delete(self):
+            group = self.assert_create(Group, name=TEST_NAME)
+            self.assert_delete(group)
 
-  Use ``flat=True`` to disable regexp matching and use raw ``not what in html``
-  expression.
+        def test_read(self):
+            self.assert_create(Group, name=TEST_NAME)
+            self.assert_read(Group, name=TEST_NAME)
 
-More custom helpers for http tests you can find in Helpers_ section.
+        def test_update(self):
+            group = self.assert_create(Group, name=TEST_NAME)
+            self.assert_update(group, name=NEW_NAME)
 
-Helpers
-=======
+.. _`See below`: `Additional helpers`
+.. _CRUD: http://en.wikipedia.org/wiki/Create,_read,_update_and_delete
 
-Also ``tddspry.django`` gives several custom helpers to easying your http
-tests. To import it use::
+Server-side tests with ``HttpTestCase``
+---------------------------------------
 
-    from tddspry.django.helpers import *
+In addition to ``DatabaseTestCase`` ``tddspry.django`` provides
+``HttpTestCase`` class to testing HTTP responses with `Twill browser`_ and
+`django.test.Client`_.
 
-List of helpers:
+At setup ``HttpTestCase`` run Django WSGI server and connects it with
+twill browser.
 
-* go200(url)
+For historical reasons ``HttpTestCase`` was developed for testing Django
+applications with Twill browser, so its consists of all functions exists
+in `twill.commands`_ module as class methods.
 
-* login(USERNAME, PASSWORD, login_url=settings.LOGIN_URL, form_id=1)
+And for convenience several twill methods was simplifying and rewriting, there
+are:
 
-* login_to_admin(USERNAME, PASSWORD)
+.. automethod :: tddspry.django.HttpTestCase.find
+.. automethod :: tddspry.django.HttpTestCase.go
+.. automethod :: tddspry.django.HttpTestCase.notfind
+.. automethod :: tddspry.django.HttpTestCase.url
 
-* logout(logout_url=settings.LOGOUT_URL)
+And from `0.3 release`_ of ``tddspry`` ``HttpTestCase`` consist of ``client``
+attribute that stores instance of ``django.test.Client`` class.
 
-* submit200()
+Also, ``HttpTestCase`` provides next methods:
+
+.. automethod :: tddspry.django.HttpTestCase.build_url
+.. automethod :: tddspry.django.HttpTestCase.disable_edit_hidden_fields()
+.. automethod :: tddspry.django.HttpTestCase.disable_redirect()
+.. automethod :: tddspry.django.HttpTestCase.enable_edit_hidden_fields()
+.. automethod :: tddspry.django.HttpTestCase.enable_redirect()
+.. automethod :: tddspry.django.HttpTestCase.go200
+.. automethod :: tddspry.django.HttpTestCase.login
+.. automethod :: tddspry.django.HttpTestCase.login_to_admin
+.. automethod :: tddspry.django.HttpTestCase.logout
+.. automethod :: tddspry.django.HttpTestCase.submit200
+
+.. _`0.3 release`: http://pypi.python.org/pypi/tddspry/0.3
+
+Usage
+~~~~~
+
+So, for testing login/logout process in your project you can write next
+test-case::
+
+    from tddspry.django import HttpTestCase
+
+    from django.conf import settings
+
+
+    class TestLoginPage(HttpTestCase):
+
+        def test_login(self):
+            user = self.helper('create_user', 'username', 'password')
+            self.login('username', 'password')
+            self.url(settings.LOGIN_REDIRECT_URL)
+
+        def test_logout(self):
+            user = self.helper('create_user', 'username', 'password')
+            self.login('username', 'password')
+            self.logout()
+            self.url('/')
+
+.. _`Twill browser`: http://twill.idyll.org/
+.. _`django.test.Client`: http://docs.djangoproject.com/en/dev/topics/testing/#module-django.test.client
+.. _`twill.commands`: http://twill.idyll.org/commands.html
 
 """
 

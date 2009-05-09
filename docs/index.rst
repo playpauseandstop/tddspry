@@ -1,24 +1,23 @@
-=======
-tddspry
-=======
+.. tddspry documentation master file, created by sphinx-quickstart on Fri May 8 00:10:14 2009.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+====================
+Testing with tddspry
+====================
 
 **tddspry** is collection of testcases and additional helpers for testing
 Django applications with nose__ library.
 
 .. __: http://somethingaboutorange.com/mrl/projects/nose/
 
-1. Requirements_
-#. Installation_
-#. Documentation_
-#. `Bugs, features, contacts`_
-
 Requirements
 ============
 
-* Django_ >= 1.0
-* mock_ >= 0.5.0
-* nose_ >= 0.10.3
-* twill_ >= 0.9
+- Django_ >= 1.0
+- mock_ >= 0.5.0
+- nose_ >= 0.10.3
+- twill_ >= 0.9
 
 .. _Django: http://www.djangoproject.com/download/
 .. _mock: http://pypi.python.org/pypi/mock/
@@ -46,16 +45,16 @@ Also, you can retrieve fresh version of **tddspry** from GitHub_::
 .. _easy_install: http://pypi.python.org/pypi/setuptools/
 .. _GitHub: http://github.com/
 
-Documentation
-=============
+Usage
+=====
 
-Sphinx_-generated documentation for **tddspry** located at `GitHub pages`_.
-This documentation updates after every **tddspry** release.
+We create **tddspry** to easing testing Django projects and applications.
 
-Fresh documentation always can access in ``docs/`` directory.
+.. toctree ::
+   :maxdepth: 3
 
-.. _Sphinx: http://sphinx.pocoo.org/
-.. _`GitHub pages`: http://playpauseandstop.github.com/tddspry/
+   writing_tests
+   running_tests
 
 Bugs, features, contacts
 ========================
@@ -81,4 +80,3 @@ Contacts
 
 :Idea:
     Andriy Khavryuchenko *< akhavr [at] gmail >*
-
