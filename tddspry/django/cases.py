@@ -5,11 +5,13 @@ from django.core.management import call_command
 from django.core.servers.basehttp import AdminMediaHandler
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import connection
+from django.test import Client
 from django.test.utils import TestSMTPConnection
 
 from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
+from tddspry.django import helpers
 from tddspry.django.decorators import show_on_error
-from tddspry.django.utils import get_db_connection, flush
+from tddspry.django.utils import db_exists, flush
 
 from twill import add_wsgi_intercept, commands
 from twill.errors import TwillAssertionError
@@ -71,23 +73,29 @@ class BaseDatabaseTestCase(NoseTestCase):
             settings.DATABASE_ENGINE = 'sqlite3'
 
             settings.TEST_DATABASE_NAME = ':memory:'
-            create_test_db = True
 
             # Flushes in-memory database if it exists
-            if get_db_connection(settings.TEST_DATABASE_NAME):
+            if db_exists(settings.TEST_DATABASE_NAME):
                 flush()
         elif self.database_name == ':original:':
+            # Disable database flush by default
+            if self.database_flush is None:
+                self.database_flush = False
+
             self.database_name = settings.DATABASE_NAME
+            settings.TEST_DATABASE_NAME = settings.DATABASE_NAME
 
             # If original database not exist - tries to create it
-            tables = connection.introspection.table_names()
-            if not tables:
-                settings.TEST_DATABASE_NAME = self.database_name
-            # If else, do not create test database - use current connection
-            else:
-                create_test_db = True
+            if db_exists(self.database_name):
+                create_test_db = False
         else:
             settings.TEST_DATABASE_NAME = self.database_name
+
+            # Do not re-creates tests database if it exists on
+            # ``database_flush == False``
+            if self.database_flush == False and \
+               db_exists(self.database_name):
+                create_test_db = False
 
         if create_test_db:
             self.database_name = \
@@ -108,12 +116,20 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         mail.outbox = []
 
+    def helper(self, name, *args, **kwargs):
+        return getattr(helpers, name)(self, *args, **kwargs)
+
+    def _get_helpers(self):
+        return helpers
+    helpers = property(_get_helpers)
+
     def teardown(self):
         # Destroys test database
-        if self.database_name == ':memory:':
+        if self.database_name == ':memory:' and self.database_flush != False:
             flush()
 
-        if self.database_name != settings.original_DATABASE_NAME:
+        if self.database_name != settings.original_DATABASE_NAME and \
+           self.database_flush != False:
             connection.creation.destroy_test_db(self.database_name)
 
         settings.DATABASE_ENGINE = settings.original_DATABASE_ENGINE
@@ -131,8 +147,8 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
     IP = '127.0.0.1'
     PORT = 8088
 
-    def __init__(self, *args, **kwargs):
-        super(BaseHttpTestCase, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super(BaseHttpTestCase, self).__init__()
         self.SITE = 'http://%s:%s/' % (self.IP, self.PORT)
 
     def setup(self):
@@ -140,6 +156,33 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
 
         app = AdminMediaHandler(WSGIHandler())
         add_wsgi_intercept(self.IP, self.PORT, lambda: app)
+
+    def build_url(self, url, args=None, kwargs=None, prepend=False):
+        """
+        Helper reverses ``url`` if possible and auto-prepends ``SITE`` to
+        it if ``prepend=True``.
+        """
+        if url.startswith(self.SITE):
+            return url
+
+        try:
+            url = reverse(url, args=args or [], kwargs=kwargs or {})
+        except NoReverseMatch:
+            pass
+
+        if not prepend:
+            return url
+
+        return self.SITE + url.lstrip('/')
+
+    def disable_edit_hidden_fields(self):
+        """
+        Disable editing hidden fields (``<input type="hidden" ... />``) by
+        Twill browser (as by default in twill).
+
+        To enable use ``HttpTestCase.enable_edit_hidden_fields`` method.
+        """
+        self.enable_edit_hidden_fields(False)
 
     def disable_redirect(self):
         """
@@ -149,14 +192,14 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
         """
         self.enable_redirect(False)
 
-    def disable_edit_hidden_fields(self):
+    def enable_edit_hidden_fields(self, flag=True):
         """
-        Disable editing hidden fields (``<input type="hidden" ... />``) in
-        Twill tests (as by default in twill).
+        Enable editing hidden fields (``<input type="hidden" ... />``) by
+        Twill browser.
 
-        To enable use ``HttpTestCase.enable_edit_hidden_fields`` method.
+        To disable use ``HttpTestCase.disable_edit_hidden_fields`` method.
         """
-        self.enable_edit_hidden_fields(False)
+        self.config('readonly_controls_writeable', flag)
 
     def enable_redirect(self, flag=True):
         """
@@ -166,22 +209,45 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
         """
         self.config('acknowledge_equiv_refresh', int(flag))
 
-    def enable_edit_hidden_fields(self, flag=True):
-        """
-        Enable editing hidden fields (``<input type="hidden" ... />``) in
-        Twill tests.
-
-        To disable use ``HttpTestCase.disable_edit_hidden_fields`` method.
-        """
-        self.config('readonly_controls_writeable', flag)
-
 
 class DatabaseTestCase(BaseDatabaseTestCase):
 
-    def check_create(self, model, **kwargs):
+    def assert_count(self, model, number):
         """
-        Create Django instance for given model with given kwargs and check
-        if it is created correctly.
+        Helper counts all ``model`` objects and ``assert_equals`` it with given
+        ``number``.
+
+        Also you can to put ``number`` argument as ``tuple`` and ``list`` and
+        ``assert_count`` checks all of its values.
+        """
+        counter = model.objects.count()
+
+        if isinstance(number, (list, tuple)):
+            equaled = False
+            numbers = number
+
+            for number in numbers:
+                if number == counter:
+                    equaled = True
+                    break
+
+            if not equaled:
+                assert False, '%r model has %d instance(s), not %s' % (
+                                  model.__name__, counter, numbers,
+                              )
+        else:
+            self.assert_equal(counter,
+                              number,
+                              '%r model has %d instance(s), not %d' % (
+                                  model.__name__, counter, number,
+                              ))
+
+    def assert_create(self, model, **kwargs):
+        """
+        Helper tries to create new ``instance`` of ``model`` class with given
+        ``**kwargs`` and checks that ``instance`` really created.
+
+        ``assert_create`` returns created ``instance``.
         """
         old_counter = model.objects.count()
 
@@ -192,16 +258,15 @@ class DatabaseTestCase(BaseDatabaseTestCase):
                           old_counter,
                           'Could not to create only one new %r instance. ' \
                           'New counter is %d, when old counter is %d.' % (
-                              model.__name__,
-                              new_counter,
-                              old_counter,
+                              model.__name__, new_counter, old_counter,
                           ))
 
         return instance
 
-    def check_delete(self, instance):
+    def assert_delete(self, instance):
         """
-        Delete Django instance and check if it is deleted correctly.
+        Helper tries to delete ``instance`` and checks that it correctly
+        deleted.
         """
         model = type(instance)
         pk = instance.pk
@@ -214,9 +279,7 @@ class DatabaseTestCase(BaseDatabaseTestCase):
                           new_counter,
                           'Could not to delete only one %r instance. ' \
                           'New counter is %d, when old counter is %d.' % (
-                              model.__name__,
-                              new_counter,
-                              old_counter,
+                              model.__name__, new_counter, old_counter,
                           ))
 
         try:
@@ -225,13 +288,35 @@ class DatabaseTestCase(BaseDatabaseTestCase):
             pass
         else:
             assert False, 'Could not to delete %r instance with %d pk.' % (
-                model.__name__, pk
+                model.__name__, pk,
             )
 
-    def check_update(self, instance, **kwargs):
+    def assert_read(self, model, **kwargs):
         """
-        Update Django instance with given kwargs and check if it is updated
-        correctly.
+        Helper tries to filter ``model`` instances by ``**kwargs`` lookup.
+
+        ``assert_read`` returns QuerySet with filtered instances or simple
+        instance if resulted QuerySet count is ``1``.
+        """
+        queryset = model.objects.filter(**kwargs)
+        count = queryset.count()
+
+        if count == 0:
+            assert False, 'Could not to filter %r objects by %s lookup.' % (
+                              model.__name__, kwargs,
+                          )
+
+        if count == 1:
+            return queryset[0]
+
+        return queryset
+
+    def assert_update(self, instance, **kwargs):
+        """
+        Helper tries to update given ``instance`` with ``**kwargs`` and checks
+        that all of ``**kwargs`` values was correctly saved to ``instance``.
+
+        ``assert_update`` returns updated ``instance``.
         """
         for name, value in kwargs.items():
             setattr(instance, name, value)
@@ -275,6 +360,12 @@ class HttpTestCase(BaseHttpTestCase):
 
     __metaclass__ = HttpTestCaseMetaclass
 
+    def _get_client(self):
+        if not hasattr(self, '__client'):
+            setattr(self, '__client', Client())
+        return getattr(self, '__client')
+    client = property(_get_client)
+
     def find(self, what, flags='', flat=False):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
@@ -282,7 +373,7 @@ class HttpTestCase(BaseHttpTestCase):
         expression.
 
         If this expression was not True (was not found on page) it's raises
-        ``TwillAssertionError`` as in ``twill.commands.notfind`` method.
+        ``TwillAssertionError`` as in ``twill.commands.find`` method.
         """
         if not flat:
             return self._find(what, flags)
@@ -301,7 +392,7 @@ class HttpTestCase(BaseHttpTestCase):
         You can also give urlpattern name and function tries to ``reverse``
         it to real URL.
         """
-        url = self._get_url(url, args, kwargs)
+        url = self.build_url(url, args, kwargs, True)
         return self._go(url)
 
     def go200(self, url, args=None, kwargs=None, check_links=False):
@@ -381,20 +472,5 @@ class HttpTestCase(BaseHttpTestCase):
         """
         Assert that current URL matches the given regexp.
         """
-        should_be = self._get_url(url, args, kwargs)
+        should_be = self.build_url(url, args, kwargs, True)
         return self._url(should_be)
-
-    def _get_url(self, url, args=None, kwargs=None):
-        """
-        Helper to reverses ``url`` if possible and auto-prepends ``SITE`` to
-        it if needed.
-        """
-        if url.startswith(self.SITE):
-            return url
-
-        try:
-            url = reverse(url, args=args or [], kwargs=kwargs or {})
-        except NoReverseMatch:
-            pass
-
-        return self.SITE + url.lstrip('/')

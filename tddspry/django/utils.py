@@ -21,7 +21,7 @@ command wasn't able to run.
 The full error: %s"""
 
 
-def get_db_connection(db_name):
+def db_exists(db_name):
     from django.conf import settings
     from django.db import connection
 
@@ -40,10 +40,7 @@ def get_db_connection(db_name):
             can_rollback
 
     tables = connection.introspection.table_names()
-    if tables:
-        return connection
-
-    return None
+    return bool(tables)
 
 
 def flush():
