@@ -1,2 +1,6 @@
 include MANIFEST.in
 include README.rst
+include docs/Makefile
+include docs/conf.py
+include docs/make.bat
+include docs/*.rst
