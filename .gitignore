@@ -1,0 +1,13 @@
+build/*
+dist/*
+docs/_build/*
+
+*.db-journal
+*.pyc
+*.pyo
+
+.coverage
+Makefile.def
+MANIFEST
+test.db
+testproject.db
