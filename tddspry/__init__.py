@@ -8,4 +8,4 @@
 from tddspry.cases import *
 
 
-VERSION = (0, 3, 'beta')
+VERSION = (0, 3, None)
