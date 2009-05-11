@@ -2,6 +2,7 @@
 ``tddspry`` provides ``NoseTestCase`` class to base functional testing.
 
 .. autoclass :: tddspry.NoseTestCase
+   :members:
 
 """
 

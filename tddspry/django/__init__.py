@@ -17,10 +17,11 @@ needed and loading fixtures if possible (``database_name``,
 Also for convenience ``DatabaseTestCase`` has additional helpers:
 
 .. autoclass :: tddspry.django.DatabaseTestCase
-   :members:
+   :members: assert_count, assert_create, assert_delete, assert_read,
+             assert_update
 
 **Note:** Also ``DatabaseTestCase`` can call additional helper by
-`helper`` method. `See below`_ how use it.
+``helper`` method. `See below`_ how use it.
 
 Usage
 ~~~~~
