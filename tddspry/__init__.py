@@ -8,10 +8,13 @@
 from tddspry.cases import *
 
 
-VERSION = (0, 3, 1, 'beta')
+VERSION = (0, 3, 1)
 
 
 def get_version():
+    """
+    Returns human-readable version of your **tddspry** installation.
+    """
     def intjoin(data, sep):
         return sep.join(str(i) for i in data)
 

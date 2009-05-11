@@ -2,8 +2,13 @@
 Running tests
 =============
 
-``tddspry`` provides special command-line utility ``django-nosetests.py`` that
-run all tests that found in current work directory.
+``tddspry`` provides special command-line utility for simplifying run all
+tests in Django project or application..
+
+.. _django-nosetests-py:
+
+django-nosetests.py utility
+===========================
 
 This utility is wrapper to nosetests_ command that only set
 ``DJANGO_SETTINGS_MODULE`` environment var by ``--with-django-settings`` option

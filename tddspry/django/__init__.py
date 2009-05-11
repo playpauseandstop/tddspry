@@ -60,9 +60,9 @@ write next test case::
 Server-side tests with ``HttpTestCase``
 ---------------------------------------
 
-In addition to ``DatabaseTestCase`` ``tddspry.django`` provides
-``HttpTestCase`` class to testing HTTP responses with `Twill browser`_ and
-`django.test.Client`_.
+In addition to :class:`tddspry.django.DatabaseTestCase` :mod:`tddspry.django`
+provides :class:`tddspry.django.HttpTestCase` class to testing HTTP responses
+with `Twill browser`_ and `django.test.Client`_.
 
 At setup ``HttpTestCase`` run Django WSGI server and connects it with
 twill browser.
@@ -74,28 +74,18 @@ in `twill.commands`_ module as class methods.
 And for convenience several twill methods was simplifying and rewriting, there
 are:
 
-.. automethod :: tddspry.django.HttpTestCase.find
-.. automethod :: tddspry.django.HttpTestCase.go
-.. automethod :: tddspry.django.HttpTestCase.notfind
-.. automethod :: tddspry.django.HttpTestCase.url
+.. autoclass :: tddspry.django.HttpTestCase
+   :members: find, go, notfind, url
 
-And from `0.3 release`_ of ``tddspry`` ``HttpTestCase`` consist of ``client``
+And from :ref:`release_0.3` of ``tddspry`` ``HttpTestCase`` consist of ``client``
 attribute that stores instance of ``django.test.Client`` class.
 
 Also, ``HttpTestCase`` provides next methods:
 
-.. automethod :: tddspry.django.HttpTestCase.build_url
-.. automethod :: tddspry.django.HttpTestCase.disable_edit_hidden_fields()
-.. automethod :: tddspry.django.HttpTestCase.disable_redirect()
-.. automethod :: tddspry.django.HttpTestCase.enable_edit_hidden_fields()
-.. automethod :: tddspry.django.HttpTestCase.enable_redirect()
-.. automethod :: tddspry.django.HttpTestCase.go200
-.. automethod :: tddspry.django.HttpTestCase.login
-.. automethod :: tddspry.django.HttpTestCase.login_to_admin
-.. automethod :: tddspry.django.HttpTestCase.logout
-.. automethod :: tddspry.django.HttpTestCase.submit200
-
-.. _`0.3 release`: http://pypi.python.org/pypi/tddspry/0.3
+.. autoclass :: tddspry.django.HttpTestCase
+   :members: build_url, disable_edit_hidden_fields, disable_redirect,
+             enable_edit_hidden_fields, enable_redirect, go200, login,
+             login_to_admin, logout, submit200
 
 Usage
 ~~~~~

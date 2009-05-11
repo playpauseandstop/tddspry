@@ -51,27 +51,24 @@ Usage
 We create **tddspry** to easing testing Django projects and applications.
 
 .. toctree ::
-   :maxdepth: 3
 
    writing_tests
    running_tests
+   changes
 
-Bugs, features, contacts
-========================
+Bugs and features
+=================
 
-Sending bugs and features
--------------------------
-
-We use ``tddspry`` in all our projects, so we hope that it hasn't any bug,
+We use **tddspry** in all our projects, so we hope that it hasn't any bug,
 but if you really find it - send it to `issues tracker`__ on GitHub.
 
-And if ``tddspry`` does not support feature needed to you - tell us too and
-we tries to adds it as soon as possible.
+And if **tddspry** doesn't support feature needed to you - tell us and we try
+to add it as soon as possible.
 
 .. __: http://github.com/playpauseandstop/tddspry/issues
 
 Contacts
---------
+========
 
 :Authors:
     Igor Davydenko *< playpauseandstop [at] gmail >*,
