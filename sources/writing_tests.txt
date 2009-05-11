@@ -6,7 +6,6 @@ Functional tests
 ================
 
 .. automodule :: tddspry
-   :members:
 
 Django related tests
 ====================

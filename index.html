@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <title>Testing with tddspry &mdash; tddspry v0.3 documentation</title>
+    
+    <title>Testing with tddspry &mdash; tddspry v0.3.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3',
+        VERSION:     '0.3.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,8 +19,8 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="tddspry v0.3 documentation" href="" />
-    <link rel="next" title="Writing tests" href="writing_tests.html" />
+    <link rel="top" title="tddspry v0.3.1 documentation" href="" />
+    <link rel="next" title="Writing tests" href="writing_tests.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,15 +35,15 @@
         <li class="right" >
           <a href="writing_tests.html" title="Writing tests"
              accesskey="N">next</a> |</li>
-        <li><a href="">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-
+            
   <div class="section" id="testing-with-tddspry">
 <h1>Testing with tddspry<a class="headerlink" href="#testing-with-tddspry" title="Permalink to this headline">¶</a></h1>
 <p><strong>tddspry</strong> is collection of testcases and additional helpers for testing
@@ -78,27 +78,47 @@ or using sudo.</em></p>
 <li class="toctree-l1"><a class="reference" href="writing_tests.html">Writing tests</a><ul>
 <li class="toctree-l2"><a class="reference" href="writing_tests.html#module-tddspry">Functional tests</a></li>
 <li class="toctree-l2"><a class="reference" href="writing_tests.html#module-tddspry.django">Django related tests</a><ul>
-<li class="toctree-l3"><a class="reference" href="writing_tests.html#database-tests-with-databasetestcase">Database tests with <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt></a></li>
-<li class="toctree-l3"><a class="reference" href="writing_tests.html#server-side-tests-with-httptestcase">Server-side tests with <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt></a></li>
-<li class="toctree-l3"><a class="reference" href="writing_tests.html#module-tddspry.django.helpers">Additional helpers</a></li>
+<li class="toctree-l3"><a class="reference" href="writing_tests.html#database-tests-with-databasetestcase">Database tests with <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt></a><ul>
+<li class="toctree-l4"><a class="reference" href="writing_tests.html#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference" href="writing_tests.html#server-side-tests-with-httptestcase">Server-side tests with <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt></a><ul>
+<li class="toctree-l4"><a class="reference" href="writing_tests.html#id2">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference" href="writing_tests.html#module-tddspry.django.helpers">Additional helpers</a><ul>
+<li class="toctree-l4"><a class="reference" href="writing_tests.html#id3">Usage</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference" href="running_tests.html">Running tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference" href="running_tests.html">Running tests</a><ul>
+<li class="toctree-l2"><a class="reference" href="running_tests.html#django-nosetests-py-utility">django-nosetests.py utility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference" href="changes.html">Changes in tddspry</a><ul>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-3-1-latest-release">Release 0.3.1 (latest release)</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-3">Release 0.3</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-2-3">Release 0.2.3</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-2-2">Release 0.2.2</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-2-1">Release 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-2">Release 0.2</a></li>
+<li class="toctree-l2"><a class="reference" href="changes.html#release-0-1">Release 0.1</a></li>
+</ul>
+</li>
 </ul>
 </div>
-<div class="section" id="bugs-features-contacts">
-<h2>Bugs, features, contacts<a class="headerlink" href="#bugs-features-contacts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="sending-bugs-and-features">
-<h3>Sending bugs and features<a class="headerlink" href="#sending-bugs-and-features" title="Permalink to this headline">¶</a></h3>
-<p>We use <tt class="docutils literal"><span class="pre">tddspry</span></tt> in all our projects, so we hope that it hasn&#8217;t any bug,
+<div class="section" id="bugs-and-features">
+<h2>Bugs and features<a class="headerlink" href="#bugs-and-features" title="Permalink to this headline">¶</a></h2>
+<p>We use <strong>tddspry</strong> in all our projects, so we hope that it hasn&#8217;t any bug,
 but if you really find it - send it to <a class="reference" href="http://github.com/playpauseandstop/tddspry/issues">issues tracker</a> on GitHub.</p>
-<p>And if <tt class="docutils literal"><span class="pre">tddspry</span></tt> does not support feature needed to you - tell us too and
-we tries to adds it as soon as possible.</p>
+<p>And if <strong>tddspry</strong> doesn&#8217;t support feature needed to you - tell us and we try
+to add it as soon as possible.</p>
 </div>
 <div class="section" id="contacts">
-<h3>Contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">¶</a></h3>
+<h2>Contacts<a class="headerlink" href="#contacts" title="Permalink to this headline">¶</a></h2>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -112,7 +132,6 @@ we tries to adds it as soon as possible.</p>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 
@@ -130,11 +149,8 @@ we tries to adds it as soon as possible.</p>
 <li><a class="reference" href="#usage">Usage</a><ul>
 </ul>
 </li>
-<li><a class="reference" href="#bugs-features-contacts">Bugs, features, contacts</a><ul>
-<li><a class="reference" href="#sending-bugs-and-features">Sending bugs and features</a></li>
+<li><a class="reference" href="#bugs-and-features">Bugs and features</a></li>
 <li><a class="reference" href="#contacts">Contacts</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -176,7 +192,7 @@ we tries to adds it as soon as possible.</p>
         <li class="right" >
           <a href="writing_tests.html" title="Writing tests"
              >next</a> |</li>
-        <li><a href="">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

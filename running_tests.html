@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <title>Running tests &mdash; tddspry v0.3 documentation</title>
+    
+    <title>Running tests &mdash; tddspry v0.3.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3',
+        VERSION:     '0.3.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,8 +19,9 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="tddspry v0.3 documentation" href="index.html" />
-    <link rel="prev" title="Writing tests" href="writing_tests.html" />
+    <link rel="top" title="tddspry v0.3.1 documentation" href="index.html" />
+    <link rel="next" title="Changes in tddspry" href="changes.html" />
+    <link rel="prev" title="Writing tests" href="writing_tests.html" /> 
   </head>
   <body>
     <div class="related">
@@ -30,21 +31,29 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="Changes in tddspry"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="writing_tests.html" title="Writing tests"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-
+            
   <div class="section" id="running-tests">
 <h1>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h1>
-<p><tt class="docutils literal"><span class="pre">tddspry</span></tt> provides special command-line utility <tt class="docutils literal"><span class="pre">django-nosetests.py</span></tt> that
-run all tests that found in current work directory.</p>
+<p><tt class="docutils literal"><span class="pre">tddspry</span></tt> provides special command-line utility for simplifying run all
+tests in Django project or application..</p>
+<div class="section" id="django-nosetests-py-utility">
+<span id="django-nosetests-py"></span><h2>django-nosetests.py utility<a class="headerlink" href="#django-nosetests-py-utility" title="Permalink to this headline">¶</a></h2>
 <p>This utility is wrapper to <a class="reference" href="http://somethingaboutorange.com/mrl/projects/nose/0.11.0/usage.html">nosetests</a> command that only set
 <tt class="docutils literal"><span class="pre">DJANGO_SETTINGS_MODULE</span></tt> environment var by <tt class="docutils literal"><span class="pre">--with-django-settings</span></tt> option
 and <tt class="docutils literal"><span class="pre">TWILL_ERROR_DIR</span></tt> environment var by <tt class="docutils literal"><span class="pre">--with-error-dir</span></tt> option.</p>
@@ -59,6 +68,7 @@ from <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt> just 
 <div class="highlight-python"><pre>ln -s /path/to/tddspry/bin/django-nosetests.py ~/bin/django-nosetests.py</pre>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -66,9 +76,20 @@ from <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt> just 
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Running tests</a><ul>
+<li><a class="reference" href="#django-nosetests-py-utility">django-nosetests.py utility</a></li>
+</ul>
+</li>
+</ul>
+
             <h4>Previous topic</h4>
             <p class="topless"><a href="writing_tests.html"
                                   title="previous chapter">Writing tests</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="changes.html"
+                                  title="next chapter">Changes in tddspry</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/running_tests.txt"
@@ -98,9 +119,15 @@ from <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt> just 
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="Changes in tddspry"
+             >next</a> |</li>
+        <li class="right" >
           <a href="writing_tests.html" title="Writing tests"
              >previous</a> |</li>
-        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

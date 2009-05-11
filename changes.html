@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changes in tddspry &mdash; tddspry v0.3.1 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="tddspry v0.3.1 documentation" href="index.html" />
+    <link rel="prev" title="Running tests" href="running_tests.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="running_tests.html" title="Running tests"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changes-in-tddspry">
+<h1>Changes in tddspry<a class="headerlink" href="#changes-in-tddspry" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="release-0-3-1-latest-release">
+<span id="release-0-3-1"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.3.1">0.3.1</a> (latest release)<a class="headerlink" href="#release-0-3-1-latest-release" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Updates documentation (adds <a class="reference" href=""><em>Changes in tddspry</em></a>).</li>
+<li>Adds <tt class="docutils literal"><span class="pre">tddspry.get_version</span></tt> function to get human-readable version of your
+<strong>tddspry</strong> installation.</li>
+</ul>
+</div>
+<div class="section" id="release-0-3">
+<span id="id2"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.3">0.3</a><a class="headerlink" href="#release-0-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Adds <a class="reference" href="index.html"><em>documentation</em></a>.</li>
+<li>Re-writes init database connection for <tt class="docutils literal"><span class="pre">:original:</span></tt> and <tt class="docutils literal"><span class="pre">custom</span></tt>
+databases in <a title="tddspry.django.DatabaseTestCase" class="reference" href="writing_tests.html#tddspry.django.DatabaseTestCase"><tt class="xref docutils literal"><span class="pre">tddspry.django.DatabaseTestCase</span></tt></a> class.</li>
+<li>Adds object of <tt class="docutils literal"><span class="pre">django.test.Client</span></tt> to
+<a title="tddspry.django.HttpTestCase" class="reference" href="writing_tests.html#tddspry.django.HttpTestCase"><tt class="xref docutils literal"><span class="pre">tddspry.django.HttpTestCase</span></tt></a> class.</li>
+<li>Rewrites <a title="" class="reference" href="writing_tests.html#module-tddspry.django.helpers"><tt class="xref docutils literal"><span class="pre">test</span> <span class="pre">helpers</span></tt></a>.</li>
+<li>Adds <a class="reference" href="running_tests.html#django-nosetests-py"><em>django-nosetests.py utility</em></a>.</li>
+</ul>
+</div>
+<div class="section" id="release-0-2-3">
+<span id="id4"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.2.3">0.2.3</a><a class="headerlink" href="#release-0-2-3" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this version of <strong>tddspry</strong> for testing your projects.
+This version may corrupt data in your database.</p>
+</div>
+<ul class="simple">
+<li>Fixes for testing with in-memory SQLite3 databases (again).</li>
+</ul>
+</div>
+<div class="section" id="release-0-2-2">
+<span id="id6"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.2.2">0.2.2</a><a class="headerlink" href="#release-0-2-2" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this version of <strong>tddspry</strong> for testing your projects.
+This version may corrupt data in your database.</p>
+</div>
+<ul class="simple">
+<li>Fixes for testing with in-memory SQLite3 databases.</li>
+</ul>
+</div>
+<div class="section" id="release-0-2-1">
+<span id="id8"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.2.1">0.2.1</a><a class="headerlink" href="#release-0-2-1" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this version of <strong>tddspry</strong> for testing your projects.
+This version may corrupt data in your database.</p>
+</div>
+<ul class="simple">
+<li>First refactoring of <a title="" class="reference" href="writing_tests.html#module-tddspry.django.helpers"><tt class="xref docutils literal"><span class="pre">tddspry.django.helpers</span></tt></a> module.</li>
+</ul>
+</div>
+<div class="section" id="release-0-2">
+<span id="id10"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.2">0.2</a><a class="headerlink" href="#release-0-2" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this version of <strong>tddspry</strong> for testing your projects.
+This version may corrupt data in your database.</p>
+</div>
+<ul class="simple">
+<li>Full refactoring of <strong>tddspry</strong> library:<ul>
+<li>Adds <a title="tddspry.NoseTestCase" class="reference" href="writing_tests.html#tddspry.NoseTestCase"><tt class="xref docutils literal"><span class="pre">tddspry.NoseTestCase</span></tt></a> class.</li>
+<li>Rewrites old <tt class="docutils literal"><span class="pre">DbMock</span></tt> and <tt class="docutils literal"><span class="pre">TwillMock</span></tt> classes to
+<a title="tddspry.django.DatabaseTestCase" class="reference" href="writing_tests.html#tddspry.django.DatabaseTestCase"><tt class="xref docutils literal"><span class="pre">DatabaseTestCase</span></tt></a> and
+<a title="tddspry.django.HttpTestCase" class="reference" href="writing_tests.html#tddspry.django.HttpTestCase"><tt class="xref docutils literal"><span class="pre">HttpTestCase</span></tt></a>.</li>
+<li>Removes <tt class="docutils literal"><span class="pre">tddspry.mock</span></tt> module and adds <a class="reference" href="http://pypi.python.org/pypi/mock">mock python module</a> to
+requirements.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="release-0-1">
+<span id="id12"></span><h2>Release <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.1">0.1</a><a class="headerlink" href="#release-0-1" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use this version of <strong>tddspry</strong> for any reasons. This
+version is deprecated.</p>
+</div>
+<ul class="simple">
+<li>Initial release.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference" href="">Changes in tddspry</a><ul>
+<li><a class="reference" href="#release-0-3-1-latest-release">Release 0.3.1 (latest release)</a></li>
+<li><a class="reference" href="#release-0-3">Release 0.3</a></li>
+<li><a class="reference" href="#release-0-2-3">Release 0.2.3</a></li>
+<li><a class="reference" href="#release-0-2-2">Release 0.2.2</a></li>
+<li><a class="reference" href="#release-0-2-1">Release 0.2.1</a></li>
+<li><a class="reference" href="#release-0-2">Release 0.2</a></li>
+<li><a class="reference" href="#release-0-1">Release 0.1</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="running_tests.html"
+                                  title="previous chapter">Running tests</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/changes.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="running_tests.html" title="Running tests"
+             >previous</a> |</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Igor Davydenko.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.
+    </div>
+  </body>
+</html>

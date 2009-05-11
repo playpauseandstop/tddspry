@@ -4,14 +4,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-    <title>Writing tests &mdash; tddspry v0.3 documentation</title>
+    
+    <title>Writing tests &mdash; tddspry v0.3.1 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3',
+        VERSION:     '0.3.1',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,9 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="tddspry v0.3 documentation" href="index.html" />
+    <link rel="top" title="tddspry v0.3.1 documentation" href="index.html" />
     <link rel="next" title="Running tests" href="running_tests.html" />
-    <link rel="prev" title="Testing with tddspry" href="index.html" />
+    <link rel="prev" title="Testing with tddspry" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,15 +39,15 @@
         <li class="right" >
           <a href="index.html" title="Testing with tddspry"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
-
+            
   <div class="section" id="writing-tests">
 <h1>Writing tests<a class="headerlink" href="#writing-tests" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-tddspry">
@@ -99,6 +99,173 @@ module.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">subtraction</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span> <span class="mf">1</span><span class="p">),</span> <span class="mf">2</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_almost_equal">
+<em class="property">
+classmethod </em><tt class="descname">assert_almost_equal</tt><big>(</big><em>first</em>, <em>second</em>, <em>places=7</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_almost_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail if the two objects are unequal as determined by their
+difference rounded to the given number of decimal places
+(default 7) and comparing to zero.</p>
+<p>Note that decimal places (from zero) are usually not the same
+as significant digits (measured from the most signficant digit).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_almost_equals">
+<em class="property">
+classmethod </em><tt class="descname">assert_almost_equals</tt><big>(</big><em>first</em>, <em>second</em>, <em>places=7</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_almost_equals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail if the two objects are unequal as determined by their
+difference rounded to the given number of decimal places
+(default 7) and comparing to zero.</p>
+<p>Note that decimal places (from zero) are usually not the same
+as significant digits (measured from the most signficant digit).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_equal">
+<em class="property">
+classmethod </em><tt class="descname">assert_equal</tt><big>(</big><em>first</em>, <em>second</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_equal" title="Permalink to this definition">¶</a></dt>
+<dd>Fail if the two objects are unequal as determined by the &#8216;==&#8217;
+operator.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_equals">
+<em class="property">
+classmethod </em><tt class="descname">assert_equals</tt><big>(</big><em>first</em>, <em>second</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_equals" title="Permalink to this definition">¶</a></dt>
+<dd>Fail if the two objects are unequal as determined by the &#8216;==&#8217;
+operator.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_false">
+<em class="property">
+classmethod </em><tt class="descname">assert_false</tt><big>(</big><em>expr</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_false" title="Permalink to this definition">¶</a></dt>
+<dd>Fail the test if the expression is true.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_not_almost_equal">
+<em class="property">
+classmethod </em><tt class="descname">assert_not_almost_equal</tt><big>(</big><em>first</em>, <em>second</em>, <em>places=7</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_not_almost_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail if the two objects are equal as determined by their
+difference rounded to the given number of decimal places
+(default 7) and comparing to zero.</p>
+<p>Note that decimal places (from zero) are usually not the same
+as significant digits (measured from the most signficant digit).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_not_almost_equals">
+<em class="property">
+classmethod </em><tt class="descname">assert_not_almost_equals</tt><big>(</big><em>first</em>, <em>second</em>, <em>places=7</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_not_almost_equals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fail if the two objects are equal as determined by their
+difference rounded to the given number of decimal places
+(default 7) and comparing to zero.</p>
+<p>Note that decimal places (from zero) are usually not the same
+as significant digits (measured from the most signficant digit).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_not_equal">
+<em class="property">
+classmethod </em><tt class="descname">assert_not_equal</tt><big>(</big><em>first</em>, <em>second</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_not_equal" title="Permalink to this definition">¶</a></dt>
+<dd>Fail if the two objects are equal as determined by the &#8216;==&#8217;
+operator.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_not_equals">
+<em class="property">
+classmethod </em><tt class="descname">assert_not_equals</tt><big>(</big><em>first</em>, <em>second</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_not_equals" title="Permalink to this definition">¶</a></dt>
+<dd>Fail if the two objects are equal as determined by the &#8216;==&#8217;
+operator.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_raises">
+<em class="property">
+classmethod </em><tt class="descname">assert_raises</tt><big>(</big><em>excClass</em>, <em>callableObj</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_raises" title="Permalink to this definition">¶</a></dt>
+<dd>Fail unless an exception of class excClass is thrown
+by callableObj when invoked with arguments args and keyword
+arguments kwargs. If a different type of exception is
+thrown, it will not be caught, and the test case will be
+deemed to have suffered an error, exactly as for an
+unexpected exception.</dd></dl>
+
+<dl class="classmethod">
+<dt id="tddspry.NoseTestCase.assert_true">
+<em class="property">
+classmethod </em><tt class="descname">assert_true</tt><big>(</big><em>expr</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.assert_true" title="Permalink to this definition">¶</a></dt>
+<dd>Fail the test unless the expression is true.</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.eq_">
+<em class="property">
+static </em><tt class="descname">eq_</tt><big>(</big><em>a</em>, <em>b</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.eq_" title="Permalink to this definition">¶</a></dt>
+<dd>Shorthand for &#8216;assert a == b, &#8220;%r != %r&#8221; % (a, b)</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.make_decorator">
+<em class="property">
+static </em><tt class="descname">make_decorator</tt><big>(</big><em>func</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.make_decorator" title="Permalink to this definition">¶</a></dt>
+<dd>Wraps a test decorator so as to properly replicate metadata
+of the decorated function, including nose&#8217;s additional stuff
+(namely, setup and teardown).</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.ok_">
+<em class="property">
+static </em><tt class="descname">ok_</tt><big>(</big><em>expr</em>, <em>msg=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.ok_" title="Permalink to this definition">¶</a></dt>
+<dd>Shorthand for assert. Saves 3 whole characters!</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.raises">
+<em class="property">
+static </em><tt class="descname">raises</tt><big>(</big><em>*exceptions</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.raises" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test must raise one of expected exceptions to pass.</p>
+<p>Example use:</p>
+<div class="highlight-python"><pre>@raises(TypeError, ValueError)
+def test_raises_type_error():
+    raise TypeError("This test passes")
+
+@raises(Exception):
+def test_that_fails_by_passing():
+    pass</pre>
+</div>
+<p>If you want to test many assertions about exceptions in a single test,
+you may want to use <cite>assert_raises</cite> instead.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.set_trace">
+<em class="property">
+static </em><tt class="descname">set_trace</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.set_trace" title="Permalink to this definition">¶</a></dt>
+<dd>Call pdb.set_trace in the calling frame, first restoring
+sys.stdout to the real output stream. Note that sys.stdout is NOT
+reset to whatever it was before the call once pdb is done!</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.timed">
+<em class="property">
+static </em><tt class="descname">timed</tt><big>(</big><em>limit</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.timed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test must finish within specified time limit to pass.</p>
+<p>Example use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@timed</span><span class="p">(</span><span class="o">.</span><span class="mf">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_that_fails</span><span class="p">():</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mf">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tddspry.NoseTestCase.with_setup">
+<em class="property">
+static </em><tt class="descname">with_setup</tt><big>(</big><em>setup=None</em>, <em>teardown=None</em><big>)</big><a class="headerlink" href="#tddspry.NoseTestCase.with_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to add setup and/or teardown methods to a test function:</p>
+<div class="highlight-python"><pre>@with_setup(setup, teardown)
+def test_something():
+    # ...</pre>
+</div>
+<p>Note that <cite>with_setup</cite> is useful <em>only</em> for test functions, not for test
+methods or inside of TestCase subclasses.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -162,7 +329,7 @@ that all of <tt class="docutils literal"><span class="pre">**kwargs</span></tt> 
 </dd></dl>
 
 <p><strong>Note:</strong> Also <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> can call additional helper by
-<cite>helper`</cite> method. <a class="reference" href="`Additionalhelpers`">See below</a> how use it.</p>
+<tt class="docutils literal"><span class="pre">helper</span></tt> method. <a class="reference" href="`Additionalhelpers`">See below</a> how use it.</p>
 <div class="section" id="usage">
 <h4>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h4>
 <p>So, for testing <a class="reference" href="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> of <tt class="docutils literal"><span class="pre">django.contrib.auth.models.Group</span></tt> model you can
@@ -198,9 +365,9 @@ write next test case:</p>
 </div>
 <div class="section" id="server-side-tests-with-httptestcase">
 <h3>Server-side tests with <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt><a class="headerlink" href="#server-side-tests-with-httptestcase" title="Permalink to this headline">¶</a></h3>
-<p>In addition to <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt> <tt class="docutils literal"><span class="pre">tddspry.django</span></tt> provides
-<tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> class to testing HTTP responses with <a class="reference" href="http://twill.idyll.org/">Twill browser</a> and
-<a class="reference" href="http://docs.djangoproject.com/en/dev/topics/testing/#module-django.test.client">django.test.Client</a>.</p>
+<p>In addition to <a title="tddspry.django.DatabaseTestCase" class="reference" href="#tddspry.django.DatabaseTestCase"><tt class="xref docutils literal"><span class="pre">tddspry.django.DatabaseTestCase</span></tt></a> <tt class="xref docutils literal"><span class="pre">tddspry.django</span></tt>
+provides <a title="tddspry.django.HttpTestCase" class="reference" href="#tddspry.django.HttpTestCase"><tt class="xref docutils literal"><span class="pre">tddspry.django.HttpTestCase</span></tt></a> class to testing HTTP responses
+with <a class="reference" href="http://twill.idyll.org/">Twill browser</a> and <a class="reference" href="http://docs.djangoproject.com/en/dev/topics/testing/#module-django.test.client">django.test.Client</a>.</p>
 <p>At setup <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> run Django WSGI server and connects it with
 twill browser.</p>
 <p>For historical reasons <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> was developed for testing Django
@@ -208,9 +375,13 @@ applications with Twill browser, so its consists of all functions exists
 in <a class="reference" href="http://twill.idyll.org/commands.html">twill.commands</a> module as class methods.</p>
 <p>And for convenience several twill methods was simplifying and rewriting, there
 are:</p>
-<dl class="method">
+<dl class="class">
+<dt id="tddspry.django.HttpTestCase">
+<em class="property">
+class </em><tt class="descclassname">tddspry.django.</tt><tt class="descname">HttpTestCase</tt><a class="headerlink" href="#tddspry.django.HttpTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
 <dt id="tddspry.django.HttpTestCase.find">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">find</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.find" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">find</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Twill used regexp for searching content on web-page. Use <tt class="docutils literal"><span class="pre">flat=True</span></tt>
 to search content on web-page by standart Python <tt class="docutils literal"><span class="pre">what</span> <span class="pre">in</span> <span class="pre">html</span></tt>
 expression.</p>
@@ -220,7 +391,7 @@ expression.</p>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.go">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">go</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">go</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go" title="Permalink to this definition">¶</a></dt>
 <dd><p>Twill needs to set full URL of web-page to loading. This helper
 auto-prepends <tt class="docutils literal"><span class="pre">SITE</span></tt> value if needed.</p>
 <p>You can also give urlpattern name and function tries to <tt class="docutils literal"><span class="pre">reverse</span></tt>
@@ -229,7 +400,7 @@ it to real URL.</p>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.notfind">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">notfind</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.notfind" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">notfind</tt><big>(</big><em>what</em>, <em>flags=''</em>, <em>flat=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.notfind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Twill used regexp for searching content on web-page. Use <tt class="docutils literal"><span class="pre">flat=True</span></tt>
 to search content on web-page by standart Python <tt class="docutils literal"><span class="pre">not</span> <span class="pre">what</span> <span class="pre">in</span> <span class="pre">html</span></tt>
 expression.</p>
@@ -239,21 +410,27 @@ expression.</p>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.url">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.url" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.url" title="Permalink to this definition">¶</a></dt>
 <dd>Assert that current URL matches the given regexp.</dd></dl>
 
-<p>And from <a class="reference" href="http://pypi.python.org/pypi/tddspry/0.3">0.3 release</a> of <tt class="docutils literal"><span class="pre">tddspry</span></tt> <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> consist of <tt class="docutils literal"><span class="pre">client</span></tt>
+</dd></dl>
+
+<p>And from <a class="reference" href="changes.html#release-0-3"><em>Release 0.3</em></a> of <tt class="docutils literal"><span class="pre">tddspry</span></tt> <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> consist of <tt class="docutils literal"><span class="pre">client</span></tt>
 attribute that stores instance of <tt class="docutils literal"><span class="pre">django.test.Client</span></tt> class.</p>
 <p>Also, <tt class="docutils literal"><span class="pre">HttpTestCase</span></tt> provides next methods:</p>
-<dl class="method">
+<dl class="class">
+<dt>
+<em class="property">
+class </em><tt class="descclassname">tddspry.django.</tt><tt class="descname">HttpTestCase</tt></dt>
+<dd><dl class="method">
 <dt id="tddspry.django.HttpTestCase.build_url">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">build_url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>prepend=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.build_url" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">build_url</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>prepend=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.build_url" title="Permalink to this definition">¶</a></dt>
 <dd>Helper reverses <tt class="docutils literal"><span class="pre">url</span></tt> if possible and auto-prepends <tt class="docutils literal"><span class="pre">SITE</span></tt> to
 it if <tt class="docutils literal"><span class="pre">prepend=True</span></tt>.</dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.disable_edit_hidden_fields">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">disable_edit_hidden_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">disable_edit_hidden_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disable editing hidden fields (<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type=&quot;hidden&quot;</span> <span class="pre">...</span> <span class="pre">/&gt;</span></tt>) by
 Twill browser (as by default in twill).</p>
 <p>To enable use <tt class="docutils literal"><span class="pre">HttpTestCase.enable_edit_hidden_fields</span></tt> method.</p>
@@ -261,14 +438,14 @@ Twill browser (as by default in twill).</p>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.disable_redirect">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">disable_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_redirect" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">disable_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.disable_redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disable auto-redirects in Twill tests.</p>
 <p>To enable use <tt class="docutils literal"><span class="pre">HttpTestCase.enable_redirect</span></tt> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.enable_edit_hidden_fields">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">enable_edit_hidden_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">enable_edit_hidden_fields</tt><big>(</big><em>flag=True</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_edit_hidden_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable editing hidden fields (<tt class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type=&quot;hidden&quot;</span> <span class="pre">...</span> <span class="pre">/&gt;</span></tt>) by
 Twill browser.</p>
 <p>To disable use <tt class="docutils literal"><span class="pre">HttpTestCase.disable_edit_hidden_fields</span></tt> method.</p>
@@ -276,35 +453,37 @@ Twill browser.</p>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.enable_redirect">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">enable_redirect</tt><big>(</big><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_redirect" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">enable_redirect</tt><big>(</big><em>flag=True</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.enable_redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable auto-redirects in Twill tests (as by default in twill).</p>
 <p>To disable use <tt class="docutils literal"><span class="pre">HttpTestCase.disable_redirect</span></tt> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.go200">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">go200</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go200" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">go200</tt><big>(</big><em>url</em>, <em>args=None</em>, <em>kwargs=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.go200" title="Permalink to this definition">¶</a></dt>
 <dd>Go to url and check that response code is 200.</dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.login">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">login</tt><big>(</big><em>username</em>, <em>password</em>, <em>url=None</em>, <em>formid=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">login</tt><big>(</big><em>username</em>, <em>password</em>, <em>url=None</em>, <em>formid=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login" title="Permalink to this definition">¶</a></dt>
 <dd>Login to Django using <tt class="docutils literal"><span class="pre">username</span></tt> and <tt class="docutils literal"><span class="pre">password</span></tt>.</dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.login_to_admin">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">login_to_admin</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login_to_admin" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">login_to_admin</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.login_to_admin" title="Permalink to this definition">¶</a></dt>
 <dd>Login to Django admin CRUD using <tt class="docutils literal"><span class="pre">username</span></tt> and <tt class="docutils literal"><span class="pre">password</span></tt>.</dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.logout">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">logout</tt><big>(</big><em>url=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.logout" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">logout</tt><big>(</big><em>url=None</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.logout" title="Permalink to this definition">¶</a></dt>
 <dd>Logout from current Django session.</dd></dl>
 
 <dl class="method">
 <dt id="tddspry.django.HttpTestCase.submit200">
-<tt class="descclassname">HttpTestCase.</tt><tt class="descname">submit200</tt><big>(</big><em>submit_button=None</em>, <em>url=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.submit200" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">submit200</tt><big>(</big><em>submit_button=None</em>, <em>url=None</em>, <em>check_links=False</em><big>)</big><a class="headerlink" href="#tddspry.django.HttpTestCase.submit200" title="Permalink to this definition">¶</a></dt>
 <dd>Submit form and checks that response code is 200.</dd></dl>
+
+</dd></dl>
 
 <div class="section" id="id2">
 <h4>Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
@@ -472,7 +651,7 @@ send <tt class="docutils literal"><span class="pre">DatabaseTestCase</span></tt>
         <li class="right" >
           <a href="index.html" title="Testing with tddspry"
              >previous</a> |</li>
-        <li><a href="index.html">tddspry v0.3 documentation</a> &raquo;</li>
+        <li><a href="index.html">tddspry v0.3.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
