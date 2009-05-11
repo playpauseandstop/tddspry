@@ -8,14 +8,7 @@ readme = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
 README = readme.read()
 readme.close()
 
-VERSION = __import__('tddspry').VERSION
-if VERSION[2] != None:
-    if isinstance(VERSION[2], int):
-        version = '%d.%d.%d' % VERSION
-    else:
-        version = '%d.%d_%s' % VERSION
-else:
-    version = '%d.%d' % VERSION[:2]
+version = __import__('tddspry').get_version()
 
 setup(name='tddspry',
       version=version,

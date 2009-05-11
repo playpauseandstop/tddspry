@@ -8,4 +8,19 @@
 from tddspry.cases import *
 
 
-VERSION = (0, 3, None)
+VERSION = (0, 3, 1, 'beta')
+
+
+def get_version():
+    def intjoin(data, sep):
+        return sep.join(str(i) for i in data)
+
+    if VERSION[-1] is not None:
+        if isinstance(VERSION[-1], int):
+            version = intjoin(VERSION, '.')
+        else:
+            version = '%s_%s' % (intjoin(VERSION[:-1], '.'), VERSION[-1])
+    else:
+        version = intjoin(VERSION[:-1], '.')
+
+    return version
