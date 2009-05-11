@@ -5,10 +5,10 @@
 PYTHONPATH=`pwd`
 
 # ``tddspry`` related variables
-project_name=tddspry
+project=tddspry
 version=`python -c "import tddspry; print tddspry.get_version()"`
-project=$(project_name)-$(version)
 
+docs_dir=$(TMPDIR)/$(project)-docs
 settings=testproject.settings
 test_settings=testproject.settings
 
@@ -22,7 +22,6 @@ docs:
 	$(MAKE) -C docs html
 
 ghdocs:
-	$(docs_dir)=$(TMPDIR)/$(project)-docs
 	rm -rf $(docs_dir)
 	$(MAKE) -C docs html
 	cp -r docs/_build/html $(docs_dir)
