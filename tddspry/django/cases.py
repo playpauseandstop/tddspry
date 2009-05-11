@@ -335,9 +335,6 @@ class DatabaseTestCase(BaseDatabaseTestCase):
 class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
 
     def __new__(cls, name, bases, attrs):
-        def method(func):
-            return lambda _, *args, **kwargs: func(*args, **kwargs)
-
         for attr_name, attr_value in attrs.items():
             if 'test' in attr_name and callable(attr_value):
                 attrs[attr_name] = show_on_error(attr_value, clsname=name)
@@ -348,9 +345,9 @@ class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
             else:
                 attr_name = attr
 
-            attrs.update({attr_name: method(getattr(commands, attr))})
+            attrs.update({attr_name: staticmethod(getattr(commands, attr))})
 
-        attrs.update({'check_links': method(check_links)})
+        attrs.update({'check_links': staticmethod(check_links)})
 
         super_new = super(HttpTestCaseMetaclass, cls).__new__
         return super_new(cls, name, bases, attrs)
