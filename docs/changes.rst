@@ -2,6 +2,14 @@
 Changes in tddspry
 ==================
 
+.. _release_0.3.2:
+
+Release 0.3.2 (current development branch)
+==========================================
+
+* Copies all of database asserts methods (`assert_create`, `assert_delete`
+  etc.) to :class:`tddspry.django.HttpTestCase`.
+
 .. _release_0.3.1:
 
 Release 0.3.1__ (latest release)
