@@ -116,13 +116,6 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         mail.outbox = []
 
-    def helper(self, name, *args, **kwargs):
-        return getattr(helpers, name)(self, *args, **kwargs)
-
-    def _get_helpers(self):
-        return helpers
-    helpers = property(_get_helpers)
-
     def teardown(self):
         # Destroys test database
         if self.database_name == ':memory:' and self.database_flush != False:
@@ -141,76 +134,6 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         del mail.outbox
 
-
-class BaseHttpTestCase(BaseDatabaseTestCase):
-
-    IP = '127.0.0.1'
-    PORT = 8088
-
-    def __init__(self):
-        super(BaseHttpTestCase, self).__init__()
-        self.SITE = 'http://%s:%s/' % (self.IP, self.PORT)
-
-    def setup(self):
-        super(BaseHttpTestCase, self).setup()
-
-        app = AdminMediaHandler(WSGIHandler())
-        add_wsgi_intercept(self.IP, self.PORT, lambda: app)
-
-    def build_url(self, url, args=None, kwargs=None, prepend=False):
-        """
-        Helper reverses ``url`` if possible and auto-prepends ``SITE`` to
-        it if ``prepend=True``.
-        """
-        if url.startswith(self.SITE):
-            return url
-
-        try:
-            url = reverse(url, args=args or [], kwargs=kwargs or {})
-        except NoReverseMatch:
-            pass
-
-        if not prepend:
-            return url
-
-        return self.SITE + url.lstrip('/')
-
-    def disable_edit_hidden_fields(self):
-        """
-        Disable editing hidden fields (``<input type="hidden" ... />``) by
-        Twill browser (as by default in twill).
-
-        To enable use ``HttpTestCase.enable_edit_hidden_fields`` method.
-        """
-        self.enable_edit_hidden_fields(False)
-
-    def disable_redirect(self):
-        """
-        Disable auto-redirects in Twill tests.
-
-        To enable use ``HttpTestCase.enable_redirect`` method.
-        """
-        self.enable_redirect(False)
-
-    def enable_edit_hidden_fields(self, flag=True):
-        """
-        Enable editing hidden fields (``<input type="hidden" ... />``) by
-        Twill browser.
-
-        To disable use ``HttpTestCase.disable_edit_hidden_fields`` method.
-        """
-        self.config('readonly_controls_writeable', flag)
-
-    def enable_redirect(self, flag=True):
-        """
-        Enable auto-redirects in Twill tests (as by default in twill).
-
-        To disable use ``HttpTestCase.disable_redirect`` method.
-        """
-        self.config('acknowledge_equiv_refresh', int(flag))
-
-
-class DatabaseTestCase(BaseDatabaseTestCase):
 
     def assert_count(self, model, number):
         """
@@ -330,6 +253,86 @@ class DatabaseTestCase(BaseDatabaseTestCase):
                               'Could not to update %r field.' % name)
 
         return upd_instance
+
+    def helper(self, name, *args, **kwargs):
+        return getattr(helpers, name)(self, *args, **kwargs)
+
+    def _get_helpers(self):
+        return helpers
+    helpers = property(_get_helpers)
+
+
+class BaseHttpTestCase(BaseDatabaseTestCase):
+
+    IP = '127.0.0.1'
+    PORT = 8088
+
+    def __init__(self):
+        super(BaseHttpTestCase, self).__init__()
+        self.SITE = 'http://%s:%s/' % (self.IP, self.PORT)
+
+    def setup(self):
+        super(BaseHttpTestCase, self).setup()
+
+        app = AdminMediaHandler(WSGIHandler())
+        add_wsgi_intercept(self.IP, self.PORT, lambda: app)
+
+    def build_url(self, url, args=None, kwargs=None, prepend=False):
+        """
+        Helper reverses ``url`` if possible and auto-prepends ``SITE`` to
+        it if ``prepend=True``.
+        """
+        if url.startswith(self.SITE):
+            return url
+
+        try:
+            url = reverse(url, args=args or [], kwargs=kwargs or {})
+        except NoReverseMatch:
+            pass
+
+        if not prepend:
+            return url
+
+        return self.SITE + url.lstrip('/')
+
+    def disable_edit_hidden_fields(self):
+        """
+        Disable editing hidden fields (``<input type="hidden" ... />``) by
+        Twill browser (as by default in twill).
+
+        To enable use ``HttpTestCase.enable_edit_hidden_fields`` method.
+        """
+        self.enable_edit_hidden_fields(False)
+
+    def disable_redirect(self):
+        """
+        Disable auto-redirects in Twill tests.
+
+        To enable use ``HttpTestCase.enable_redirect`` method.
+        """
+        self.enable_redirect(False)
+
+    def enable_edit_hidden_fields(self, flag=True):
+        """
+        Enable editing hidden fields (``<input type="hidden" ... />``) by
+        Twill browser.
+
+        To disable use ``HttpTestCase.disable_edit_hidden_fields`` method.
+        """
+        self.config('readonly_controls_writeable', flag)
+
+    def enable_redirect(self, flag=True):
+        """
+        Enable auto-redirects in Twill tests (as by default in twill).
+
+        To disable use ``HttpTestCase.disable_redirect`` method.
+        """
+        self.config('acknowledge_equiv_refresh', int(flag))
+
+
+class DatabaseTestCase(BaseDatabaseTestCase):
+
+    pass
 
 
 class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
