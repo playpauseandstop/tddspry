@@ -16,11 +16,13 @@ Requirements
 ============
 
 * Django_ >= 1.0
+* setuptools_ >= 0.6.9
 * mock_ >= 0.5.0
 * nose_ >= 0.10.3
 * twill_ >= 0.9
 
 .. _Django: http://www.djangoproject.com/download/
+.. _setuptools: http://pypi.python.org/pypi/setuptools/
 .. _mock: http://pypi.python.org/pypi/mock/
 .. _nose: http://pypi.python.org/pypi/nose/
 .. _twill: http://pypi.python.org/pypi/twill/
