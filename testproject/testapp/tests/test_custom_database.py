@@ -38,8 +38,8 @@ class TestCustomDatabase(DatabaseTestCase):
 
     def test_unicode(self):
         profile = self.assert_create(UserProfile, user=self.user)
-        self.assert_equal(unicode(profile),
-                          u'Profile for "%s" user' % self.user.username)
+        self.assert_unicode(profile,
+                            u'Profile for "%s" user' % self.user.username)
 
 
 class TestCustomDatabaseWithFlush(DatabaseTestCase):
@@ -68,8 +68,8 @@ class TestCustomDatabaseWithFlush(DatabaseTestCase):
 
     def test_unicode(self):
         profile = self.assert_create(UserProfile, user=self.user)
-        self.assert_equal(unicode(profile),
-                          u'Profile for "%s" user' % self.user.username)
+        self.assert_unicode(profile,
+                            u'Profile for "%s" user' % self.user.username)
 
 
 class TestCustomDatabaseWithoutFlush(DatabaseTestCase):
@@ -96,8 +96,8 @@ class TestCustomDatabaseWithoutFlush(DatabaseTestCase):
 
     def test_unicode(self):
         profile = self.assert_read(UserProfile, user__username=TEST_USERNAME)
-        self.assert_equal(unicode(profile),
-                          u'Profile for "%s" user' % TEST_USERNAME)
+        self.assert_unicode(profile,
+                            u'Profile for "%s" user' % TEST_USERNAME)
 
 
 class TestCustomDatabaseWithFixtures(DatabaseTestCase):
