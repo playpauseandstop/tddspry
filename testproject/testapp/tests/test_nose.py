@@ -3,6 +3,25 @@ import time
 from tddspry import NoseTestCase
 
 
+TEST_STRING = 'Something'
+TEST_UNICODE = u'Something'
+
+
+class DummyUnicodeAndStr(object):
+
+    def __str__(self):
+        return TEST_STRING * 2
+
+    def __unicode__(self):
+        return TEST_UNICODE
+
+
+class DummyUnicode(object):
+
+    def __unicode__(self):
+        return TEST_UNICODE
+
+
 def dummy_setup():
     pass
 
@@ -34,6 +53,13 @@ class TestNose(NoseTestCase):
         self.assert_false(False)
         self.assert_raises(TypeError, raise_exception)
         self.assert_true(True)
+
+        self.assert_unicode(TEST_STRING, TEST_UNICODE)
+        self.assert_unicode(DummyUnicode(), TEST_STRING)
+        self.assert_unicode(DummyUnicode(), TEST_UNICODE)
+        self.assert_unicode(DummyUnicode(), DummyUnicodeAndStr())
+        self.assert_unicode(DummyUnicodeAndStr(), TEST_STRING)
+        self.assert_unicode(DummyUnicodeAndStr(), TEST_UNICODE)
 
     @NoseTestCase.raises(TypeError)
     def test_raises(self):

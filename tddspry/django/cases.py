@@ -7,6 +7,7 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import connection
 from django.test import Client
 from django.test.utils import TestSMTPConnection
+from django.utils.encoding import force_unicode
 
 from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
 from tddspry.django import helpers
@@ -134,7 +135,6 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         del mail.outbox
 
-
     def assert_count(self, model, number):
         """
         Helper counts all ``model`` objects and ``assert_equals`` it with given
@@ -233,6 +233,15 @@ class BaseDatabaseTestCase(NoseTestCase):
             return queryset[0]
 
         return queryset
+
+    def assert_unicode(self, first, second, message=None):
+        """
+        Use ``django.utils.encoding.force_unicode`` to ``first`` and ``second``
+        function args.
+        """
+        return self.assert_equal(force_unicode(first),
+                                 force_unicode(second),
+                                 message)
 
     def assert_update(self, instance, **kwargs):
         """

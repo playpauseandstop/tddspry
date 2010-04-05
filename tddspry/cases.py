@@ -70,3 +70,13 @@ class NoseTestCase(BaseTestCase):
     """
 
     __metaclass__ = NoseTestCaseMetaclass
+
+    def assert_unicode(self, first, second, message=None):
+        """
+        Helper method to shortcut checking unicode value of some instance.
+
+        Without ``assert_unicode`` method you may be need to manually convert
+        first and second value to unicode, but ``assert_unicode`` make this
+        for you automatic.
+        """
+        return self.assert_equal(unicode(first), unicode(second), message)

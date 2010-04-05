@@ -32,8 +32,8 @@ class TestMemoryDatabase(DatabaseTestCase):
 
     def test_unicode(self):
         profile = self.assert_create(UserProfile, user=self.user)
-        self.assert_equal(unicode(profile),
-                          u'Profile for "%s" user' % self.user.username)
+        self.assert_unicode(profile,
+                            u'Profile for "%s" user' % self.user.username)
 
 
 TestMemoryDatabaseWithFlush = TestMemoryDatabase
@@ -64,8 +64,8 @@ class TestMemoryDatabaseWithoutFlush(DatabaseTestCase):
 
     def test_unicode(self):
         profile = self.assert_create(UserProfile, user=self.user)
-        self.assert_equal(unicode(profile),
-                          u'Profile for "%s" user' % self.user.username)
+        self.assert_unicode(profile,
+                            u'Profile for "%s" user' % self.user.username)
 
 
 class TestMemoryDatabaseWithFixtures(DatabaseTestCase):
