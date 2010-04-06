@@ -1,25 +1,27 @@
 # Targets
-.PHONY: test clean docs ghdocs nosetests run syncdb
-
-# Adds current work directory to ``PYTHONPATH``
-PYTHONPATH=`pwd`
+.PHONY: clean docs fullclean fulltest ghdocs pypi test
 
 # ``tddspry`` related variables
 project=tddspry
-version=`python -c "import tddspry; print tddspry.get_version()"`
-
 docs_dir=$(TMPDIR)/$(project)-docs
-settings=testproject.settings
-test_settings=testproject.settings
-
-test: clean nosetests
 
 clean:
-	-find . -name '*.pyc' -exec rm {} \;
-	-rm testproject/test.db
+	find . -name 'pip-log.txt' -delete
+	find . -name '*.pyc' -delete
 
 docs:
 	$(MAKE) -C docs html
+
+fullclean: clean
+	rm -rf build/
+	rm -rf dist/
+	rm -rf docs/_build/
+	rm -rf $(project).egg-info/
+	rm -f MANIFEST
+	-$(MAKE) -C testproject fullclean
+
+fulltest:
+	$(MAKE) -C testproject fulltest
 
 ghdocs:
 	rm -rf $(docs_dir)
@@ -37,16 +39,10 @@ ghdocs:
 	git checkout master
 	rm -rf $(docs_dir)
 
-nosetests:
-	PYTHONPATH=$(PYTHONPATH) ./bin/django-nosetests.py --with-django-settings=$(test_settings) -w .. --with-coverage --cover-package=tddspry --exe testproject
-
-run:
-	PYTHONPATH=$(PYTHONPATH) ./testproject/manage.py runserver
-
-syncdb:
-	PYTHONPATH=$(PYTHONPATH) ./testproject/manage.py syncdb
+test:
+	$(MAKE) -C testproject test
 
 ### Local variables: ***
 ### compile-command:"make" ***
-### tab-width: 2 ***
+### tab-width: 4 ***
 ### End: ***

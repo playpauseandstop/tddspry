@@ -15,15 +15,11 @@ Django applications with nose__ library.
 Requirements
 ============
 
-* Django_ >= 1.0
-* setuptools_ >= 0.6.9
-* mock_ >= 0.5.0
-* nose_ >= 0.10.3
+* Django_ >= 1.0 (1.2 version with multiple databases not supported yet)
+* nose_ >= 0.10.4
 * twill_ >= 0.9
 
 .. _Django: http://www.djangoproject.com/download/
-.. _setuptools: http://pypi.python.org/pypi/setuptools/
-.. _mock: http://pypi.python.org/pypi/mock/
 .. _nose: http://pypi.python.org/pypi/nose/
 .. _twill: http://pypi.python.org/pypi/twill/
 
@@ -33,20 +29,21 @@ Installation
 *On most UNIX-like systems, you'll probably need to run these commands as root
 or using sudo.*
 
-To install::
+To install use::
 
-    python setup.py install
+    $ pip install tddspry
 
-Or via easy_install_::
+Or::
 
-    easy_install tddspry
+    $ python setup.py install
 
-Also, you can retrieve fresh version of **tddspry** from GitHub_::
+Also, you can retrieve fresh version of **tddspry** from `git repo`__::
 
-    git clone git://github.com/playpauseandstop/tddspry.git
+    $ git clone git://github.com/playpauseandstop/tddspry.git
 
-.. _easy_install: http://pypi.python.org/pypi/setuptools/
-.. _GitHub: http://github.com/
+and place ``tddspry`` directory somewhere to ``PYTHONPATH`` (or ``sys.path``).
+
+.. __: http://github.com/playpauseandstop/tddspry
 
 Documentation
 =============

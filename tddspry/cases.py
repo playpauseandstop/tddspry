@@ -1,4 +1,8 @@
-from nose import tools
+# Dirty hack to prevent ``ImportError`` on installing tddspry via pip
+try:
+    from nose import tools
+except ImportError:
+    tools = type('FakeNoseToolsModule', (object, ), {'__all__': []})
 
 
 __all__ = ('NoseTestCase', )

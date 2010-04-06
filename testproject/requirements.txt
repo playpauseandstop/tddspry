@@ -1,0 +1,4 @@
+http://www.djangoproject.com/download/1.1.1/tarball/
+http://nedbatchelder.com/code/modules/coverage-2.8.tar.gz
+http://pypi.python.org/packages/source/n/nose/nose-0.10.4.tar.gz
+http://darcs.idyll.org/~t/projects/twill-0.9.tar.gz
