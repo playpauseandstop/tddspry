@@ -8,7 +8,7 @@ readme = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
 README = readme.read()
 readme.close()
 
-requires = ['Django (>= 1.0)', 'nose (>= 0.10.3)', 'twill (>= 0.9)']
+requires = ['Django (>= 1.0)', 'nose (>= 0.10.4)', 'twill (>= 0.9)']
 version = __import__('tddspry').get_version()
 
 setup(name='tddspry',
