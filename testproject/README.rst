@@ -26,6 +26,16 @@ You need to have virtualenv_ and pip_ both installed on your system.
        [virtualenv]
        site_packages = True
 
+
+.. important:: To support download cache you need at lease pip version 0.6
+   installed in your system.
+
+   Else if ``error: no such option: --download-cache`` would be reached on
+   bootstrap, create ``bootstrap.cfg`` file with::
+
+       [pip]
+       download_cache = False
+
 .. _virtualenv: http://virtualenv.openplans.org/
 .. _pip: http://pip.openplans.org/
 .. _nose: http://somethingaboutorange.com/mrl/projects/nose/
