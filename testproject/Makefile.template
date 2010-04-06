@@ -1,0 +1,36 @@
+ENV = %(DEST_DIR)s
+
+# Targets
+.PHONY: clean fullclean fulltest runserver shell test
+
+# Default values for tddspry test project
+IP = 0.0.0.0
+PORT = 8191
+
+project = testproject
+settings = settings
+test_settings = $(settings)
+
+clean:
+	find . -name 'pip-log.txt' -delete
+	find . -name '*.pyc' -delete
+
+fullclean: clean
+	rm -rf $(ENV)/
+	rm -f testproject.db
+	rm -f Makefile
+
+fulltest:
+	echo "MAKE FULLTEST"
+
+runserver:
+	PYTHONPATH=. python manage.py runserver $(IP):$(PORT)
+
+shell:
+	PYTHONPATH=. python manage.py shell
+
+syncdb:
+	PYTHONPATH=. python manage.py syncdb --noinput
+
+test:
+	PYTHONPATH=. django-nosetests.py --with-django-settings=$(test_settings) -w .. --exe $(project)
