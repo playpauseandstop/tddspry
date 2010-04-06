@@ -135,15 +135,16 @@ class BaseDatabaseTestCase(NoseTestCase):
 
         del mail.outbox
 
-    def assert_count(self, model, number):
+    def assert_count(self, model_or_manager, number):
         """
-        Helper counts all ``model`` objects and ``assert_equals`` it with given
-        ``number``.
+        Helper counts all ``model_or_manager`` objects and ``assert_equal`` it
+        with given ``number``.
 
         Also you can to put ``number`` argument as ``tuple`` and ``list`` and
         ``assert_count`` checks all of its values.
         """
-        counter = model.objects.count()
+        manager = self._get_manager(model_or_manager)
+        counter = manager.count()
 
         if isinstance(number, (list, tuple)):
             equaled = False
@@ -156,78 +157,84 @@ class BaseDatabaseTestCase(NoseTestCase):
 
             if not equaled:
                 assert False, '%r model has %d instance(s), not %s' % (
-                                  model.__name__, counter, numbers,
+                                  manager.model.__name__, counter, numbers,
                               )
         else:
             self.assert_equal(counter,
                               number,
                               '%r model has %d instance(s), not %d' % (
-                                  model.__name__, counter, number,
+                                  manager.model.__name__, counter, number,
                               ))
 
-    def assert_create(self, model, **kwargs):
+    def assert_create(self, model_or_manager, **kwargs):
         """
-        Helper tries to create new ``instance`` of ``model`` class with given
-        ``**kwargs`` and checks that ``instance`` really created.
+        Helper tries to create new ``instance`` for ``model_or_manager`` class
+        with given ``**kwargs`` and checks that ``instance`` really created.
 
-        ``assert_create`` returns created ``instance``.
+        Method returns created ``instance`` if any.
         """
-        old_counter = model.objects.count()
+        manager = self._get_manager(model_or_manager)
+        old_counter = manager.count()
 
-        instance = model.objects.create(**kwargs)
-        new_counter = model.objects.count()
+        instance = manager.create(**kwargs)
+        new_counter = manager.count()
 
         self.assert_equal(new_counter - 1,
                           old_counter,
-                          'Could not to create only one new %r instance. ' \
-                          'New counter is %d, when old counter is %d.' % (
-                              model.__name__, new_counter, old_counter,
-                          ))
+                          'Could not create only one new %r instance. ' \
+                          'New counter is %d, when old counter is %d.' % \
+                          (manager.model.__name__, new_counter, old_counter))
 
         return instance
 
-    def assert_delete(self, instance):
+    def assert_delete(self, mixed):
         """
-        Helper tries to delete ``instance`` and checks that it correctly
-        deleted.
+        Helper tries to delete ``instance`` directly or all objects from
+        ``model`` or ``manager`` and checks that its correctly deleted.
         """
-        model = type(instance)
-        pk = instance.pk
+        instance, pk = self._get_instance_and_pk(mixed)
+        manager = self._get_manager(mixed)
+        old_counter = manager.count()
 
-        old_counter = model.objects.count()
-        instance.delete()
-        new_counter = model.objects.count()
-
-        self.assert_equal(old_counter - 1,
-                          new_counter,
-                          'Could not to delete only one %r instance. ' \
-                          'New counter is %d, when old counter is %d.' % (
-                              model.__name__, new_counter, old_counter,
-                          ))
-
-        try:
-            model.objects.get(pk=pk)
-        except model.DoesNotExist:
-            pass
+        if pk:
+            instance.delete()
+            message = 'Could not delete only one %r instance. New counter is '\
+                      '%d, when old counter is %d.'
         else:
-            assert False, 'Could not to delete %r instance with %d pk.' % (
-                model.__name__, pk,
-            )
+            manager.all().delete()
+            message = 'Could not delete all instances of %r model. New ' \
+                      'counter is %d, when old counter is %d.'
 
-    def assert_read(self, model, **kwargs):
+        new_counter = manager.count()
+        message = message % (manager.model.__name__, new_counter, old_counter)
+
+        self.assert_equal(new_counter, 0, message)
+
+        if pk:
+            try:
+                manager.get(pk=pk)
+            except manager.model.DoesNotExist:
+                pass
+            else:
+                assert False, 'Could not delete %r instance with %d pk.' % \
+                               (manager.model.__name__, pk)
+
+    def assert_read(self, model_or_manager, **kwargs):
         """
-        Helper tries to filter ``model`` instances by ``**kwargs`` lookup.
+        Helper tries to filter ``model_or_manager`` instance by ``**kwargs``
+        lookup.
 
         ``assert_read`` returns QuerySet with filtered instances or simple
         instance if resulted QuerySet count is ``1``.
         """
-        queryset = model.objects.filter(**kwargs)
+        manager = self._get_manager(model_or_manager)
+
+        queryset = manager.filter(**kwargs)
         count = queryset.count()
 
         if count == 0:
-            assert False, 'Could not to filter %r objects by %s lookup.' % (
-                              model.__name__, kwargs,
-                          )
+            assert False, 'Could not filter %r objects by %s lookup.' % \
+                          (manager.model.__name__, kwargs)
 
         if count == 1:
             return queryset[0]
@@ -243,25 +250,34 @@ class BaseDatabaseTestCase(NoseTestCase):
                                  force_unicode(second),
                                  message)
 
-    def assert_update(self, instance, **kwargs):
+    def assert_update(self, mixed, **kwargs):
         """
-        Helper tries to update given ``instance`` with ``**kwargs`` and checks
-        that all of ``**kwargs`` values was correctly saved to ``instance``.
+        Helper tries to update given model instance with ``**kwargs`` and
+        checks that all of ``**kwargs`` values was correctly saved to given
+        instance. In this case ``assert_update`` returns update instance.
 
-        ``assert_update`` returns updated ``instance``.
+        Also you can update all model class or manager instances with
+        QuerySet's ``update`` method and check for these updates.
         """
-        for name, value in kwargs.items():
-            setattr(instance, name, value)
-        instance.save()
+        instance, pk = self._get_instance_and_pk(mixed)
+        manager = self._get_manager(mixed)
 
-        upd_instance = type(instance).objects.get(pk=instance.pk)
+        if pk:
+            for name, value in kwargs.items():
+                setattr(instance, name, value)
+            instance.save()
 
-        for name, value in kwargs.items():
-            self.assert_equal(getattr(upd_instance, name),
-                              value,
-                              'Could not to update %r field.' % name)
+            instance = manager.get(pk=pk)
 
-        return upd_instance
+            for name, value in kwargs.items():
+                self.assert_equal(getattr(instance, name),
+                                  value,
+                                  'Could not update %r field.' % name)
+
+            return instance
+
+        manager.update(**kwargs)
+        return self.assert_read(manager, **kwargs)
 
     def helper(self, name, *args, **kwargs):
         return getattr(helpers, name)(self, *args, **kwargs)
@@ -269,6 +285,27 @@ class BaseDatabaseTestCase(NoseTestCase):
     def _get_helpers(self):
         return helpers
     helpers = property(_get_helpers)
+
+    def _get_instance_and_pk(self, mixed):
+        """
+        Utility function to return tuple contains of models instance and its pk
+        if possible.
+        """
+        instance, pk = None, None
+
+        if hasattr(mixed, 'pk') and not isinstance(mixed.pk, property):
+            instance, pk = mixed, mixed.pk
+
+        return (instance, pk)
+
+    def _get_manager(self, model_or_manager):
+        """
+        Utility function to return default manager from model or instance
+        object or given manager.
+        """
+        if hasattr(model_or_manager, '_default_manager'):
+            return model_or_manager._default_manager
+        return model_or_manager
 
 
 class BaseHttpTestCase(BaseDatabaseTestCase):
