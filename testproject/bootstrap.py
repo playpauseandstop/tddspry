@@ -149,7 +149,7 @@ def install_requirements():
     os.chdir(DIRNAME)
 
     # Move stored archive to temporary file
-    version = __import__('tddspry.version').get_version()
+    version = __import__('tddspry').get_version()
     archive = os.path.join(root, 'dist', 'tddspry-%s.tar.gz' % version)
     tempname = os.tempnam()
 
