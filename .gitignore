@@ -10,5 +10,9 @@ tddspry.egg-info/*
 .coverage
 Makefile.def
 MANIFEST
+pip-log.txt
 test.db
+testproject/env/
+testproject/bootstrap.cfg
+testproject/Makefile
 testproject.db
