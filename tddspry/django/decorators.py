@@ -1,6 +1,8 @@
 import os
 import time
 
+from functools import wraps
+
 from twill.commands import save_html, show
 from twill.errors import TwillAssertionError
 
@@ -15,7 +17,8 @@ def show_on_error(func, clsname=None):
     By sets up ``TWILL_ERROR_DIR`` environment var all error pages would be
     saved on it.
     """
-    def test_wrapper(*args, **kwargs):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         try:
             func(*args, **kwargs)
         except TwillAssertionError:
@@ -62,8 +65,4 @@ def show_on_error(func, clsname=None):
 
             raise
 
-    test_wrapper.__name__ = func.__name__
-    test_wrapper.__doc__ = func.__doc__
-    test_wrapper.__dict__.update(func.__dict__)
-
-    return test_wrapper
+    return wrapper

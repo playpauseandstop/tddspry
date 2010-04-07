@@ -5,6 +5,7 @@
    :members:
 
 """
+
 from tddspry.cases import *
 
 
@@ -21,7 +22,7 @@ def get_version():
         if isinstance(VERSION[-1], int):
             version = intjoin(VERSION)
         else:
-            version = '%s_%s' % (intjoin(VERSION[:-1]), VERSION[-1])
+            version = '%s-%s' % (intjoin(VERSION[:-1]), VERSION[-1])
     else:
         version = intjoin(VERSION[:-1])
 

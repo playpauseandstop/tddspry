@@ -4,8 +4,10 @@ try:
 except ImportError:
     tools = type('FakeNoseToolsModule', (object, ), {'__all__': []})
 
+from tddspry.utils import camelcase
 
-__all__ = ('NoseTestCase', )
+
+__all__ = ('NoseTestCase', 'TestCase')
 
 
 class BaseTestCase(object):
@@ -13,9 +15,16 @@ class BaseTestCase(object):
     pass
 
 
-class NoseTestCaseMetaclass(type):
+class TestCaseMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
+        for attr_name, attr_value in attrs.items():
+            if attr_name.startswith('assert_'):
+                new_name = camelcase(attr_name)
+
+                if not new_name in attrs:
+                    attrs[new_name] = attr_value
+
         for attr in tools.__all__:
             attrs.update({attr: getattr(tools, attr)})
             attrs[attr] = staticmethod(attrs[attr])
@@ -23,8 +32,7 @@ class NoseTestCaseMetaclass(type):
         return type.__new__(cls, name, bases, attrs)
 
 
-class NoseTestCase(BaseTestCase):
-
+class TestCase(BaseTestCase):
     """
     For convenience this class consist of all functions exists in nose.tools__
     module.
@@ -73,7 +81,7 @@ class NoseTestCase(BaseTestCase):
 
     """
 
-    __metaclass__ = NoseTestCaseMetaclass
+    __metaclass__ = TestCaseMetaclass
 
     def assert_unicode(self, first, second, message=None):
         """
@@ -84,3 +92,6 @@ class NoseTestCase(BaseTestCase):
         for you automatic.
         """
         return self.assert_equal(unicode(first), unicode(second), message)
+
+
+NoseTestCase = TestCase
