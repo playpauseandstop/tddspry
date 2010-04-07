@@ -1,4 +1,4 @@
-from tddspry.django import *
+from tddspry.django import TestCase
 
 from django.contrib.auth.models import User, check_password
 
@@ -8,7 +8,7 @@ from testproject.testapp.models import UserProfile
 TEST_BIO = u'Some bio text'
 
 
-class TestBaseHelpers(DatabaseTestCase):
+class TestBaseHelpers(TestCase):
 
     def test_create_profile(self):
         old_counter = UserProfile.objects.count()
@@ -71,7 +71,7 @@ class TestBaseHelpers(DatabaseTestCase):
         self.assert_false(user.is_superuser)
 
 
-class TestRegistrationHelpers(HttpTestCase):
+class TestRegistrationHelpers(TestCase):
 
     def test_registration(self):
         self.helper('registration')

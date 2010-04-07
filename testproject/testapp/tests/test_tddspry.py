@@ -1,4 +1,4 @@
-import tddspry
+from tddspry import TestCase
 
 
 TEST_VERSIONS = (
@@ -11,7 +11,7 @@ TEST_VERSIONS = (
 )
 
 
-class TestVersion(tddspry.NoseTestCase):
+class TestVersion(TestCase):
 
     def setup(self):
         self.OLD_VERSION = tddspry.VERSION

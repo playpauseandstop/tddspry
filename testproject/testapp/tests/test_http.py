@@ -1,12 +1,14 @@
 import os
 import re
+import shutil
 
-from tddspry.django import HttpTestCase
-from tddspry.django.decorators import *
+from tddspry.django import TestCase
+from tddspry.django.decorators import show_on_error
 from tddspry.django.helpers import PASSWORD, USERNAME
 
 from django.conf import settings
 from django.contrib.auth.models import User
+
 from twill.errors import TwillAssertionError
 
 from testproject.testapp.models import UserProfile
@@ -21,7 +23,7 @@ def dummy_error(obj):
     obj.code(200)
 
 
-class TestHTTP(HttpTestCase):
+class TestHttp(TestCase):
 
     def test_build_url(self):
         user = self.helper('create_user')
@@ -123,7 +125,7 @@ class TestHTTP(HttpTestCase):
         self.find('User profiles')
         self.find('Add user profile')
 
-    @HttpTestCase.raises(TwillAssertionError)
+    @TestCase.raises(TwillAssertionError)
     def test_login_to_admin_regular_user(self):
         user = self.helper('create_user')
         self.login_to_admin(USERNAME, PASSWORD)

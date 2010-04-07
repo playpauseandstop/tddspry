@@ -1,6 +1,6 @@
 import time
 
-from tddspry import NoseTestCase
+from tddspry import TestCase
 
 
 TEST_STRING = 'Something'
@@ -34,7 +34,7 @@ def raise_exception():
     raise TypeError
 
 
-class TestNose(NoseTestCase):
+class TestNose(TestCase):
 
     def test_methods(self):
         self.ok_(True)
@@ -61,38 +61,38 @@ class TestNose(NoseTestCase):
         self.assert_unicode(DummyUnicodeAndStr(), TEST_STRING)
         self.assert_unicode(DummyUnicodeAndStr(), TEST_UNICODE)
 
-    @NoseTestCase.raises(TypeError)
+    @TestCase.raises(TypeError)
     def test_raises(self):
         raise_exception()
 
-    @NoseTestCase.raises(AssertionError, TypeError, ValueError)
+    @TestCase.raises(AssertionError, TypeError, ValueError)
     def test_raises_complex(self):
         self.ok_(False)
         raise_exception()
         raise ValueError
 
-    @NoseTestCase.raises(TypeError)
-    @NoseTestCase.raises(ValueError)
+    @TestCase.raises(TypeError)
+    @TestCase.raises(ValueError)
     def test_raises_failed(self):
         raise_exception()
 
-    @NoseTestCase.timed(10)
+    @TestCase.timed(10)
     def test_timed(self):
         pass
 
-    @NoseTestCase.raises(AssertionError)
-    @NoseTestCase.timed(1)
+    @TestCase.raises(AssertionError)
+    @TestCase.timed(1)
     def test_timed_failed(self):
         time.sleep(2)
 
-    @NoseTestCase.with_setup(dummy_setup, dummy_teardown)
+    @TestCase.with_setup(dummy_setup, dummy_teardown)
     def test_with_setup_complex(self):
         pass
 
-    @NoseTestCase.with_setup(setup=dummy_setup)
+    @TestCase.with_setup(setup=dummy_setup)
     def test_with_setup_setup(self):
         pass
 
-    @NoseTestCase.with_setup(teardown=dummy_teardown)
+    @TestCase.with_setup(teardown=dummy_teardown)
     def test_with_setup_teardown(self):
         pass

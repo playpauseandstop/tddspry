@@ -1,4 +1,4 @@
-from tddspry.django import DatabaseTestCase
+from tddspry.django import TestCase
 
 from django.contrib.auth.models import Group, User
 from django.contrib.flatpages.models import FlatPage
@@ -12,10 +12,9 @@ TEST_CITIES = ('London', 'Edinburg', 'Cardiff', 'Belfast', 'Dublin')
 TEST_CITY = TEST_CITIES[0]
 
 
-class TestMemoryDatabase(DatabaseTestCase):
+class TestDatabase(TestCase):
 
     def setup(self):
-        super(TestMemoryDatabase, self).setup()
         self.user = self.helper('create_user')
 
     def test_create(self):
@@ -80,17 +79,74 @@ class TestMemoryDatabase(DatabaseTestCase):
                             u'Profile for "%s" user' % self.user.username)
 
 
-class TestMemoryDatabaseWithFlush(TestMemoryDatabase):
+class TestDatabaseUnitTestStyleMethods(TestCase):
 
-    database_flush = True
+    def setUp(self):
+        self.user = self.helper('create_user')
+
+    def testCreate(self):
+        self.assertCreate(UserProfile, user=self.user)
+
+    def testCreateManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertCreate(profile.contacts, city=TEST_CITY)
+
+    def testDelete(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertDelete(profile)
+
+    def testDeleteManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assertCreate(profile.contacts, city=city)
+
+        self.assertCount(profile.contacts, len(TEST_CITIES))
+        self.assertDelete(profile.contacts)
+        self.assertCount(profile.contacts, 0)
+
+    def testDeleteModel(self):
+        self.assertCreate(UserProfile, user=self.user)
+        self.assertDelete(UserProfile)
+        self.assertCount(UserProfile, 0)
+
+    def testRead(self):
+        self.assertCreate(UserProfile, user=self.user)
+        self.assertRead(UserProfile, user=self.user)
+
+    def testReadManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assertCreate(profile.contacts, city=city)
+            self.assertRead(profile.contacts, city=city)
+
+    def testUpdate(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertUpdate(profile, bio=TEST_BIO)
+
+    def testUpdateManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assertCreate(profile.contacts, city=city)
+
+        self.assertUpdate(profile.contacts, address=TEST_ADDRESS)
+        queryset = self.assertRead(profile.contacts, address=TEST_ADDRESS)
+        self.assertCount(queryset, len(TEST_CITIES))
+
+    def testUpdateModel(self):
+        self.assertCreate(UserProfile, user=self.user)
+        self.assertUpdate(UserProfile, bio=TEST_BIO)
+        self.assertRead(UserProfile, bio=TEST_BIO)
+
+    def testUnicode(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertUnicode(profile,
+                           u'Profile for "%s" user' % self.user.username)
 
 
-class TestMemoryDatabaseWithoutFlush(TestMemoryDatabase):
-
-    database_flush = False
-
-
-class TestMemoryDatabaseWithFixtures(DatabaseTestCase):
+class TestDatabaseWithFixtures(TestCase):
 
     fixtures = ['users.json', 'userprofiles.json', 'groups.json',
                 'flatpages.json']
@@ -109,7 +165,7 @@ class TestMemoryDatabaseWithFixtures(DatabaseTestCase):
         self.assert_count(FlatPage, 3)
 
 
-class TestMemoryDatabaseWithoutFixtures(DatabaseTestCase):
+class TestDatabaseWithoutFixtures(TestCase):
 
     def test_data(self):
         self.assert_count(User, 0)
