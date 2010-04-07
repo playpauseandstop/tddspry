@@ -8,6 +8,7 @@ generates ``Makefile`` from template.
 .. _pip: http://pypi.python.org/pypi/pip
 
 """
+
 import ConfigParser
 import copy
 import os
@@ -16,10 +17,11 @@ import sys
 
 from distutils.core import run_setup
 
+
 try:
     import pip
 except ImportError, e:
-    print('ERROR: %s' % e)
+    print('ERROR: %s') % e
     print('ERROR: This script requires pip installed in your system.')
     sys.exit(1)
 
@@ -27,7 +29,7 @@ except ImportError, e:
 try:
     import virtualenv
 except ImportError, e:
-    print('ERROR: %s' % e)
+    print('ERROR: %s') % e
     print('ERROR: This script requires virtualenv installed in your system.')
     sys.exit(1)
 
@@ -133,52 +135,13 @@ def install_requirements():
               requirements_file)
         sys.exit(1)
 
-    # Install ``tddspry`` to new virtual environment
-    # First add root directory to ``sys.path`` if needed
-    root = os.path.dirname(DIRNAME)
-    root_added = False
-
-    if not root in sys.path and not root.rstrip(os.sep) in sys.path:
-        root_added = True
-        sys.path.append(root)
-
-    # Make source distribution for tddspry
-    os.chdir(root)
-    dist = run_setup(os.path.join(root, 'setup.py'), 'sdist')
-    dist.run_command('sdist')
-    os.chdir(DIRNAME)
-
-    # Move stored archive to temporary file
-    version = __import__('tddspry').get_version()
-    archive = os.path.join(root, 'dist', 'tddspry-%s.tar.gz' % version)
-    tempname = os.tempnam()
-
-    shutil.move(archive, tempname)
-
-    # Run pip install for this temporary file
-    args = ['install',
-            '-E', CONFIG['virtualenv']['dest_dir'],
-            tempname]
-
-    try:
-        pip.main(args)
-    except SystemExit, e:
-        if e.code:
-            raise e
-
-    # Remove temporary file and clean dist directory and MANIFEST file
-    os.unlink(tempname)
-    shutil.rmtree(os.path.dirname(archive))
-    os.unlink(os.path.join(root, 'MANIFEST'))
-
-    # Remove root directory from ``sys.path``
-    if root_added:
-        sys.path.remove(root)
-
 def main():
     """
     Create new virtualenv and install all pip requirements there.
     """
+    # Change directory to current
+    os.chdir(DIRNAME)
+
     # Read configuration values from ``bootstrap.cfg`` file if possible
     read_config('bootstrap.cfg')
 

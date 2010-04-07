@@ -3,12 +3,7 @@ import sys
 
 
 # Calculate current and base directories pathes
-DIRNAME = os.path.dirname(__file__)
-BASEDIR = os.path.abspath(os.path.join(DIRNAME, '..'))
-
-# Inserts base and current directories to ``sys.path``
-sys.path.insert(0, BASEDIR)
-sys.path.insert(0, DIRNAME)
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
 
 # Debug settings
 DEBUG = True
