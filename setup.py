@@ -1,7 +1,19 @@
 #!/usr/bin/env python
 import os
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+    kwargs = {}
+else:
+    kwargs = {
+        'entry_points': """
+        [nose.plugins.0.10]
+        django = tddspry.noseplugins:DjangoPlugin
+        """
+    }
+
 
 
 readme = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
@@ -23,7 +35,8 @@ setup(name='tddspry',
       maintainer_email='playpauseandstop@gmail.com',
       url='http://github.com/42/tddspry',
 
-      packages=['tddspry', 'tddspry.django', 'tddspry.django.helpers'],
+      packages=['tddspry', 'tddspry.django', 'tddspry.django.helpers',
+                'tddspry.noseplugins'],
       scripts=['bin/django-nosetests.py'],
 
       classifiers=[
@@ -35,4 +48,8 @@ setup(name='tddspry',
       ],
       keywords='django nose tdd testing tests twill',
 
-      requires=requires)
+      setup_requires=[r.replace('(', '').replace(')', '') for r in requires \
+                      if not r.startswith('Django')],
+      requires=requires,
+
+      **kwargs)
