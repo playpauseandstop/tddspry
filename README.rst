@@ -16,7 +16,7 @@ Requirements
 ============
 
 * Django_ >= 1.0 (1.2 version with multiple databases not supported yet)
-* nose_ >= 0.10.4
+* nose_ >= 0.11.0
 * twill_ >= 0.9
 
 .. _Django: http://www.djangoproject.com/download/
