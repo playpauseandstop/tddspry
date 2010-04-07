@@ -12,7 +12,10 @@ Makefile.def
 MANIFEST
 pip-log.txt
 test.db
+testproject/Makefile
 testproject/env/
 testproject/bootstrap.cfg
-testproject/Makefile
+testproject/settings_local.py
+testproject/settings_mysql_local.py
+testproject/settings_sqlite_local.py
 testproject.db
