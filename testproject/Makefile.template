@@ -1,7 +1,7 @@
 ENV = %(DEST_DIR)s
 
 # Targets
-.PHONY: clean fullclean fulltest runserver shell test
+.PHONY: alltest clean fullclean fulltest fulltest_mysql runserver shell test test_mysql test_sqlite
 
 # Default values for tddspry test project
 IP = 0.0.0.0
@@ -10,27 +10,47 @@ PORT = 8191
 project = testproject
 settings = settings
 test_settings = $(settings)
+test_settings_mysql = $(test_settings)_mysql
+test_settings_sqlite = $(test_settings)_sqlite
+test_options = --with-django --django-settings=$(test_settings) -w .. --exe $(project)
+test_options_mysql = --with-django --django-settings=$(test_settings_mysql) -w .. --exe $(project)
+test_options_sqlite = --with-django --django-settings=$(test_settings_sqlite) -w .. --exe $(project)
+
+allfulltest: fulltest fulltest_mysql fulltest_sqlite
+alltest: test test_mysql test_sqlite
 
 clean:
-	find . -name 'pip-log.txt' -delete
 	find . -name '*.pyc' -delete
 
 fullclean: clean
+	find . -name 'pip-log.txt' -delete
 	rm -rf $(ENV)/
 	rm -f testproject.db
 	rm -f Makefile
 
-fulltest:
-	echo "MAKE FULLTEST"
+fulltest: clean
+	echo "make fulltest"
+
+fulltest_mysql: clean
+	echo "make fulltest_mysql"
+
+fulltest_sqlite: clean
+	echo "make fulltest_sqlite"
 
 runserver:
-	PYTHONPATH=. python manage.py runserver $(IP):$(PORT)
+	python manage.py runserver $(IP):$(PORT)
 
 shell:
-	PYTHONPATH=. python manage.py shell
+	python manage.py shell
 
 syncdb:
-	PYTHONPATH=. python manage.py syncdb --noinput
+	python manage.py syncdb --noinput
 
-test:
-	PYTHONPATH=. django-nosetests.py --with-django-settings=$(test_settings) -w .. --exe $(project)
+test: clean
+	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options)
+
+test_mysql: clean
+	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options_mysql)
+
+test_sqlite: clean
+	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options_sqlite)

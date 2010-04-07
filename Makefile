@@ -6,13 +6,13 @@ project=tddspry
 docs_dir=$(TMPDIR)/$(project)-docs
 
 clean:
-	find . -name 'pip-log.txt' -delete
 	find . -name '*.pyc' -delete
 
 docs:
 	$(MAKE) -C docs html
 
 fullclean: clean
+	find . -name 'pip-log.txt' -delete
 	rm -rf build/
 	rm -rf dist/
 	rm -rf docs/_build/
@@ -21,7 +21,7 @@ fullclean: clean
 	-$(MAKE) -C testproject fullclean
 
 fulltest:
-	$(MAKE) -C testproject fulltest
+	$(MAKE) -C testproject allfulltest
 
 ghdocs:
 	rm -rf $(docs_dir)
@@ -40,7 +40,7 @@ ghdocs:
 	rm -rf $(docs_dir)
 
 test:
-	$(MAKE) -C testproject test
+	$(MAKE) -C testproject alltest
 
 ### Local variables: ***
 ### compile-command:"make" ***

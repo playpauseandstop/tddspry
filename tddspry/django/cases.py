@@ -1,139 +1,48 @@
-from django.conf import settings
-from django.core import mail
-from django.core.handlers.wsgi import WSGIHandler
 from django.core.management import call_command
-from django.core.servers.basehttp import AdminMediaHandler
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.db import connection
-from django.test import Client
-from django.test.utils import TestSMTPConnection
 from django.utils.encoding import force_unicode
 
-from tddspry.cases import NoseTestCase, NoseTestCaseMetaclass
+from tddspry.cases import TestCase as NoseTestCase, \
+                          TestCaseMetaclass as NoseTestCaseMetaclass
 from tddspry.django import helpers
 from tddspry.django.decorators import show_on_error
-from tddspry.django.utils import db_exists, flush
+from tddspry.django.settings import SITE, DjangoTestCase
 
-from twill import add_wsgi_intercept, commands
+from twill import commands
 from twill.errors import TwillAssertionError
 from twill.extensions.check_links import check_links
 
 
-__all__ = ('DatabaseTestCase', 'HttpTestCase')
+__all__ = ('DatabaseTestCase', 'HttpTestCase', 'TestCase')
 
 
-class BaseDatabaseTestCase(NoseTestCase):
+class TestCaseMetaclass(NoseTestCaseMetaclass):
 
-    """
-    Additional arguments
-    --------------------
+    def __new__(cls, name, bases, attrs):
+        for attr_name, attr_value in attrs.items():
+            if 'test' in attr_name and callable(attr_value):
+                attrs[attr_name] = show_on_error(attr_value, clsname=name)
 
-    database_name
-      Use ``None`` or ``':memory'`` to creates sqlite3 database in memory.
-      (Default case of Django TestCases).
+            if attr_name == 'setup' and not 'setUp' in attrs:
+                attrs['setUp'] = attr_value
 
-      Use ``':original:'`` to test in your current projects
-      ``settings.DATABASE_NAME``.
+        for attr in commands.__all__:
+            if attr in ('find', 'go', 'notfind', 'run', 'url'):
+                attr_name = '_' + attr
+            else:
+                attr_name = attr
 
-      Use custom name to creates test database with current
-      ``settings.DATABASE_ENGINE``.
+            attrs.update({attr_name: staticmethod(getattr(commands, attr))})
 
-    database_flush
-      Flush database if it exists while ``True`` and any changes to database on
-      ``False``.
+        attrs.update({'check_links': staticmethod(check_links)})
 
-      **Note:** Please, do not use ``database_flush=True``, on
-      ``database_name=':original:'``, it's flushes all data in your
-      original (that exists in ``settings.DATABASE_NAME``) database.
+        super_new = super(TestCaseMetaclass, cls).__new__
+        return super_new(cls, name, bases, attrs)
 
-    fixtures
-      List or tuple with fixtures names to load. See
-      ``./manage.py loaddata --help`` in your project to more details.
 
-    """
+class TestCase(NoseTestCase, DjangoTestCase):
 
-    database_name = None
-    database_flush = None
-    fixtures = []
-
-    def setup(self):
-        """
-        Creates or sets up test database name, loads fixtures and mocks
-        ``SMTPConnection`` class from ``django.core.mail``.
-        """
-        # Creates test database
-        create_test_db = True
-
-        settings.original_DATABASE_ENGINE = settings.DATABASE_ENGINE
-        settings.original_DATABASE_NAME = settings.DATABASE_NAME
-
-        if self.database_name is None or self.database_name == ':memory:':
-            # Closes current database connection and changes
-            # ``DATABASE_ENGINE`` to ``'sqlite3'``
-            connection.close()
-            settings.DATABASE_ENGINE = 'sqlite3'
-
-            settings.TEST_DATABASE_NAME = ':memory:'
-
-            # Flushes in-memory database if it exists
-            if db_exists(settings.TEST_DATABASE_NAME):
-                flush()
-        elif self.database_name == ':original:':
-            # Disable database flush by default
-            if self.database_flush is None:
-                self.database_flush = False
-
-            self.database_name = settings.DATABASE_NAME
-            settings.TEST_DATABASE_NAME = settings.DATABASE_NAME
-
-            # If original database not exist - tries to create it
-            if db_exists(self.database_name):
-                create_test_db = False
-        else:
-            settings.TEST_DATABASE_NAME = self.database_name
-
-            # Do not re-creates tests database if it exists on
-            # ``database_flush == False``
-            if self.database_flush == False and \
-               db_exists(self.database_name):
-                create_test_db = False
-
-        if create_test_db:
-            self.database_name = \
-                connection.creation.create_test_db(autoclobber=True)
-
-        tables = connection.introspection.table_names()
-
-        if self.database_flush and tables:
-            call_command('flush', interactive=False)
-
-        # Load data from fixtures
-        if self.fixtures:
-            call_command('loaddata', *self.fixtures)
-
-        # Mock original SMTPConnection
-        mail.original_SMTPConnection = mail.SMTPConnection
-        mail.SMTPConnection = TestSMTPConnection
-
-        mail.outbox = []
-
-    def teardown(self):
-        # Destroys test database
-        if self.database_name == ':memory:' and self.database_flush != False:
-            flush()
-
-        if self.database_name != settings.original_DATABASE_NAME and \
-           self.database_flush != False:
-            connection.creation.destroy_test_db(self.database_name)
-
-        settings.DATABASE_ENGINE = settings.original_DATABASE_ENGINE
-        settings.DATABASE_NAME = settings.original_DATABASE_NAME
-
-        # Unmock original SMTPConnection
-        mail.SMTPConnection = mail.original_SMTPConnection
-        del mail.original_SMTPConnection
-
-        del mail.outbox
+    __metaclass__ = TestCaseMetaclass
 
     def assert_count(self, model_or_manager, number):
         """
@@ -279,56 +188,12 @@ class BaseDatabaseTestCase(NoseTestCase):
         manager.update(**kwargs)
         return self.assert_read(manager, **kwargs)
 
-    def helper(self, name, *args, **kwargs):
-        return getattr(helpers, name)(self, *args, **kwargs)
-
-    def _get_helpers(self):
-        return helpers
-    helpers = property(_get_helpers)
-
-    def _get_instance_and_pk(self, mixed):
-        """
-        Utility function to return tuple contains of models instance and its pk
-        if possible.
-        """
-        instance, pk = None, None
-
-        if hasattr(mixed, 'pk') and not isinstance(mixed.pk, property):
-            instance, pk = mixed, mixed.pk
-
-        return (instance, pk)
-
-    def _get_manager(self, model_or_manager):
-        """
-        Utility function to return default manager from model or instance
-        object or given manager.
-        """
-        if hasattr(model_or_manager, '_default_manager'):
-            return model_or_manager._default_manager
-        return model_or_manager
-
-
-class BaseHttpTestCase(BaseDatabaseTestCase):
-
-    IP = '127.0.0.1'
-    PORT = 8088
-
-    def __init__(self):
-        super(BaseHttpTestCase, self).__init__()
-        self.SITE = 'http://%s:%s/' % (self.IP, self.PORT)
-
-    def setup(self):
-        super(BaseHttpTestCase, self).setup()
-
-        app = AdminMediaHandler(WSGIHandler())
-        add_wsgi_intercept(self.IP, self.PORT, lambda: app)
-
     def build_url(self, url, args=None, kwargs=None, prepend=False):
         """
         Helper reverses ``url`` if possible and auto-prepends ``SITE`` to
         it if ``prepend=True``.
         """
-        if url.startswith(self.SITE):
+        if url.startswith(SITE):
             return url
 
         try:
@@ -339,7 +204,7 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
         if not prepend:
             return url
 
-        return self.SITE + url.lstrip('/')
+        return SITE + url.lstrip('/')
 
     def disable_edit_hidden_fields(self):
         """
@@ -374,43 +239,6 @@ class BaseHttpTestCase(BaseDatabaseTestCase):
         To disable use ``HttpTestCase.disable_redirect`` method.
         """
         self.config('acknowledge_equiv_refresh', int(flag))
-
-
-class DatabaseTestCase(BaseDatabaseTestCase):
-
-    pass
-
-
-class HttpTestCaseMetaclass(NoseTestCaseMetaclass):
-
-    def __new__(cls, name, bases, attrs):
-        for attr_name, attr_value in attrs.items():
-            if 'test' in attr_name and callable(attr_value):
-                attrs[attr_name] = show_on_error(attr_value, clsname=name)
-
-        for attr in commands.__all__:
-            if attr in ('find', 'go', 'notfind', 'url'):
-                attr_name = '_' + attr
-            else:
-                attr_name = attr
-
-            attrs.update({attr_name: staticmethod(getattr(commands, attr))})
-
-        attrs.update({'check_links': staticmethod(check_links)})
-
-        super_new = super(HttpTestCaseMetaclass, cls).__new__
-        return super_new(cls, name, bases, attrs)
-
-
-class HttpTestCase(BaseHttpTestCase):
-
-    __metaclass__ = HttpTestCaseMetaclass
-
-    def _get_client(self):
-        if not hasattr(self, '__client'):
-            setattr(self, '__client', Client())
-        return getattr(self, '__client')
-    client = property(_get_client)
 
     def find(self, what, flags='', flat=False):
         """
@@ -450,6 +278,13 @@ class HttpTestCase(BaseHttpTestCase):
 
         if check_links:
             self.check_links()
+
+    def helper(self, name, *args, **kwargs):
+        return getattr(helpers, name)(self, *args, **kwargs)
+
+    def _get_helpers(self):
+        return helpers
+    helpers = property(_get_helpers)
 
     def login(self, username, password, url=None, formid=None):
         """
@@ -520,3 +355,28 @@ class HttpTestCase(BaseHttpTestCase):
         """
         should_be = self.build_url(url, args, kwargs, True)
         return self._url(should_be)
+
+    def _get_instance_and_pk(self, mixed):
+        """
+        Utility function to return tuple contains of models instance and its pk
+        if possible.
+        """
+        instance, pk = None, None
+
+        if hasattr(mixed, 'pk') and not isinstance(mixed.pk, property):
+            instance, pk = mixed, mixed.pk
+
+        return (instance, pk)
+
+    def _get_manager(self, model_or_manager):
+        """
+        Utility function to return default manager from model or instance
+        object or given manager.
+        """
+        if hasattr(model_or_manager, '_default_manager'):
+            return model_or_manager._default_manager
+        return model_or_manager
+
+
+DatabaseTestCase = TestCase
+HttpTestCase = TestCase

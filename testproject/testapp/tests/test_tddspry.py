@@ -1,17 +1,20 @@
 import tddspry
 
+from tddspry import TestCase
+
 
 TEST_VERSIONS = (
     ((0, 1), '0.1'),
     ((0, 1, None), '0.1'),
-    ((0, 1, 'alpha'), '0.1_alpha'),
+    ((0, 1, 'alpha'), '0.1-alpha'),
     ((0, 1, 1), '0.1.1'),
-    ((0, 1, 1, 'rc1'), '0.1.1_rc1'),
-    ((0, 1, 1, 1), '0.1.1.1')
+    ((0, 1, 1, 'beta'), '0.1.1-beta'),
+    ((0, 1, 1, 1), '0.1.1.1'),
+    ((0, 1, 1, 1, 'rc1'), '0.1.1.1-rc1'),
 )
 
 
-class TestVersion(tddspry.NoseTestCase):
+class TestVersion(TestCase):
 
     def setup(self):
         self.OLD_VERSION = tddspry.VERSION
