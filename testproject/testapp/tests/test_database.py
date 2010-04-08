@@ -108,11 +108,12 @@ class TestDatabaseDeprecated(DatabaseTestCase):
     def teardown(self):
         super(TestDatabaseDeprecated, self).teardown()
 
-    def test_nothing(self):
+    def test_message(self):
         """
         Check that old styled setup and teardown methods loaded without
         errors.
         """
+        self.message = {'big': 'badda boom'}
 
 class TestDatabaseUnitTestStyleMethods(TestCase):
 
