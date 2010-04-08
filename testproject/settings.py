@@ -2,8 +2,9 @@ import os
 import sys
 
 
-# Calculate current and base directories pathes
+# Calculate current directory path and add it to ``sys.path``
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(DIRNAME)
 
 # Debug settings
 DEBUG = True
