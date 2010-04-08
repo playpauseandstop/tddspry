@@ -1,3 +1,5 @@
+import warnings
+
 from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.encoding import force_unicode
@@ -23,8 +25,12 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
             if 'test' in attr_name and callable(attr_value):
                 attrs[attr_name] = show_on_error(attr_value, clsname=name)
 
+            # Add nose styled names of setup and teardown methods to cls attrs
             if attr_name == 'setup' and not 'setUp' in attrs:
                 attrs['setUp'] = attr_value
+
+            if attr_name == 'teardown' and not 'tearDown' in attrs:
+                attrs['tearDown'] = attr_value
 
         for attr in commands.__all__:
             if attr in ('find', 'go', 'notfind', 'run', 'url'):
@@ -378,5 +384,16 @@ class TestCase(NoseTestCase, DjangoTestCase):
         return model_or_manager
 
 
-DatabaseTestCase = TestCase
-HttpTestCase = TestCase
+class DatabaseTestCase(TestCase):
+
+    message = 'Calling super for ``%s()`` method is deprecated. ' \
+              '``tddspry.django.TestCase`` class does not need this anymore.'
+
+    def setup(self):
+        warnings.warn(self.message % 'setup', DeprecationWarning)
+
+    def teardown(self):
+        warnings.warn(self.message % 'teardown', DeprecationWarning)
+
+
+HttpTestCase = DatabaseTestCase
