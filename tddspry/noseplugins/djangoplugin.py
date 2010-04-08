@@ -6,7 +6,7 @@ import os
 import sys
 
 from nose.plugins.base import Plugin
-from nose.util import getfilename
+from nose.util import getfilename, resolve_name, skip_pattern, _ls_tree_lines
 
 
 __all__ = ('DjangoPlugin', )
@@ -31,13 +31,45 @@ class DjangoPlugin(Plugin):
         from django.core.handlers.wsgi import WSGIHandler
         from django.core.servers.basehttp import AdminMediaHandler
         from django.db import connection
+        from django.test.simple import TEST_MODULE
         from django.test.utils import setup_test_environment
 
         from tddspry.django.settings import IP, PORT
 
         from twill import add_wsgi_intercept
 
+        def ispackage(module):
+            return module.__file__.rstrip('co').endswith('__init__.py')
+
+        def load_tests(name):
+            module = resolve_name(name)
+            log.debug('Load tests for: %s', module)
+
+            if not hasattr(module, '__file__') or not ispackage(module):
+                return
+
+            childs = list(_ls_tree_lines(os.path.dirname(module.__file__),
+                                         skip_pattern,
+                                         '', '', '', ''))
+
+            for child in list(childs):
+                if not child.endswith('.py') or child == '__init__.py':
+                    continue
+
+                tests = name + '.' + child[:-3]
+                load_tests(tests)
+
         log.debug('DjangoPlugin start')
+
+        # Find to Django models in tests modules for each of ``INSTALLED_APPS``
+        for label in settings.INSTALLED_APPS:
+            tests = label + '.' + TEST_MODULE
+            log.debug('Tests module: %s', tests)
+
+            try:
+                load_tests(tests)
+            except (AttributeError, ImportError):
+                pass
 
         # Setup Django test environment
         setup_test_environment()
