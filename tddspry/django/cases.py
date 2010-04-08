@@ -112,10 +112,12 @@ class TestCase(NoseTestCase, DjangoTestCase):
         old_counter = manager.count()
 
         if pk:
+            diff = 1
             instance.delete()
             message = 'Could not delete only one %r instance. New counter is '\
                       '%d, when old counter is %d.'
         else:
+            diff = manager.count()
             manager.all().delete()
             message = 'Could not delete all instances of %r model. New ' \
                       'counter is %d, when old counter is %d.'
@@ -123,7 +125,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         new_counter = manager.count()
         message = message % (manager.model.__name__, new_counter, old_counter)
 
-        self.assert_equal(new_counter, 0, message)
+        self.assert_equal(new_counter + diff, old_counter, message)
 
         if pk:
             try:
