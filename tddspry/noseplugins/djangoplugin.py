@@ -3,16 +3,18 @@
 
 import logging
 import os
+import re
 import sys
 
 from nose.plugins.base import Plugin
-from nose.util import getfilename, resolve_name, skip_pattern, _ls_tree_lines
+from nose.util import ispackage, resolve_name, skip_pattern
 
 
 __all__ = ('DjangoPlugin', )
 
 
 log = logging.getLogger(__name__)
+skip_pattern_re = re.compile(skip_pattern)
 
 
 class DjangoPlugin(Plugin):
@@ -77,6 +79,7 @@ class DjangoPlugin(Plugin):
         self.error_dir = options.error_dir
         self.settings = options.settings
         self.verbosity = options.verbosity
+        self.test_match_re = config.testMatch
 
         # Try to load Django project settings
         self.load_settings(self.settings)
@@ -147,21 +150,35 @@ class DjangoPlugin(Plugin):
 
         os.environ['DJANGO_SETTINGS_MODULE'] = settings
 
-    def load_tests(self, name):
-        obj = resolve_name(name)
+    def load_tests(self, basename):
+        log.debug('Basename: %s', basename)
+        obj = resolve_name(basename)
+        log.debug('Load tests from %s', obj)
 
         if not self.ismodule(obj) or not self.ispackage(obj):
             return
 
-        childs = filter(lambda name: name.endswith('.py') and \
-                                     name != '__init__.py',
-                        list(_ls_tree_lines(os.path.dirname(obj.__file__),
-                                            skip_pattern,
-                                            '', '', '', '')))
+        dirname = os.path.dirname(obj.__file__)
 
-        for child in childs:
-            name = name + '.' + child[:-3]
-            self.load_tests(name)
+        childs = os.listdir(dirname)
+        childs.sort()
+        childs = map(lambda name: (name, os.path.join(dirname, name)), childs)
+
+        log.debug('Dirname: %s', dirname)
+        log.debug('Childs: %s', childs)
+
+        for name, fullname in childs:
+            if os.path.isdir(fullname) and ispackage(fullname):
+                self.load_tests(basename + '.' + name)
+
+            if not os.path.isfile(fullname) or skip_pattern_re.match(name) or \
+               not name.endswith('.py') or name == '__init__.py':
+                continue
+
+            if self.test_match_re.match(name):
+                self.load_tests(basename + '.' + name[:-3])
+
+        log.debug('\n\n')
 
     def options(self, parser, env=None):
         env = env or os.environ
