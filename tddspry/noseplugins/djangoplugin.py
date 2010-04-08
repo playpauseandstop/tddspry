@@ -136,7 +136,7 @@ class DjangoPlugin(Plugin):
 
                     try:
                         resolve_name(settings)
-                    except (AttributeError, ImportError):
+                    except (AttributeError, ImportError, ValueError):
                         pass
                     else:
                         loaded = True
