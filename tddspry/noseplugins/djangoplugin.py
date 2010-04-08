@@ -65,6 +65,10 @@ class DjangoPlugin(Plugin):
     def configure(self, options, config):
         Plugin.configure(self, options, config)
 
+        # Do nothing if plugin not enabled
+        if not self.enabled:
+            return
+
         # Check that Django and twill libraries available in this system
         if self.enabled:
             for lib in ('Django', 'twill'):
