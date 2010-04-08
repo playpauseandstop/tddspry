@@ -1,5 +1,7 @@
 import warnings
 
+from random import choice
+
 from tddspry.django import DatabaseTestCase, TestCase
 
 from django.contrib.auth.models import Group, User
@@ -29,6 +31,14 @@ class TestDatabase(TestCase):
     def test_delete(self):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_delete(profile)
+
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        contact = choice(self.assert_read(profile.contacts))
+        self.assert_delete(contact)
 
     def test_delete_manager(self):
         profile = self.assert_create(UserProfile, user=self.user)
@@ -110,6 +120,14 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
     def testDelete(self):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertDelete(profile)
+
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assertCreate(profile.contacts, city=city)
+
+        contact = choice(self.assertRead(profile.contacts))
+        self.assertDelete(contact)
 
     def testDeleteManager(self):
         profile = self.assertCreate(UserProfile, user=self.user)
