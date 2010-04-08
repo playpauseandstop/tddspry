@@ -7,17 +7,21 @@ ENV = %(DEST_DIR)s
 IP = 0.0.0.0
 PORT = 8191
 
+nosetests = `pwd`/../bin/django-nosetests.py
 project = testproject
+
 settings = $(project).settings
 test_settings = $(settings)
 test_settings_mysql = $(test_settings)_mysql
 test_settings_sqlite = $(test_settings)_sqlite
-test_options = --with-django --django-settings=$(test_settings) -w .. --exe $(project)
-test_options_mysql = --with-django --django-settings=$(test_settings_mysql) -w .. --exe $(project)
-test_options_sqlite = --with-django --django-settings=$(test_settings_sqlite) -w .. --exe $(project)
+
+smarttest_options = -w .. $(project)
+test_options = --django-settings=$(test_settings) -w .. $(project)
+test_options_mysql = --django-settings=$(test_settings_mysql) -w .. $(project)
+test_options_sqlite = --django-settings=$(test_settings_sqlite) -w .. $(project)
 
 allfulltest: fulltest fulltest_mysql fulltest_sqlite
-alltest: test test_mysql test_sqlite
+alltest: smarttest test test_mysql test_sqlite
 
 clean:
 	find . -name '*.pyc' -delete
@@ -43,14 +47,17 @@ runserver:
 shell:
 	python manage.py shell
 
+smarttest:
+	PYTHONPATH=..:. $(nosetests) $(smarttest_options)
+
 syncdb:
 	python manage.py syncdb --noinput
 
 test: clean
-	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options)
+	PYTHONPATH=.. $(nosetests) $(test_options)
 
 test_mysql: clean
-	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options_mysql)
+	PYTHONPATH=.. $(nosetests) $(test_options_mysql)
 
 test_sqlite: clean
-	PYTHONPATH=.. `pwd`/../bin/django-nosetests.py $(test_options_sqlite)
+	PYTHONPATH=.. $(nosetests) $(test_options_sqlite)
