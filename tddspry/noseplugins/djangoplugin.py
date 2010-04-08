@@ -155,9 +155,7 @@ class DjangoPlugin(Plugin):
         os.environ['DJANGO_SETTINGS_MODULE'] = settings
 
     def load_tests(self, basename):
-        log.debug('Basename: %s', basename)
         obj = resolve_name(basename)
-        log.debug('Load tests from %s', obj)
 
         if not self.ismodule(obj) or not self.ispackage(obj):
             return
@@ -167,9 +165,6 @@ class DjangoPlugin(Plugin):
         childs = os.listdir(dirname)
         childs.sort()
         childs = map(lambda name: (name, os.path.join(dirname, name)), childs)
-
-        log.debug('Dirname: %s', dirname)
-        log.debug('Childs: %s', childs)
 
         for name, fullname in childs:
             if os.path.isdir(fullname) and ispackage(fullname):
@@ -181,8 +176,6 @@ class DjangoPlugin(Plugin):
 
             if self.test_match_re.match(name):
                 self.load_tests(basename + '.' + name[:-3])
-
-        log.debug('\n\n')
 
     def options(self, parser, env=None):
         env = env or os.environ
