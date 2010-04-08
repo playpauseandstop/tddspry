@@ -388,14 +388,17 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
 class DatabaseTestCase(TestCase):
 
-    message = 'Calling super for ``%s()`` method is deprecated. ' \
-              '``tddspry.django.TestCase`` class does not need this anymore.'
+    def __init__(self, *args, **kwargs):
+        super(DatabaseTestCase, self).__init__(*args, **kwargs)
+        self._warning_message = \
+            'Calling super for ``%s()`` method is deprecated. ' \
+            '``tddspry.django.TestCase`` class does not need this anymore.'
 
     def setup(self):
-        warnings.warn(self.message % 'setup', DeprecationWarning)
+        warnings.warn(self._warning_message % 'setup', DeprecationWarning)
 
     def teardown(self):
-        warnings.warn(self.message % 'teardown', DeprecationWarning)
+        warnings.warn(self._warning_message % 'teardown', DeprecationWarning)
 
 
 HttpTestCase = DatabaseTestCase
