@@ -8,7 +8,7 @@ IP = 0.0.0.0
 PORT = 8191
 
 project = testproject
-settings = settings
+settings = $(project).settings
 test_settings = $(settings)
 test_settings_mysql = $(test_settings)_mysql
 test_settings_sqlite = $(test_settings)_sqlite
