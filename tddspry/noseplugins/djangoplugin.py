@@ -38,36 +38,14 @@ class DjangoPlugin(Plugin):
 
         from twill import add_wsgi_intercept
 
-        def ispackage(module):
-            return module.__file__.rstrip('co').endswith('__init__.py')
-
-        def load_tests(name):
-            module = resolve_name(name)
-            log.debug('Load tests for: %s', module)
-
-            if not hasattr(module, '__file__') or not ispackage(module):
-                return
-
-            childs = list(_ls_tree_lines(os.path.dirname(module.__file__),
-                                         skip_pattern,
-                                         '', '', '', ''))
-
-            for child in list(childs):
-                if not child.endswith('.py') or child == '__init__.py':
-                    continue
-
-                tests = name + '.' + child[:-3]
-                load_tests(tests)
-
         log.debug('DjangoPlugin start')
 
         # Find to Django models in tests modules for each of ``INSTALLED_APPS``
         for label in settings.INSTALLED_APPS:
             tests = label + '.' + TEST_MODULE
-            log.debug('Tests module: %s', tests)
 
             try:
-                load_tests(tests)
+                self.load_tests(tests)
             except (AttributeError, ImportError):
                 pass
 
@@ -107,12 +85,12 @@ class DjangoPlugin(Plugin):
         if self.error_dir:
             os.environ['TWILL_ERROR_DIR'] = self.error_dir
 
-    def error(self, settings, dirname, subdirs=None):
+    def error(self, settings, dirname=None, subdirs=None):
         if settings is not None:
             sys.stderr.write(
-                "Error: Can't find the module %r in the current work " \
-                "directory %r.\n(If the file settings.py does indeed exist, " \
-                "it's causing an ImportError somehow.)\n" % (settings, dirname)
+                "Error: Can't find the module %r in ``sys.path``.\n(If " \
+                "the file settings.py does indeed exist, it's causing an " \
+                "ImportError somehow.)\n" % settings
             )
         else:
             sys.stderr.write(
@@ -125,63 +103,65 @@ class DjangoPlugin(Plugin):
             )
         sys.exit(1)
 
-    def fake_import(self, package):
-        filename = getfilename(package)
-        if not filename:
-            raise ImportError
-        return filename
+    def ismodule(self, obj):
+        return hasattr(obj, '__file__')
 
-    def load_settings(self, settings=None):
-        old_settings = settings
+    def ispackage(self, module):
+        return module.__file__.rstrip('co').endswith('__init__.py')
 
-        dirname = os.getcwd()
-        sys.path.append(dirname)
-
-        childs = os.listdir(dirname)
-        childs.sort()
-
-        subdirs = []
-
-        for name in childs:
-            if name[0] == '.':
-                continue
-
-            if os.path.isdir(os.path.join(dirname, name)):
-                subdirs.append(name)
-
-        try:
-            settings = old_settings or 'settings'
+    def load_settings(self, settings):
+        # If settings module was set try to load or die with error
+        if settings is not None:
+            try:
+                resolve_name(settings)
+            except (AttributeError, ImportError):
+                return self.error(settings)
+        else:
+            settings = 'settings'
 
             try:
-                self.fake_import(settings)
-            except ImportError:
-                if old_settings is not None:
-                    self.error(old_settings, dirname)
+                resolve_name(settings)
+            except (AttributeError, ImportError):
+                dirname = os.getcwd()
+                loaded = False
 
-                settings = os.path.basename(dirname) + '.settings'
+                subdirs = \
+                    filter(lambda name: os.path.isdir(os.path.join(dirname,
+                                                                   name)),
+                           os.listdir(dirname))
+                subdirs.sort()
 
-                try:
-                    self.fake_import(settings)
-                except ImportError:
-                    imported = False
+                for name in subdirs:
+                    settings = name + '.settings'
 
-                    for subdir in subdirs:
-                        settings = subdir + '.settings'
+                    try:
+                        resolve_name(settings)
+                    except (AttributeError, ImportError):
+                        pass
+                    else:
+                        loaded = True
+                        break
 
-                        try:
-                            self.fake_import(settings)
-                        except ImportError:
-                            pass
-                        else:
-                            imported = True
-                            break
-
-                    if not imported:
-                        raise ImportError
-        except ImportError:
-            self.error(None, dirname, subdirs)
+                if not loaded:
+                    self.error(None, dirname, subdirs)
 
         os.environ['DJANGO_SETTINGS_MODULE'] = settings
+
+    def load_tests(self, name):
+        obj = resolve_name(name)
+
+        if not self.ismodule(obj) or not self.ispackage(obj):
+            return
+
+        childs = filter(lambda name: name.endswith('.py') and \
+                                     name != '__init__.py',
+                        list(_ls_tree_lines(os.path.dirname(obj.__file__),
+                                            skip_pattern,
+                                            '', '', '', '')))
+
+        for child in childs:
+            name = name + '.' + child[:-3]
+            self.load_tests(name)
 
     def options(self, parser, env=None):
         env = env or os.environ
