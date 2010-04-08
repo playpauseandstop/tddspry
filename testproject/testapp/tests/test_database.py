@@ -1,4 +1,6 @@
-from tddspry.django import TestCase
+import warnings
+
+from tddspry.django import DatabaseTestCase, TestCase
 
 from django.contrib.auth.models import Group, User
 from django.contrib.flatpages.models import FlatPage
@@ -78,6 +80,20 @@ class TestDatabase(TestCase):
         self.assert_unicode(profile,
                             u'Profile for "%s" user' % self.user.username)
 
+
+class TestDatabaseDeprecated(DatabaseTestCase):
+
+    def setup(self):
+        super(TestDatabaseDeprecated, self).setup()
+
+    def teardown(self):
+        super(TestDatabaseDeprecated, self).teardown()
+
+    def test_nothing(self):
+        """
+        Check that old styled setup and teardown methods loaded without
+        errors.
+        """
 
 class TestDatabaseUnitTestStyleMethods(TestCase):
 

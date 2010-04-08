@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 
-from tddspry.django import TestCase
+from tddspry.django import HttpTestCase, TestCase
 from tddspry.django.decorators import show_on_error
 from tddspry.django.helpers import PASSWORD, USERNAME
 
@@ -230,3 +230,18 @@ class TestHttp(TestCase):
 
         self.go(settings.MEDIA_URL + 'css/screen.css')
         self.code(200)
+
+
+class TestHttpDeprecated(HttpTestCase):
+
+    def setup(self):
+        super(TestHttpDeprecated, self).setup()
+
+    def teardown(self):
+        super(TestHttpDeprecated, self).teardown()
+
+    def test_nothing(self):
+        """
+        Check that old styled setup and teardown methods loaded without
+        errors.
+        """
