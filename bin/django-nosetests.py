@@ -5,15 +5,23 @@ Django projects without installed ``setuptools``.
 """
 
 import nose
+from nose.plugins.manager import EntryPointPluginManager
+
+from tddspry.noseplugins import DjangoPlugin
 
 
 if __name__ == '__main__':
-    kwargs = {}
+    found, kwargs = False, {}
 
-    try:
-        import setuptools
-    except ImportError:
-        from tddspry.noseplugins import DjangoPlugin
+    manager = EntryPointPluginManager()
+    manager.loadPlugins()
+
+    for plugin in manager.plugins:
+        if isinstance(plugin, DjangoPlugin):
+            found = True
+            break
+
+    if not found:
         kwargs = {'addplugins': [DjangoPlugin()]}
 
     nose.main(**kwargs)
