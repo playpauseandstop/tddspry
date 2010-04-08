@@ -9,6 +9,9 @@ DIRNAME = os.path.abspath(os.path.dirname(__file__))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+# Test settings
+TDDSPRY_TEST_CASE = 'django.test.TestCase'
+
 # Authentication settings
 AUTH_PROFILE_MODULE = 'testapp.UserProfile'
 LOGIN_URL = '/login/'

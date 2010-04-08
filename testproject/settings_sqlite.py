@@ -1,6 +1,9 @@
 from settings import *
 
 
+# SQLite database doesn't properly work with standart django TestCase class
+TDDSPRY_TEST_CASE = 'django.test.TransactionTestCase'
+
 # SQLite database engine configuration for tddspry test project set in original
 # settings, here set test database name
 TEST_DATABASE_NAME = os.path.join(DIRNAME, 'test.db')
