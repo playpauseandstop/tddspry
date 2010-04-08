@@ -6,6 +6,7 @@ from tddspry.django import DatabaseTestCase, TestCase
 
 from django.contrib.auth.models import Group, User
 from django.contrib.flatpages.models import FlatPage
+from django.db import models
 
 from testproject.testapp.models import UserProfile
 
@@ -14,6 +15,14 @@ TEST_ADDRESS = '221B Baker Street'
 TEST_BIO = 'Test bio'
 TEST_CITIES = ('London', 'Edinburg', 'Cardiff', 'Belfast', 'Dublin')
 TEST_CITY = TEST_CITIES[0]
+
+
+class DummyModel(models.Model):
+
+    field = models.CharField(max_length=128)
+
+    class Meta:
+        app_label = 'testapp'
 
 
 class TestDatabase(TestCase):
@@ -206,3 +215,21 @@ class TestDatabaseWithoutFixtures(TestCase):
         self.assert_count(UserProfile, 0)
         self.assert_count(Group, 0)
         self.assert_count(FlatPage, 0)
+
+
+class TestDummyModel(TestCase):
+
+    def test_create(self):
+        self.assert_create(DummyModel, field=TEST_ADDRESS)
+
+    def test_delete(self):
+        dummy = self.assert_create(DummyModel, field=TEST_ADDRESS)
+        self.assert_delete(dummy)
+
+    def test_read(self):
+        self.assert_create(DummyModel, field=TEST_ADDRESS)
+        self.assert_read(DummyModel, field=TEST_ADDRESS)
+
+    def test_update(self):
+        dummy = self.assert_create(DummyModel, field=TEST_ADDRESS)
+        self.assert_update(dummy, field=TEST_CITY)
