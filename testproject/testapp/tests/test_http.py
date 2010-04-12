@@ -28,12 +28,15 @@ class TestHttp(TestCase):
 
     def test_build_url(self):
         user = self.helper('create_user')
+        profile = self.helper('create_profile', user, UserProfile)
 
         self.assert_equal(self.build_url('index'), '/')
         self.assert_equal(self.build_url('user', args=[user.username]),
                           '/user/' + user.username + '/')
         self.assert_equal(self.build_url('user',
                                          kwargs={'username': user.username}),
+                          '/user/' + user.username + '/')
+        self.assert_equal(self.build_url(profile),
                           '/user/' + user.username + '/')
 
     def test_client(self):
