@@ -37,32 +37,29 @@ class TestHttp(TestCase):
 
     def test_client(self):
         # ``GET`` request
-        client = self.client
-
-        response = client.get('/')
+        response = self.client.get('/')
         self.assert_equal(response.status_code, 200)
 
         # ``POST`` request
-        client = self.client
-
         post = {
             'hidden_field_1': 'Value',
             'hidden_field_2': 'Value',
             'some_field_1': 'Value,'
         }
-        response = client.post('/edit_hidden_fields/', post)
+        response = self.client.post('/edit_hidden_fields/', post)
         self.assert_equal(response.status_code, 200)
 
     def test_edit_hidden_fields(self):
         self.enable_edit_hidden_fields()
+        url = self.build_url('edit_hidden_fields')
 
-        self.go200('/edit_hidden_fields/')
+        self.go200(url)
 
         self.formvalue(1, 'hidden_field_1', 'Value')
         self.formvalue(1, 'hidden_field_2', 'Value')
         self.formvalue(1, 'some_field_1', 'Value')
 
-        self.submit200(url='/edit_hidden_fields/')
+        self.submit200(url=url + '$')
 
         self.find("hidden_field_1: 'Value'")
         self.find("hidden_field_2: 'Value'")
@@ -70,13 +67,13 @@ class TestHttp(TestCase):
 
         self.disable_edit_hidden_fields()
 
-        self.go200('/edit_hidden_fields/')
+        self.go200(url)
 
         self.formvalue(1, 'hidden_field_1', 'Value')
         self.formvalue(1, 'hidden_field_2', 'Value')
         self.formvalue(1, 'some_field_1', 'Value')
 
-        self.submit200(url='/edit_hidden_fields/')
+        self.submit200(url=url + '$')
 
         self.find("hidden_field_1: ''")
         self.notfind("hidden_field_1: 'Value'")
@@ -246,3 +243,35 @@ class TestHttpDeprecated(HttpTestCase):
         errors.
         """
         self.message = {'big': 'badda boom'}
+
+
+class TestHttpDjangoAssertMethods(TestCase):
+
+    def testContains(self):
+        response = self.client.get('/')
+        self.assertContains(response, 'Index')
+        self.assertContains(response, 'c++ is good, but python - better ;)')
+
+    def testFormError(self):
+        pass
+
+    def testNotContains(self):
+        response = self.client.get('/')
+        self.assertNotContains(response, 'Impossible')
+
+    def testRedirects(self):
+        response = self.client.get('/fast-redirect/')
+        self.assertRedirects(response, '/')
+
+        response = self.client.get('/fast-redirect/?next=/&permanent=yes')
+        self.assertRedirects(response, '/', 301)
+
+    def testTemplateNotUsed(self):
+        response = self.client.get('/')
+        self.assertTemplateNotUsed(response, 'testapp/user.html')
+        self.assertTemplateNotUsed(response, 'testapp/users.html')
+
+    def testTemplateUsed(self):
+        response = self.client.get('/')
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'testapp/index.html')
