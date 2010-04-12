@@ -209,6 +209,9 @@ class TestCase(NoseTestCase, DjangoTestCase):
         Helper reverses ``url`` if possible and auto-prepends ``SITE`` to
         it if ``prepend=True``.
         """
+        if hasattr(url, 'get_absolute_url'):
+            url = url.get_absolute_url()
+
         if url.startswith(SITE):
             return url
 
