@@ -89,6 +89,14 @@ class TestCase(NoseTestCase, DjangoTestCase):
                               '%r model has %d instance(s), not %d' % \
                               (manager.model.__name__, counter, number))
 
+    def assert_contains_count(self, text, count):
+        """
+        Asserts that ``text`` occuts on current Twill page ``count`` times.
+
+        Else ``TwillAssertionError`` raises.
+        """
+        return self.find(text, count=count)
+
     def assert_create(self, model_or_manager, **kwargs):
         """
         Helper tries to create new ``instance`` for ``model_or_manager`` class
@@ -259,7 +267,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         """
         self.config('acknowledge_equiv_refresh', int(flag))
 
-    def find(self, what, flags='', flat=False):
+    def find(self, what, flags='', flat=False, count=None):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
         to search content on web-page by standart Python ``what in html``
@@ -268,11 +276,16 @@ class TestCase(NoseTestCase, DjangoTestCase):
         If this expression was not True (was not found on page) it's raises
         ``TwillAssertionError`` as in ``twill.commands.find`` method.
         """
-        if not flat:
+        if not flat and not count:
             return self._find(what, flags)
 
         html = self.get_browser().get_html()
-        if not what in html:
+        real_count = html.count(what)
+
+        if count is not None and count != real_count:
+            raise TwillAssertionError('Matched to %r %d times, not %d ' \
+                                      'times.' % (what, real_count, count))
+        elif real_count == 0:
             raise TwillAssertionError, 'No match to %r' % what
 
         return True
