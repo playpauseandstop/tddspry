@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -14,6 +16,14 @@ def edit_hidden_fields(request):
         'POST': request.POST,
     })
     return render_to_response('testapp/edit_hidden_fields.html', context)
+
+
+def fast_redirect(request):
+    from django.shortcuts import redirect
+    next = request.GET.get('next', '/')
+    permanent = strtobool(request.GET.get('permanent', 'no'))
+    print 'Permanent redirect:', permanent
+    return redirect(next, permanent)
 
 
 def index(request):
