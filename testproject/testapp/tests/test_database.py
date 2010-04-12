@@ -89,6 +89,32 @@ class TestDatabase(TestCase):
                             u'Profile for "%s" user' % self.user.username)
 
 
+class TestDatabaseCallCommand(TestCase):
+
+    def test_call_command(self):
+        self.call_command('loaddata', 'users.json', 'userprofiles.json',
+                                      'groups.json', 'flatpages.json')
+
+        # Users loaded from ``testapp/fixtures/users.json``
+        self.assert_count(User, 10)
+
+        # UserProfiles loaded from ``testapp/fixtures/userprofiles.json``
+        self.assert_count(UserProfile, 10)
+
+        # Groups loaded from ``fixtures/groups.json``
+        self.assert_count(Group, 3)
+
+        # FlatPages loaded from ``fixtures/flatpages.json``
+        self.assert_count(FlatPage, 3)
+
+        self.call_command('flush', interactive=False)
+
+        self.assert_count(User, 0)
+        self.assert_count(UserProfile, 0)
+        self.assert_count(Group, 0)
+        self.assert_count(FlatPage, 0)
+
+
 class TestDatabaseDeprecated(DatabaseTestCase):
 
     def setup(self):

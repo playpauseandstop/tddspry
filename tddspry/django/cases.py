@@ -41,6 +41,7 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
 
             attrs.update({attr_name: staticmethod(getattr(commands, attr))})
 
+        attrs.update({'call_command': staticmethod(call_command)})
         attrs.update({'check_links': staticmethod(check_links)})
 
         # Dirty hack to convert django testcase camelcase method names to
