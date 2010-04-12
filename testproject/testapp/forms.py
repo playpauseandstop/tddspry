@@ -7,6 +7,7 @@ __all__ = ('LoginForm', )
 
 
 class LoginForm(forms.Form):
+
     username = forms.CharField(label=_('Username'), max_length=30,
         required=True)
     password = forms.CharField(label=_('Password'), max_length=255,
@@ -15,6 +16,9 @@ class LoginForm(forms.Form):
     def clean_password(self):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
+
+        if not username or not password:
+            return password
 
         user = auth.authenticate(username=username, password=password)
 
