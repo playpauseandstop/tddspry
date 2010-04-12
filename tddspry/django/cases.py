@@ -32,6 +32,7 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
             if attr_name == 'teardown' and not 'tearDown' in attrs:
                 attrs['tearDown'] = attr_value
 
+        # Add twill commands to testcase as staticmethods
         for attr in commands.__all__:
             if attr in ('find', 'go', 'notfind', 'run', 'url'):
                 attr_name = '_' + attr
@@ -41,6 +42,14 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
             attrs.update({attr_name: staticmethod(getattr(commands, attr))})
 
         attrs.update({'check_links': staticmethod(check_links)})
+
+        # Dirty hack to convert django testcase camelcase method names to
+        # name with underscores
+        attr_names = filter(lambda item: item.startswith('assert'),
+                            dir(DjangoTestCase))
+
+        for attr_name in attr_names:
+            attrs.update({attr_name: getattr(DjangoTestCase, attr_name)})
 
         super_new = super(TestCaseMetaclass, cls).__new__
         return super_new(cls, name, bases, attrs)
@@ -71,15 +80,13 @@ class TestCase(NoseTestCase, DjangoTestCase):
                     break
 
             if not equaled:
-                assert False, '%r model has %d instance(s), not %s' % (
-                                  manager.model.__name__, counter, numbers,
-                              )
+                assert False, '%r model has %d instance(s), not %s' % \
+                              (manager.model.__name__, counter, numbers)
         else:
             self.assert_equal(counter,
                               number,
-                              '%r model has %d instance(s), not %d' % (
-                                  manager.model.__name__, counter, number,
-                              ))
+                              '%r model has %d instance(s), not %d' % \
+                              (manager.model.__name__, counter, number))
 
     def assert_create(self, model_or_manager, **kwargs):
         """

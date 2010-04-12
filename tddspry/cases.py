@@ -4,7 +4,7 @@ try:
 except ImportError:
     tools = type('FakeNoseToolsModule', (object, ), {'__all__': []})
 
-from tddspry.utils import camelcase
+from tddspry.utils import camelcase_to_underscore, underscore_to_camelcase
 
 
 __all__ = ('NoseTestCase', 'TestCase')
@@ -19,8 +19,11 @@ class TestCaseMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         for attr_name, attr_value in attrs.items():
-            if attr_name.startswith('assert_'):
-                new_name = camelcase(attr_name)
+            if attr_name.startswith('assert'):
+                if attr_name[6] == '_':
+                    new_name = underscore_to_camelcase(attr_name)
+                else:
+                    new_name = camelcase_to_underscore(attr_name)
 
                 if not new_name in attrs:
                     attrs[new_name] = attr_value
