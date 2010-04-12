@@ -26,6 +26,20 @@ def dummy_error(obj):
 
 class TestHttp(TestCase):
 
+    def test_assert_contains_count(self):
+        self.go200('index')
+
+        self.assert_contains_count('Index', 1)
+        self.assert_contains_count('python', 2)
+
+        self.find('Index', count=1)
+        self.find('python', count=2)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_assert_contains_count_error(self):
+        self.go200('index')
+        self.assert_contains_count('python', 3)
+
     def test_build_url(self):
         user = self.helper('create_user')
         profile = self.helper('create_profile', user, UserProfile)
@@ -84,6 +98,16 @@ class TestHttp(TestCase):
         self.find("hidden_field_2: ''")
         self.notfind("hidden_field_2: 'Value'")
         self.find("some_field_1: 'Value'")
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_count_error(self):
+        self.go200('index')
+        self.find('python', count=3)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_flat_error(self):
+        self.go200('index')
+        self.find('Impossible', flat=True)
 
     def test_index(self):
         self.go200('/')
@@ -256,6 +280,11 @@ class TestHttpDjangoAssertMethods(TestCase):
         self.assertContains(response, 'Index')
         self.assertContains(response, 'c++ is good, but python - better ;)')
 
+    def testContainsCount(self):
+        response = self.client.get('/')
+        self.assertContains(response, 'Index', 1)
+        self.assertContains(response, 'python', 2)
+
     def testFormError(self):
         response = self.client.post('/login/', {'username': USERNAME})
         self.assertFormError(response,
@@ -298,6 +327,11 @@ class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
         response = self.client.get('/')
         self.assert_contains(response, 'Index')
         self.assert_contains(response, 'c++ is good, but python - better ;)')
+
+    def test_contains_count(self):
+        response = self.client.get('/')
+        self.assert_contains(response, 'Index', 1)
+        self.assert_contains(response, 'python', 2)
 
     def test_form_error(self):
         response = self.client.post('/login/', {'username': USERNAME})
