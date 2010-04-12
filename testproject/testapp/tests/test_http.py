@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 
 from twill.errors import TwillAssertionError
 
+from testproject.testapp.forms import LoginForm
 from testproject.testapp.models import UserProfile
 
 
@@ -46,7 +47,7 @@ class TestHttp(TestCase):
             'hidden_field_2': 'Value',
             'some_field_1': 'Value,'
         }
-        response = self.client.post('/edit_hidden_fields/', post)
+        response = self.client.post('/edit-hidden-fields/', post)
         self.assert_equal(response.status_code, 200)
 
     def test_edit_hidden_fields(self):
@@ -253,7 +254,11 @@ class TestHttpDjangoAssertMethods(TestCase):
         self.assertContains(response, 'c++ is good, but python - better ;)')
 
     def testFormError(self):
-        pass
+        response = self.client.post('/login/', {'username': USERNAME})
+        self.assertFormError(response,
+                             'form',
+                             'password',
+                             'This field is required.')
 
     def testNotContains(self):
         response = self.client.get('/')
@@ -263,8 +268,15 @@ class TestHttpDjangoAssertMethods(TestCase):
         response = self.client.get('/fast-redirect/')
         self.assertRedirects(response, '/')
 
-        response = self.client.get('/fast-redirect/?next=/&permanent=yes')
+        response = self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        self.assertRedirects(response, '/edit-hidden-fields/')
+
+        response = self.client.get('/fast-redirect/?permanent=yes')
         self.assertRedirects(response, '/', 301)
+
+        url = settings.MEDIA_URL + 'does_not_exist.exe'
+        response = self.client.get('/fast-redirect/?next=%s' % url)
+        self.assertRedirects(response, url, 302, 404)
 
     def testTemplateNotUsed(self):
         response = self.client.get('/')
@@ -275,3 +287,46 @@ class TestHttpDjangoAssertMethods(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'base.html')
         self.assertTemplateUsed(response, 'testapp/index.html')
+
+
+class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
+
+    def test_contains(self):
+        response = self.client.get('/')
+        self.assert_contains(response, 'Index')
+        self.assert_contains(response, 'c++ is good, but python - better ;)')
+
+    def test_form_error(self):
+        response = self.client.post('/login/', {'username': USERNAME})
+        self.assert_form_error(response,
+                               'form',
+                               'password',
+                               'This field is required.')
+
+    def test_not_contains(self):
+        response = self.client.get('/')
+        self.assert_not_contains(response, 'Impossible')
+
+    def test_redirects(self):
+        response = self.client.get('/fast-redirect/')
+        self.assert_redirects(response, '/')
+
+        response = self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        self.assert_redirects(response, '/edit-hidden-fields/')
+
+        response = self.client.get('/fast-redirect/?permanent=yes')
+        self.assert_redirects(response, '/', 301)
+
+        url = settings.MEDIA_URL + 'does_not_exist.exe'
+        response = self.client.get('/fast-redirect/?next=%s' % url)
+        self.assert_redirects(response, url, 302, 404)
+
+    def test_template_not_used(self):
+        response = self.client.get('/')
+        self.assert_template_not_used(response, 'testapp/user.html')
+        self.assert_template_not_used(response, 'testapp/users.html')
+
+    def test_template_used(self):
+        response = self.client.get('/')
+        self.assert_template_used(response, 'base.html')
+        self.assert_template_used(response, 'testapp/index.html')
