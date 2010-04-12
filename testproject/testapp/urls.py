@@ -3,8 +3,9 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('testproject.testapp.views',
     url(r'^$', 'index', name='index'),
-    url(r'^edit_hidden_fields/$', 'edit_hidden_fields',
+    url(r'^edit-hidden-fields/$', 'edit_hidden_fields',
         name='edit_hidden_fields'),
+    url(r'^fast-redirect/$', 'fast_redirect', name='fast_redirect'),
     url(r'^login/$', 'login', name='auth_login'),
     url(r'^logout/$', 'logout', name='auth_logout'),
     url(r'^profile/$', 'profile', name='profile'),

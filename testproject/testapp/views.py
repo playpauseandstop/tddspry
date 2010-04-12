@@ -1,8 +1,10 @@
+from distutils.util import strtobool
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 
@@ -14,6 +16,18 @@ def edit_hidden_fields(request):
         'POST': request.POST,
     })
     return render_to_response('testapp/edit_hidden_fields.html', context)
+
+
+def fast_redirect(request):
+    next = request.GET.get('next', '/')
+    permanent = strtobool(request.GET.get('permanent', 'no'))
+
+    if permanent:
+        redirect_class = HttpResponsePermanentRedirect
+    else:
+        redirect_class = HttpResponseRedirect
+
+    return redirect_class(next)
 
 
 def index(request):
