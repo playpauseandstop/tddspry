@@ -20,7 +20,7 @@ readme = open(os.path.join(os.path.dirname(__file__), 'README.rst'))
 README = readme.read()
 readme.close()
 
-requires = ['Django (>= 1.0)', 'nose (>= 0.10.4)', 'twill (>= 0.9)']
+requires = ['Django (>= 1.0)', 'nose (>= 0.11.0)', 'twill (>= 0.9)']
 version = __import__('tddspry').get_version()
 
 setup(name='tddspry',
@@ -43,7 +43,7 @@ setup(name='tddspry',
           'Development Status :: 4 - Beta',
           'Environment :: Web Environment',
           'Framework :: Django',
-          'License :: OSI Approved :: GNU General Public License (GPL)',
+          'License :: OSI Approved :: BSD License',
           'Topic :: Software Development :: Testing',
       ],
       keywords='django nose tdd testing tests twill',
