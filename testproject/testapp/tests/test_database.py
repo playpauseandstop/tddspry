@@ -26,6 +26,9 @@ class TestDatabase(TestCase):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_create(profile.contacts, city=TEST_CITY)
 
+    def test_create_string(self):
+        self.assert_create('testapp.UserProfile', user=self.user)
+
     def test_delete(self):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_delete(profile)
@@ -53,6 +56,11 @@ class TestDatabase(TestCase):
         self.assert_delete(UserProfile)
         self.assert_count(UserProfile, 0)
 
+    def test_delete_string(self):
+        self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_delete('testapp.UserProfile')
+        self.assert_count('testapp.UserProfile', 0)
+
     def test_read(self):
         self.assert_create(UserProfile, user=self.user)
         self.assert_read(UserProfile, user=self.user)
@@ -63,6 +71,10 @@ class TestDatabase(TestCase):
         for city in TEST_CITIES:
             self.assert_create(profile.contacts, city=city)
             self.assert_read(profile.contacts, city=city)
+
+    def test_read_string(self):
+        self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_read('testapp.UserProfile', user=self.user)
 
     def test_update(self):
         profile = self.assert_create(UserProfile, user=self.user)
@@ -82,6 +94,11 @@ class TestDatabase(TestCase):
         self.assert_create(UserProfile, user=self.user)
         self.assert_update(UserProfile, bio=TEST_BIO)
         self.assert_read(UserProfile, bio=TEST_BIO)
+
+    def test_update_string(self):
+        self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_update('testapp.UserProfile', bio=TEST_BIO)
+        self.assert_read('testapp.UserProfile', bio=TEST_BIO)
 
     def test_unicode(self):
         profile = self.assert_create(UserProfile, user=self.user)
@@ -142,6 +159,9 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertCreate(profile.contacts, city=TEST_CITY)
 
+    def testCreateString(self):
+        self.assertCreate('testapp.UserProfile', user=self.user)
+
     def testDelete(self):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertDelete(profile)
@@ -169,6 +189,11 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         self.assertDelete(UserProfile)
         self.assertCount(UserProfile, 0)
 
+    def testDeleteString(self):
+        self.assertCreate('testapp.UserProfile', user=self.user)
+        self.assertDelete('testapp.UserProfile')
+        self.assertCount('testapp.UserProfile', 0)
+
     def testRead(self):
         self.assertCreate(UserProfile, user=self.user)
         self.assertRead(UserProfile, user=self.user)
@@ -179,6 +204,10 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         for city in TEST_CITIES:
             self.assertCreate(profile.contacts, city=city)
             self.assertRead(profile.contacts, city=city)
+
+    def testReadString(self):
+        self.assertCreate('testapp.UserProfile', user=self.user)
+        self.assertRead('testapp.UserProfile', user=self.user)
 
     def testUpdate(self):
         profile = self.assertCreate(UserProfile, user=self.user)
@@ -198,6 +227,11 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         self.assertCreate(UserProfile, user=self.user)
         self.assertUpdate(UserProfile, bio=TEST_BIO)
         self.assertRead(UserProfile, bio=TEST_BIO)
+
+    def testUpdateString(self):
+        self.assertCreate('testapp.UserProfile', user=self.user)
+        self.assertUpdate('testapp.UserProfile', bio=TEST_BIO)
+        self.assertRead('testapp.UserProfile', bio=TEST_BIO)
 
     def testUnicode(self):
         profile = self.assertCreate(UserProfile, user=self.user)
