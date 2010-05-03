@@ -2,6 +2,7 @@ import warnings
 
 from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.db.models import get_model
 from django.utils.encoding import force_unicode
 
 from tddspry.cases import TestCase as NoseTestCase, \
@@ -405,8 +406,13 @@ class TestCase(NoseTestCase, DjangoTestCase):
         Utility function to return default manager from model or instance
         object or given manager.
         """
+        if isinstance(model_or_manager, basestring):
+            app, model = model_or_manager.split('.')
+            model_or_manager = get_model(app, model)
+
         if hasattr(model_or_manager, '_default_manager'):
             return model_or_manager._default_manager
+
         return model_or_manager
 
 
