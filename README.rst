@@ -2,26 +2,110 @@
 tddspry
 =======
 
-**tddspry** is collection of testcases and additional helpers for testing
-Django applications with nose__ library.
+Collection of testcases and helpers to test Django projects and applications
+with `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ and
+`twill <http://twill.idyll.org/>`_ libraries.
 
-.. __: http://somethingaboutorange.com/mrl/projects/nose/
-
-1. Requirements_
+#. `Key features`_
+#. `Quick examples`_
+#. Requirements_
 #. Installation_
+#. License_
 #. Documentation_
-#. `Bugs, features, contacts`_
+#. `Sending bugs and feature requests`_
+#. Contacts_
+
+Key features
+============
+
+* Full support of all features from ``django.test.TestCase`` or
+  ``django.test.TransationalTestCase`` classes.
+* Run tests for Django projects and applications via ``nosetests`` command
+  instead of ``python manage.py test``. You don't need to place tests in
+  ``tests`` module - ``nosetests`` automaticly find its in project or
+  application.
+* Assert methods for testing Django models (``assert_create``,
+  ``assert_count``, etc).
+* Test web responses with ``twill`` library instead of using
+  ``django.test.Client``.
+* Helpers for make particular actions in tests (create users or superusers,
+  login or logout from projects).
+
+Quick examples
+==============
+
+Database test
+-------------
+
+Check that ``username`` field of standart ``auth.User`` model is unique::
+
+    from tddspry.django import TestCase
+
+    from django.contrib.auth.models import User
+
+
+    TEST_EMAIL = 'test-email@domain.com'
+    TEST_PASSWORD = 'test-password'
+    TEST_USERNAME = 'test-username'
+
+
+    class TestUserModel(TestCase):
+
+        def test_unique(self):
+            self.assert_create(User,
+                            username=TEST_USERNAME,
+                            password=TEST_PASSWORD,
+                            email=TEST_EMAIL)
+            self.assert_raises(Exception,
+                            self.assert_create,
+                            User,
+                            username=TEST_USERNAME,
+                            password=TEST_PASSWORD,
+                            email=TEST_EMAIL)
+
+Http test
+---------
+
+Login into project and check that login url does not exist in index page and
+logout and profile links exist::
+
+    from tddspry.django import TestCase
+
+
+    class TestHttp(TestCase):
+
+        def setup(self):
+            # Create user
+            self.user = self.helper('create_user')
+
+            # Login this user into project
+            self.login(self.helpers.USERNAME, self.helpers.PASSWORD)
+
+        def test_index_links(self):
+            # Login, logout and profile urls
+            login_url = self.build_url('auth_login')
+            logout_url = self.build_url('auth_logout')
+            profile_url = self.build_url('auth_profile')
+
+            # Go to index page
+            self.go200('/')
+
+            # Login url does not exist cause user already logged in
+            self.notfind(login_url)
+
+            # But logout and profile url exist
+            # Profile url must find at page 3 times
+            self.find(logout_url)
+            self.find(profile_url, count=3)
 
 Requirements
 ============
 
-* Django_ >= 1.0 (1.2 version with multiple databases not supported yet)
-* nose_ >= 0.11.0
-* twill_ >= 0.9
-
-.. _Django: http://www.djangoproject.com/download/
-.. _nose: http://pypi.python.org/pypi/nose/
-.. _twill: http://pypi.python.org/pypi/twill/
+* `Python <http://www.python.org/>`_ 2.4 or above
+* `Django <http://www.djangoproject.com/>`_ up to 1.1 (multiple databases from
+  version 1.2 not supported yet)
+* `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ 0.11.0 or above
+* `twill <http://twill.idyll.org/>`_ 0.9
 
 Installation
 ============
@@ -37,47 +121,41 @@ Or::
 
     $ python setup.py install
 
-Also, you can retrieve fresh version of **tddspry** from `git repo`__::
+Also, you can retrieve fresh version of ``tddspry`` from `GitHub
+<http://github.com/playpauseandstop/tddspry>`_::
 
     $ git clone git://github.com/playpauseandstop/tddspry.git
 
 and place ``tddspry`` directory somewhere to ``PYTHONPATH`` (or ``sys.path``).
 
-.. __: http://github.com/playpauseandstop/tddspry
+License
+=======
+
+``tddspry`` is licensed under the `BSD License
+<http://github.com/playpauseandstop/tddspry/blob/master/LICENSE>`_.
 
 Documentation
 =============
 
-Sphinx_-generated documentation for **tddspry** located at `GitHub pages`_.
-This documentation updates after every **tddspry** release.
+`Sphinx <http://sphinx.pocoo.org/>`_-generated documentation for ``tddspry``
+located at `GitHub pages <http://playpauseandstop.github.com/tddspry/>`_. This
+documentation updates after every ``tddspry`` release.
 
 Fresh documentation always can access in ``docs/`` directory.
 
-.. _Sphinx: http://sphinx.pocoo.org/
-.. _`GitHub pages`: http://playpauseandstop.github.com/tddspry/
+Sending bugs and feature requests
+=================================
 
-Bugs, features, contacts
-========================
-
-Sending bugs and features
--------------------------
-
-We use ``tddspry`` in all our projects, so we hope that it hasn't any bug,
-but if you really find it - send it to `issues tracker`__ on GitHub.
-
-And if ``tddspry`` does not support feature needed to you - tell us too and
-we tries to adds it as soon as possible.
-
-.. __: http://github.com/playpauseandstop/tddspry/issues
+Found a bug? Have a good idea for improving tddspry? Head over to `tddspry's
+trac <http://trac.khavr.com/project/tddspry>`_ to create a new ticket or to
+`GitHub`_ to create a new fork.
 
 Contacts
---------
+========
 
 :Authors:
     Igor Davydenko *< playpauseandstop [at] gmail >*,
-
     Volodymyr Hotsyk *< gotsyk [at] gmail >*
 
 :Idea:
     Andriy Khavryuchenko *< akhavr [at] gmail >*
-
