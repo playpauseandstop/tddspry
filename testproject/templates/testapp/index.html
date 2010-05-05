@@ -7,12 +7,15 @@
 <h2>{% trans 'Pages' %}</h2>
 
 <ul>
+    <li><a href="?query=string">{% trans "Query string" %}</a></li>
     <li><a href="{% url edit_hidden_fields %}">{% trans 'Edit hidden fields' %}</a></li>
     <li><a href="{% url redirect %}">{% trans 'Redirect' %}</a></li>
     <li><a href="{% url users %}">{% trans 'Users list' %}</a></li>
 </ul>
 
-<pre>{% trans 'c++ is good, but python - better ;)' %}</pre>
-<pre>{% trans 'python is good, but erlang - faster ;)' %}</pre>
+<pre>{% trans "c++ is good, but python - better ;)" %}</pre>
+<pre>{% trans "python is good, but erlang - faster ;)" %}</pre>
+
+{% if query %}<pre>request.GET['query'] = {{ query }}</pre>{% endif %}
 
 {% endblock content %}
