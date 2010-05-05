@@ -109,6 +109,16 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find('Impossible', flat=True)
 
+    def test_follow200(self):
+        self.go200('/')
+
+        self.follow('Edit hidden fields')
+        self.code(200)
+        self.url('edit_hidden_fields')
+
+        self.go200('/')
+        self.follow200('Edit hidden fields', url='edit_hidden_fields')
+
     def test_index(self):
         self.go200('/')
         self.url('/')
