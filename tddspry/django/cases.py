@@ -402,11 +402,17 @@ class TestCase(NoseTestCase, DjangoTestCase):
         if check_links:
             self.check_links()
 
-    def url(self, url, args=None, kwargs=None):
+    def url(self, url, args=None, kwargs=None, regexp=True):
         """
         Assert that current URL matches the given regexp.
+
+        If ``regexp`` is set function appends '$' to the regexp end if needed.
         """
         should_be = self.build_url(url, args, kwargs, True)
+
+        if regexp and should_be[-1] != '$':
+            should_be += '$'
+
         return self._url(should_be)
 
     def _get_instance_and_pk(self, mixed):
