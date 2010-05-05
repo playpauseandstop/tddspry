@@ -291,6 +291,26 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         return True
 
+    def follow200(self, what, url=None, args=None, kwargs=None,
+                  check_links=False):
+        """
+        Find the first matching link on the page, visit it and check that
+        response code is 200.
+
+        If ``url`` is set function checks to make sure that the current URL
+        matches the given regexp or urlpattern.
+
+        If ``check_links`` is set function checks links on current page.
+        """
+        self.follow(what)
+        self.code(200)
+
+        if url:
+            self.url(url, args, kwargs)
+
+        if check_links:
+            self.check_links()
+
     def go(self, url, args=None, kwargs=None):
         """
         Twill needs to set full URL of web-page to loading. This helper
