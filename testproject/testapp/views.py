@@ -31,8 +31,10 @@ def fast_redirect(request):
 
 
 def index(request):
-    return render_to_response('testapp/index.html',
-                              RequestContext(request))
+    context = RequestContext(request, {
+        'query': request.GET.get('query', u''),
+    })
+    return render_to_response('testapp/index.html', context)
 
 
 def login(request):

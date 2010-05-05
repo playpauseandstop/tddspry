@@ -138,7 +138,7 @@ class TestHttp(TestCase):
 
     def test_login(self):
         self.go200('/profile/')
-        self.url('/login/')
+        self.url('/login/\?next=/profile/')
 
         user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
@@ -176,7 +176,7 @@ class TestHttp(TestCase):
         self.logout()
 
         self.go200('/profile/')
-        self.url('/login/')
+        self.url('/login/\?next=/profile/')
 
     def test_pages(self):
         profiles, users = [], []
@@ -265,6 +265,19 @@ class TestHttp(TestCase):
 
         self.go(settings.MEDIA_URL + 'css/screen.css')
         self.code(200)
+
+    def test_url_regexp(self):
+        self.go200('/')
+
+        self.follow200('Query string')
+
+        self.assert_raises(TwillAssertionError, self.url, '/')
+        self.assert_raises(TwillAssertionError, self.url, '/$')
+        self.url('/', regexp=False)
+        self.url('/\?query=string')
+        self.url('/\?query=string$')
+
+        self.find("request.GET\['query'\] = string")
 
 
 class TestHttpDeprecated(HttpTestCase):
