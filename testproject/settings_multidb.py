@@ -11,7 +11,7 @@ DATABASES.update({
 
 # Add application that testing multidb purposes to tddspry
 INSTALLED_APPS += (
-    'testproject.olddata',
+    'testproject.multidb',
 )
 
 
