@@ -86,13 +86,21 @@ class TestCase(BaseTestCase):
 
     __metaclass__ = TestCaseMetaclass
 
+    def assert_not_unicode(self, first, second, message=None):
+        """
+        Test that ``first`` and ``second`` after converting to ``unicode``
+        are not equal.
+        """
+        return self.assert_not_equal(unicode(first), unicode(second), message)
+
     def assert_unicode(self, first, second, message=None):
         """
-        Helper method to shortcut checking unicode value of some instance.
+        Test that ``first`` and ``second`` after converting to ``unicode``
+        are equal.
 
         Without ``assert_unicode`` method you may be need to manually convert
-        first and second value to unicode, but ``assert_unicode`` make this
-        for you automatic.
+        ``first`` and ``second`` values to ``unicode``, when ``assert_unicode``
+        make this in place of you.
         """
         return self.assert_equal(unicode(first), unicode(second), message)
 
