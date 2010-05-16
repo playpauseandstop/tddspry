@@ -61,15 +61,20 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
     __metaclass__ = TestCaseMetaclass
 
-    def assert_count(self, model_or_manager, number):
+    def assert_count(self, model_or_manager, number, **kwargs):
         """
         Helper counts all ``model_or_manager`` objects and ``assert_equal`` it
         with given ``number``.
 
-        Also you can to put ``number`` argument as ``tuple`` and ``list`` and
+        You can put ``number`` argument as ``tuple`` and ``list`` and
         ``assert_count`` checks all of its values.
+
+        Method supports ``using`` keyword, so you can test count objects not
+        only in default database.
         """
         manager = self._get_manager(model_or_manager)
+        manager, kwargs = self._process_using(manager, kwargs)
+
         counter = manager.count()
 
         if isinstance(number, (list, tuple)):
@@ -103,9 +108,28 @@ class TestCase(NoseTestCase, DjangoTestCase):
         Helper tries to create new ``instance`` for ``model_or_manager`` class
         with given ``**kwargs`` and checks that ``instance`` really created.
 
+        Method supports ``using`` keyword, so you can test create process
+        not only in default database.
+
+        .. note:: If your model contains ``using`` field, use::
+
+               self.assert_create(model.objects.using('database'),
+                                  ...
+                                  using='value')
+
+           instead of given ``using`` as keyword argument, cause::
+
+               self.assert_create(model,
+                                  ...
+                                  using='value')
+
+           will create new ``model`` object in ``default`` database.
+
         Method returns created ``instance`` if any.
         """
         manager = self._get_manager(model_or_manager)
+        manager, kwargs = self._process_using(manager, kwargs)
+
         old_counter = manager.count()
 
         instance = manager.create(**kwargs)
@@ -119,13 +143,14 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         return instance
 
-    def assert_delete(self, mixed):
+    def assert_delete(self, mixed, **kwargs):
         """
         Helper tries to delete ``instance`` directly or all objects from
         ``model`` or ``manager`` and checks that its correctly deleted.
         """
         instance, pk = self._get_instance_and_pk(mixed)
         manager = self._get_manager(mixed)
+        manager, kwargs = self._process_using(manager, kwargs)
         old_counter = manager.count()
 
         if pk:
@@ -160,8 +185,12 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         ``assert_read`` returns QuerySet with filtered instances or simple
         instance if resulted QuerySet count is ``1``.
+
+        Method supports ``using`` keyword so you can test read models not only
+        from default database.
         """
         manager = self._get_manager(model_or_manager)
+        manager, kwargs = self._process_using(manager, kwargs)
 
         queryset = manager.filter(**kwargs)
         count = queryset.count()
@@ -192,9 +221,13 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         Also you can update all model class or manager instances with
         QuerySet's ``update`` method and check for these updates.
+
+        Method supports ``using`` keyword so you can test update models not
+        only for default database.
         """
         instance, pk = self._get_instance_and_pk(mixed)
         manager = self._get_manager(mixed)
+        manager, kwargs = self._process_using(manager, kwargs)
 
         if pk:
             for name, value in kwargs.items():
@@ -440,6 +473,28 @@ class TestCase(NoseTestCase, DjangoTestCase):
             return model_or_manager._default_manager
 
         return model_or_manager
+
+    def _process_using(self, manager, kwargs):
+        """
+        Utility function to check if model of manager has ``using`` field and
+        if not use it as arg for ``manager.using`` function.
+        """
+        if 'using' in kwargs:
+            model = manager.model
+
+            all_fields = model._meta.fields + model._meta.many_to_many
+            found = False
+
+            for field in all_fields:
+                if field.name == 'using':
+                    found = True
+                    break
+
+            if not found:
+                using = kwargs.pop('using')
+                return (manager.using(using), kwargs)
+
+        return (manager, kwargs)
 
 
 class DatabaseTestCase(TestCase):
