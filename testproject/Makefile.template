@@ -19,7 +19,7 @@ test_settings_mysql_legacy = $(test_settings)_mysql_legacy
 test_settings_sqlite = $(test_settings)_sqlite
 test_settings_sqlite_legacy = $(test_settings)_sqlite_legacy
 
-smarttest_options = -w .. $(project)
+smarttest_options = -e multidb -w .. $(project)
 test_options = --django-settings=$(test_settings) -e multidb -w .. $(project)
 test_options_legacy = --django-settings=$(test_settings_legacy) -e multidb -w .. $(project)
 test_options_multidb = --django-settings=$(test_settings_multidb) -w .. $(project)
