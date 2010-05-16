@@ -4,6 +4,7 @@ from tddspry.django import DatabaseTestCase, TestCase
 
 from django.contrib.auth.models import Group, User
 from django.contrib.flatpages.models import FlatPage
+from django.db.models import Q
 
 from testproject.testapp.models import UserProfile
 
@@ -19,7 +20,49 @@ class TestDatabase(TestCase):
     def setup(self):
         self.user = self.helper('create_user')
 
-    def test_create(self):
+    @TestCase.raises(AssertionError)
+    def test_count_assertion(self):
+        self.assert_count(UserProfile, 1)
+        self.assert_count(UserProfile, (1, 2))
+        self.assert_count(UserProfile, [1, 2])
+
+    def test_count_model(self):
+        self.assert_count(UserProfile, 0)
+        self.assert_count(UserProfile, (0, 1))
+        self.assert_count(UserProfile, [0, 1])
+
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        self.assert_count(UserProfile, 1)
+        self.assert_count(UserProfile, (0, 1))
+        self.assert_count(UserProfile, [0, 1])
+
+    def test_count_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        self.assert_count(profile.contacts, 0)
+        self.assert_count(profile.contacts, (0, len(TEST_CITIES)))
+        self.assert_count(profile.contacts, [0, len(TEST_CITIES)])
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_count(profile.contacts, len(TEST_CITIES))
+        self.assert_count(profile.contacts, (0, len(TEST_CITIES)))
+        self.assert_count(profile.contacts, [0, len(TEST_CITIES)])
+
+    def test_count_string(self):
+        self.assert_count('testapp.UserProfile', 0)
+        self.assert_count('testapp.UserProfile', (0, 1))
+        self.assert_count('testapp.UserProfile', [0, 1])
+
+        profile = self.assert_create('testapp.UserProfile', user=self.user)
+
+        self.assert_count('testapp.UserProfile', 1)
+        self.assert_count('testapp.UserProfile', (0, 1))
+        self.assert_count('testapp.UserProfile', [0, 1])
+
+    def test_create_model(self):
         self.assert_create(UserProfile, user=self.user)
 
     def test_create_manager(self):
@@ -61,8 +104,65 @@ class TestDatabase(TestCase):
         self.assert_delete('testapp.UserProfile')
         self.assert_count('testapp.UserProfile', 0)
 
-    def test_read(self):
+    @TestCase.raises(AssertionError)
+    def test_not_count_assertion(self):
+        self.assert_not_count(UserProfile, 0)
+        self.assert_not_count(UserProfile, (0, 1))
+        self.assert_not_count(UserProfile, [0, 1])
+
+    def test_not_count_model(self):
+        self.assert_not_count(UserProfile, 1)
+        self.assert_not_count(UserProfile, (1, 2))
+        self.assert_not_count(UserProfile, [1, 2])
+
+    def test_not_count_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_count(profile.contacts, 1)
+        self.assert_not_count(profile.contacts, (1, 2))
+        self.assert_not_count(profile.contacts, [1, 2])
+
+    def test_not_count_string(self):
+        self.assert_not_count('testapp.UserProfile', 1)
+        self.assert_not_count('testapp.UserProfile', (1, 2))
+        self.assert_not_count('testapp.UserProfile', [1, 2])
+
+    @TestCase.raises(AssertionError)
+    def test_not_read_assertion(self):
         self.assert_create(UserProfile, user=self.user)
+        self.assert_not_read(UserProfile, Q(user=self.user))
+        self.assert_not_read(UserProfile, user=self.user)
+
+    def test_not_read_model(self):
+        self.assert_not_read(UserProfile, Q(user=self.user))
+        self.assert_not_read(UserProfile, user=self.user)
+
+    def test_not_read_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_read(profile.contacts, Q(city=TEST_CITY))
+        self.assert_not_read(profile.contacts, city=TEST_CITY)
+
+    def test_not_read_string(self):
+        self.assert_not_read('testapp.UserProfile', Q(user=self.user))
+        self.assert_not_read('testapp.UserProfile', user=self.user)
+
+    def test_not_unicode(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_unicode(profile,
+                                u'Profile for "%s"' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def test_not_unicode_assertion(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_unicode(profile,
+                                u'Profile for "%s" user' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def test_read_assertion(self):
+        self.assert_read(UserProfile, user=self.user)
+
+    def test_read_model(self):
+        self.assert_create(UserProfile, user=self.user)
+        self.assert_read(UserProfile, Q(user=self.user))
         self.assert_read(UserProfile, user=self.user)
 
     def test_read_manager(self):
@@ -70,13 +170,15 @@ class TestDatabase(TestCase):
 
         for city in TEST_CITIES:
             self.assert_create(profile.contacts, city=city)
+            self.assert_read(profile.contacts, Q(city=city))
             self.assert_read(profile.contacts, city=city)
 
     def test_read_string(self):
         self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_read('testapp.UserProfile', Q(user=self.user))
         self.assert_read('testapp.UserProfile', user=self.user)
 
-    def test_update(self):
+    def test_update_instance(self):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_update(profile, bio=TEST_BIO)
 
@@ -104,6 +206,12 @@ class TestDatabase(TestCase):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_unicode(profile,
                             u'Profile for "%s" user' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def test_unicode_assertion(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_unicode(profile,
+                            u'Profile for "%s"' % self.user.username)
 
 
 class TestDatabaseCallCommand(TestCase):
@@ -152,7 +260,49 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
     def setUp(self):
         self.user = self.helper('create_user')
 
-    def testCreate(self):
+    @TestCase.raises(AssertionError)
+    def testCountAssertion(self):
+        self.assertCount(UserProfile, 1)
+        self.assertCount(UserProfile, (1, 2))
+        self.assertCount(UserProfile, [1, 2])
+
+    def testCountModel(self):
+        self.assertCount(UserProfile, 0)
+        self.assertCount(UserProfile, (0, 1))
+        self.assertCount(UserProfile, [0, 1])
+
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        self.assertCount(UserProfile, 1)
+        self.assertCount(UserProfile, (0, 1))
+        self.assertCount(UserProfile, [0, 1])
+
+    def testCountManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+
+        self.assertCount(profile.contacts, 0)
+        self.assertCount(profile.contacts, (0, len(TEST_CITIES)))
+        self.assertCount(profile.contacts, [0, len(TEST_CITIES)])
+
+        for city in TEST_CITIES:
+            self.assertCreate(profile.contacts, city=city)
+
+        self.assertCount(profile.contacts, len(TEST_CITIES))
+        self.assertCount(profile.contacts, (0, len(TEST_CITIES)))
+        self.assertCount(profile.contacts, [0, len(TEST_CITIES)])
+
+    def testCountString(self):
+        self.assertCount('testapp.UserProfile', 0)
+        self.assertCount('testapp.UserProfile', (0, 1))
+        self.assertCount('testapp.UserProfile', [0, 1])
+
+        profile = self.assertCreate('testapp.UserProfile', user=self.user)
+
+        self.assertCount('testapp.UserProfile', 1)
+        self.assertCount('testapp.UserProfile', (0, 1))
+        self.assertCount('testapp.UserProfile', [0, 1])
+
+    def testCreateModel(self):
         self.assertCreate(UserProfile, user=self.user)
 
     def testCreateManager(self):
@@ -162,7 +312,7 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
     def testCreateString(self):
         self.assertCreate('testapp.UserProfile', user=self.user)
 
-    def testDelete(self):
+    def testDeleteInstance(self):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertDelete(profile)
 
@@ -194,7 +344,59 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         self.assertDelete('testapp.UserProfile')
         self.assertCount('testapp.UserProfile', 0)
 
-    def testRead(self):
+    @TestCase.raises(AssertionError)
+    def testNotCountAssertion(self):
+        self.assertNotCount(UserProfile, 0)
+        self.assertNotCount(UserProfile, (0, 1))
+        self.assertNotCount(UserProfile, [0, 1])
+
+    def testNotCountModel(self):
+        self.assertNotCount(UserProfile, 1)
+        self.assertNotCount(UserProfile, (1, 2))
+        self.assertNotCount(UserProfile, [1, 2])
+
+    def testNotCountManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertNotCount(profile.contacts, 1)
+        self.assertNotCount(profile.contacts, (1, 2))
+        self.assertNotCount(profile.contacts, [1, 2])
+
+    def testNotCountString(self):
+        self.assertNotCount('testapp.UserProfile', 1)
+        self.assertNotCount('testapp.UserProfile', (1, 2))
+        self.assertNotCount('testapp.UserProfile', [1, 2])
+
+    @TestCase.raises(AssertionError)
+    def testNotReadAssertion(self):
+        self.assertCreate(UserProfile, user=self.user)
+        self.assertNotRead(UserProfile, user=self.user)
+
+    def testNotReadModel(self):
+        self.assertNotRead(UserProfile, user=self.user)
+
+    def testNotReadManager(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertNotRead(profile.contacts, city=TEST_CITY)
+
+    def testNotReadString(self):
+        self.assertNotRead('testapp.UserProfile', user=self.user)
+
+    def testNotUnicode(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertNotUnicode(profile,
+                                u'Profile for "%s"' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def testNotUnicodeAssertion(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertNotUnicode(profile,
+                                u'Profile for "%s" user' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def testReadAssertion(self):
+        self.assertRead(UserProfile, user=self.user)
+
+    def testReadModel(self):
         self.assertCreate(UserProfile, user=self.user)
         self.assertRead(UserProfile, user=self.user)
 
@@ -209,7 +411,7 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
         self.assertCreate('testapp.UserProfile', user=self.user)
         self.assertRead('testapp.UserProfile', user=self.user)
 
-    def testUpdate(self):
+    def testUpdateInstance(self):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertUpdate(profile, bio=TEST_BIO)
 
@@ -236,7 +438,13 @@ class TestDatabaseUnitTestStyleMethods(TestCase):
     def testUnicode(self):
         profile = self.assertCreate(UserProfile, user=self.user)
         self.assertUnicode(profile,
-                           u'Profile for "%s" user' % self.user.username)
+                            u'Profile for "%s" user' % self.user.username)
+
+    @TestCase.raises(AssertionError)
+    def testUnicodeAssertion(self):
+        profile = self.assertCreate(UserProfile, user=self.user)
+        self.assertUnicode(profile,
+                            u'Profile for "%s"' % self.user.username)
 
 
 class TestDatabaseWithFixtures(TestCase):
