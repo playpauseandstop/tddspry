@@ -9,7 +9,7 @@ from tddspry.django.helpers import PASSWORD, USERNAME
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from twill.errors import TwillAssertionError
+from twill.errors import TwillAssertionError, TwillException
 
 from testproject.testapp.forms import LoginForm
 from testproject.testapp.models import UserProfile
@@ -22,6 +22,12 @@ TEST_BIO = 'Something text %d'
 def dummy_error(obj):
     obj.go('/does_not_exist/')
     obj.code(200)
+
+
+@show_on_error
+def dummy_field_error(obj):
+    obj.go200('edit_hidden_fields')
+    obj.fv(1, 'does_not_exist', 'Something')
 
 
 class TestHttp(TestCase):
@@ -98,6 +104,11 @@ class TestHttp(TestCase):
         self.find("hidden_field_2: ''")
         self.notfind("hidden_field_2: 'Value'")
         self.find("some_field_1: 'Value'")
+
+    @TestCase.raises(TwillException)
+    def test_field_error(self):
+        self.go200('edit_hidden_fields')
+        self.fv(1, 'does_not_exist', 'does_not_exist')
 
     @TestCase.raises(TwillAssertionError)
     def test_find_count_error(self):
@@ -230,31 +241,37 @@ class TestHttp(TestCase):
         self.find(user.email)
 
     def test_show_on_error_save_output(self):
-        old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
+        def check(func):
+            old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
 
-        dirname = os.path.dirname(os.tempnam())
-        os.environ['TWILL_ERROR_DIR'] = dirname
-
-        try:
-            dummy_error(self)
-        except TwillAssertionError:
-            pass
-
-        contents = os.listdir(dirname)
-        found = False
-        filename = '%s.%s-' % (self.__module__, 'dummy_error')
-
-        if old_dirname is not None:
+            dirname = os.path.dirname(os.tempnam())
             os.environ['TWILL_ERROR_DIR'] = dirname
 
-        for name in contents:
-            if name.startswith(filename):
-                os.unlink(os.path.join(dirname, name))
-                found = True
+            try:
+                func(self)
+            except (TwillAssertionError, TwillException):
+                pass
 
-        assert found, \
-               'Cannot found file started with %r in %r dir.\nDir ' \
-               'contents:\n%s' % (filename, dirname, contents)
+            contents = os.listdir(dirname)
+            contents.sort()
+
+            filename = '%s.%s-' % (self.__module__, func.__name__)
+            found = False
+
+            if old_dirname is not None:
+                os.environ['TWILL_ERROR_DIR'] = dirname
+
+            for name in contents:
+                if name.startswith(filename):
+                    os.unlink(os.path.join(dirname, name))
+                    found = True
+
+            assert found, \
+                'Cannot found file started with %r in %r dir.\nDir ' \
+                'contents:\n%s' % (filename, dirname, contents)
+
+        check(dummy_error)
+        check(dummy_field_error)
 
     def test_static(self):
         self.go(settings.MEDIA_URL)
