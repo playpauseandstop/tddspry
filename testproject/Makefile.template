@@ -1,7 +1,7 @@
 ENV = %(DEST_DIR)s
 
 # Targets
-.PHONY: alltest clean fullclean fulltest fulltest_mysql runserver shell test test_mysql test_sqlite
+.PHONY: alltest clean fullclean fulltest fulltest_legacy fulltest_multidb fulltest_mysql fulltest_mysql_legacy fulltest_sqlite fulltest_sqlite_legacy runserver shell test test_legacy test_multidb test_mysql test_mysql_legacy test_sqlite test_sqlite_legacy
 
 # Default values for tddspry test project
 IP = 0.0.0.0
@@ -12,16 +12,24 @@ project = testproject
 
 settings = $(project).settings
 test_settings = $(settings)
+test_settings_legacy = $(test_settings)_legacy
+test_settings_multidb = $(test_settings)_multidb
 test_settings_mysql = $(test_settings)_mysql
+test_settings_mysql_legacy = $(test_settings)_mysql_legacy
 test_settings_sqlite = $(test_settings)_sqlite
+test_settings_sqlite_legacy = $(test_settings)_sqlite_legacy
 
 smarttest_options = -w .. $(project)
 test_options = --django-settings=$(test_settings) -w .. $(project)
+test_options_legacy = --django-settings=$(test_settings_legacy) -w .. $(project)
+test_options_multidb = --django-settings=$(test_settings_multidb) -w .. $(project)
 test_options_mysql = --django-settings=$(test_settings_mysql) -w .. $(project)
+test_options_mysql_legacy = --django-settings=$(test_settings_mysql_legacy) -w .. $(project)
 test_options_sqlite = --django-settings=$(test_settings_sqlite) -w .. $(project)
+test_options_sqlite_legacy = --django-settings=$(test_settings_sqlite_legacy) -w .. $(project)
 
-allfulltest: fulltest fulltest_mysql fulltest_sqlite
-alltest: smarttest test test_mysql test_sqlite
+allfulltest: fulltest fulltest_legacy fulltest_multidb fulltest_mysql fulltest_mysql_legacy fulltest_sqlite fulltest_sqlite_legacy
+alltest: smarttest test test_legacy test_multidb test_mysql test_mysql_legacy test_sqlite test_sqlite_legacy
 
 clean:
 	find . -name '*.pyc' -delete
@@ -31,15 +39,6 @@ fullclean: clean
 	rm -rf $(ENV)/
 	rm -f testproject.db
 	rm -f Makefile
-
-fulltest: clean
-	echo "make fulltest"
-
-fulltest_mysql: clean
-	echo "make fulltest_mysql"
-
-fulltest_sqlite: clean
-	echo "make fulltest_sqlite"
 
 runserver:
 	python manage.py runserver $(IP):$(PORT)
@@ -56,8 +55,20 @@ syncdb:
 test: clean
 	PYTHONPATH=.. $(nosetests) $(test_options)
 
+test_legacy: clean
+	PYTHONPATH=.. $(nosetests) $(test_options_legacy)
+
+test_multidb: clean
+	PYTHONPATH=.. $(nosetests) $(test_options_multidb)
+
 test_mysql: clean
 	PYTHONPATH=.. $(nosetests) $(test_options_mysql)
 
+test_mysql_legacy: clean
+	PYTHONPATH=.. $(nosetests) $(test_options_mysql_legacy)
+
 test_sqlite: clean
 	PYTHONPATH=.. $(nosetests) $(test_options_sqlite)
+
+test_sqlite_legacy: clean
+	PYTHONPATH=.. $(nosetests) $(test_options_sqlite_legacy)
