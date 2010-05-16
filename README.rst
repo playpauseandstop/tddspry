@@ -8,6 +8,10 @@ with `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ and
 
 #. `Key features`_
 #. `Quick examples`_
+
+   #. `Writing tests`_
+   #. `Running tests`_
+
 #. Requirements_
 #. Installation_
 #. License_
@@ -34,8 +38,11 @@ Key features
 Quick examples
 ==============
 
-Database test
+Writing tests
 -------------
+
+Database test
+~~~~~~~~~~~~~
 
 Check that ``username`` field of standart ``auth.User`` model is unique::
 
@@ -63,8 +70,8 @@ Check that ``username`` field of standart ``auth.User`` model is unique::
                             password=TEST_PASSWORD,
                             email=TEST_EMAIL)
 
-Http test
----------
+Http (twill) test
+~~~~~~~~~~~~~~~~~
 
 Login into project and check that login url does not exist in index page and
 logout and profile links exist::
@@ -97,6 +104,33 @@ logout and profile links exist::
             # Profile url must find at page 3 times
             self.find(logout_url)
             self.find(profile_url, count=3)
+
+Running tests
+-------------
+
+There are two ways to run tests in your project.
+
+First, using ``nosetests`` command, e.g.::
+
+    $ nosetests --with-django --django-settings=project.settings project
+    $ DJANGO_SETTINGS_MODULE=project.settings NOSE_WTIH_DJANGO=1 nosetests project
+
+This way requires install ``tddspry`` to your system.
+
+And second, using ``django-nosetests.py`` script, e.g.::
+
+    $ django-nosetests.py --django-settings=project.settings project
+    $ DJANGO_SETTINGS_MODULE=project.settings django-nosetests.py project
+
+This script is wrapper to previous method (you don't need to run ``nosetests``
+with ``--with-django`` option or ``NOSE_WTIH_DJANGO`` environment var), but
+does not require install ``tddspry`` to your system (it's good idea if you want
+use latest development version of ``tddspry``). Script located in ``bin/``
+directory.
+
+Otherwise, you can use all `power of nosetests command
+<http://somethingaboutorange.com/mrl/projects/nose/0.11.0/usage.html>`_ to run
+tests in your Django project or applications.
 
 Requirements
 ============
