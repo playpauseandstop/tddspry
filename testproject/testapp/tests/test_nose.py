@@ -54,6 +54,12 @@ class TestNose(TestCase):
         self.assert_raises(TypeError, raise_exception)
         self.assert_true(True)
 
+        self.assert_not_unicode(TEST_STRING, TEST_UNICODE[::-1])
+        self.assert_not_unicode(DummyUnicode(), TEST_STRING[::-1])
+        self.assert_not_unicode(DummyUnicode(), TEST_UNICODE[::-1])
+        self.assert_not_unicode(DummyUnicodeAndStr(), TEST_STRING[::-1])
+        self.assert_not_unicode(DummyUnicodeAndStr(), TEST_UNICODE[::-1])
+
         self.assert_unicode(TEST_STRING, TEST_UNICODE)
         self.assert_unicode(DummyUnicode(), TEST_STRING)
         self.assert_unicode(DummyUnicode(), TEST_UNICODE)
