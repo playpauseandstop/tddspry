@@ -63,10 +63,10 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
     def assert_count(self, model_or_manager, number, **kwargs):
         """
-        Helper counts all ``model_or_manager`` objects and ``assert_equal`` it
-        with given ``number``.
+        Test that number of all ``model_or_manager`` objects equals to given
+        ``number``.
 
-        You can put ``number`` argument as ``tuple`` and ``list`` and
+        You can put ``number`` argument as ``tuple`` or ``list`` and
         ``assert_count`` checks all of its values.
 
         Method supports ``using`` keyword, so you can test count objects not
@@ -87,12 +87,12 @@ class TestCase(NoseTestCase, DjangoTestCase):
                     break
 
             if not equaled:
-                assert False, '%r model has %d instance(s), not %s' % \
+                assert False, '%r model has %d instance(s), not %s.' % \
                               (manager.model.__name__, counter, numbers)
         else:
             self.assert_equal(counter,
                               number,
-                              '%r model has %d instance(s), not %d' % \
+                              '%r model has %d instance(s), not %d.' % \
                               (manager.model.__name__, counter, number))
 
     def assert_contains_count(self, text, count):
@@ -178,13 +178,80 @@ class TestCase(NoseTestCase, DjangoTestCase):
                 assert False, 'Could not delete %r instance with %d pk.' % \
                                (manager.model.__name__, pk)
 
-    def assert_read(self, model_or_manager, **kwargs):
+    def assert_not_count(self, model_or_manager, number, **kwargs):
         """
-        Helper tries to filter ``model_or_manager`` instance by ``**kwargs``
-        lookup.
+        Test that number of all ``model_or_manager`` objects not equals to
+        given ``number``.
 
-        ``assert_read`` returns QuerySet with filtered instances or simple
-        instance if resulted QuerySet count is ``1``.
+        You can put ``number`` argument as ``tuple`` or ``list`` and
+        ``assert_count`` checks all of its values.
+
+        Method supports ``using`` keyword, so you can test count objects not
+        only in default database.
+        """
+        manager = self._get_manager(model_or_manager)
+        manager, kwargs = self._process_using(manager, kwargs)
+
+        counter = manager.count()
+
+        if isinstance(number, (list, tuple)):
+            equaled = False
+            numbers = number
+
+            for number in numbers:
+                if number == counter:
+                    equaled = True
+                    break
+
+            if equaled:
+                assert False, '%r model has %d instance(s), but should not.' %\
+                              (manager.model.__name__, counter)
+        else:
+            self.assert_not_equal(counter,
+                                  number,
+                                  '%r model has %d instance(s), but should ' \
+                                  'not.' % (manager.model.__name__, number))
+
+    def assert_not_read(self, model_or_manager, query_=None, **kwargs):
+        """
+        Helper filters ``model_or_manager`` instance by ``query`` or
+        ``**kwargs`` lookup and check for empty ``QuerySet``.
+
+        Method support ``using`` keyword so you can test unread models not only
+        for default database.
+        """
+        manager = self._get_manager(model_or_manager)
+        manager, kwargs = self._process_using(manager, kwargs)
+
+        if query_:
+            queryset = manager.filter(query_)
+        else:
+            queryset = manager.filter(**kwargs)
+
+        count = queryset.count()
+
+        if count != 0:
+            assert False, '%d %s objects exist by %r lookup.' % \
+                          (count, manager.model.__name__, query_ or kwargs)
+
+        return True
+
+    def assert_not_unicode(self, first, second, message=None):
+        """
+        Test that ``first`` and ``second`` after converting with
+        ``django.utils.encoding.force_unicode`` function are not equal.
+        """
+        return self.assert_not_equal(force_unicode(first),
+                                     force_unicode(second),
+                                     message)
+
+    def assert_read(self, model_or_manager, query_=None, **kwargs):
+        """
+        Helper filters ``model_or_manager`` instance by ``query`` or
+        ``**kwargs`` lookup and checks for valid ``QuerySet``.
+
+        Method returns ``QuerySet`` with filtered instances or simple model
+        instance if resulted ``QuerySet`` is only one.
 
         Method supports ``using`` keyword so you can test read models not only
         from default database.
@@ -192,12 +259,16 @@ class TestCase(NoseTestCase, DjangoTestCase):
         manager = self._get_manager(model_or_manager)
         manager, kwargs = self._process_using(manager, kwargs)
 
-        queryset = manager.filter(**kwargs)
+        if query_:
+            queryset = manager.filter(query_)
+        else:
+            queryset = manager.filter(**kwargs)
+
         count = queryset.count()
 
         if count == 0:
             assert False, 'Could not filter %r objects by %s lookup.' % \
-                          (manager.model.__name__, kwargs)
+                          (manager.model.__name__, query_ or kwargs)
 
         if count == 1:
             return queryset[0]
