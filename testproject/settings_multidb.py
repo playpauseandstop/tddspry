@@ -2,16 +2,17 @@ from settings import *
 
 
 # MySQL database engine settings for tddspry test project
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tddspry',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
+DATABASES.update({
+    'legacy': {
+        'ENGINE': DATABASES['default']['ENGINE'],
+        'NAME': DATABASES['default']['NAME'].replace('.db', '_legacy.db'),
     },
-}
+})
+
+# Add application that testing multidb purposes to tddspry
+INSTALLED_APPS += (
+    'testproject.multidb',
+)
 
 
 # Try to loading settings from ``settings_mysql_local.py`` file

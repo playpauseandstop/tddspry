@@ -6,10 +6,10 @@ TDDSPRY_TEST_CASE = 'django.test.TransactionTestCase'
 
 # SQLite database engine configuration for tddspry test project set in original
 # settings, here set test database name
-TEST_DATABASE_NAME = os.path.join(DIRNAME, 'test.db')
+DATABASES['default'].update({'TEST_NAME': os.path.join(DIRNAME, 'test.db')})
 
 
-# Try to loading settings from ``settings_mysql_local.py`` file
+# Try to loading settings from ``settings_sqlite_local.py`` file
 try:
     from settings_sqlite_local import *
 except ImportError, e:

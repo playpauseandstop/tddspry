@@ -21,8 +21,12 @@ LOGOUT_URL = '/logout/'
 
 # Database settings
 # Please, set proper database settings in ``settings_local.py`` file
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(DIRNAME, 'testproject.db')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(DIRNAME, 'testproject.db'),
+    },
+}
 
 # Date and time settings
 TIME_ZONE = 'Europe/Kiev'

@@ -1,4 +1,6 @@
 """
+Plugin that make able to test Django projects or applications with nose
+library.
 """
 
 import logging
@@ -19,9 +21,9 @@ skip_pattern_re = re.compile(skip_pattern)
 
 class DjangoPlugin(Plugin):
     """
-    Run nosetests for Django (<= 1.1) projects or apps. You need to specify
-    settings of your project or plugin tries to auto-load from current or
-    child directories.
+    Run nosetests for Django projects or apps. You need to specify settings of
+    your project or plugin tries to auto-load from current or child
+    directories.
     """
     error_dir = None
     name = 'django'
@@ -32,9 +34,7 @@ class DjangoPlugin(Plugin):
         from django.conf import settings
         from django.core.handlers.wsgi import WSGIHandler
         from django.core.servers.basehttp import AdminMediaHandler
-        from django.db import connection
         from django.test.simple import TEST_MODULE
-        from django.test.utils import setup_test_environment
 
         from tddspry.django.settings import IP, PORT
 
@@ -51,12 +51,8 @@ class DjangoPlugin(Plugin):
             except (AttributeError, ImportError):
                 pass
 
-        # Setup Django test environment
-        setup_test_environment()
-
-        # Create Django test database
-        self.old_database_name = settings.DATABASE_NAME
-        connection.creation.create_test_db(self.verbosity, autoclobber=True)
+        # Setup Django test environment and test database
+        self.setup_django()
 
         # Setup Twill for testing with Django
         app = AdminMediaHandler(WSGIHandler())
@@ -115,6 +111,11 @@ class DjangoPlugin(Plugin):
 
     def ispackage(self, module):
         return module.__file__.rstrip('co').endswith('__init__.py')
+
+    @property
+    def legacy_django(self):
+        from django import VERSION
+        return not (VERSION[0] == 1 and VERSION[1] >= 2)
 
     def load_settings(self, settings):
         # If settings module was set try to load or die with error
@@ -194,14 +195,63 @@ class DjangoPlugin(Plugin):
                           'output in this directory. [TWILL_ERROR_DIR]')
 
     def report(self, stream):
-        from django.db import connection
-        from django.test.utils import teardown_test_environment
-
         log.debug('DjangoPlugin report')
 
-        # Destroy Django test database
-        connection.creation.destroy_test_db(self.old_database_name,
-                                            self.verbosity)
+        # Destroy Django test database and teardown Django test environment
+        self.teardown_django()
 
-        # Teardown Django test environment
-        teardown_test_environment()
+    def setup_django(self):
+        from django.conf import settings
+
+        # If Django < 1.2
+        if self.legacy_django:
+            from django.db import connection
+            from django.test.utils import setup_test_environment
+
+            # Setup Django test environment
+            setup_test_environment()
+
+            # Create Django test database
+            self.old_database_name = settings.DATABASE_NAME
+            connection.creation.create_test_db(self.verbosity, autoclobber=True)
+        # If Django >= 1.2
+        else:
+            from django.test.simple import DjangoTestSuiteRunner
+
+            # Initialize Django tests runner
+            runner = DjangoTestSuiteRunner(verbosity=self.verbosity)
+
+            # New Django tests runner set ``DEBUG`` to False on setup test
+            # environment, so we need to store real ``DEBUG`` value
+            DEBUG = settings.DEBUG
+
+            # Setup test environment
+            runner.setup_test_environment()
+
+            # And restore it to real value if needed
+            if settings.DEBUG != DEBUG:
+                settings.DEBUG = DEBUG
+
+            # Setup test databases
+            self.old_config = runner.setup_databases()
+            self.runner = runner
+
+    def teardown_django(self):
+        # If Django < 1.2
+        if self.legacy_django:
+            from django.db import connection
+            from django.test.utils import teardown_test_environment
+
+            # Destroy test database
+            connection.creation.destroy_test_db(self.old_database_name,
+                                                self.verbosity)
+
+            # Teardown Django test environment
+            teardown_test_environment()
+        # If Django >= 1.2
+        else:
+            # Destroy test databases
+            self.runner.teardown_databases(self.old_config)
+
+            # Teardown Django test environment
+            self.runner.teardown_test_environment()

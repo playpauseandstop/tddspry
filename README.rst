@@ -136,8 +136,7 @@ Requirements
 ============
 
 * `Python <http://www.python.org/>`_ 2.4 or above
-* `Django <http://www.djangoproject.com/>`_ up to 1.1 (multiple databases from
-  version 1.2 not supported yet)
+* `Django <http://www.djangoproject.com/>`_ up to trunk
 * `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ 0.11.0 or above
 * `twill <http://twill.idyll.org/>`_ 0.9
 
