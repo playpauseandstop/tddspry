@@ -13,6 +13,15 @@
     <li><a href="{% url users %}">{% trans 'Users list' %}</a></li>
 </ul>
 
+<hr />
+
+<h2>{% trans "Quotes" %}</h2>
+
+<pre>{% trans 'Text in "valid" quotes' %}</pre>
+<pre>{% filter force_escape %}{% trans 'Text in "invalid" quotes' %}{% endfilter %}</pre>
+
+<hr />
+
 <pre>{% trans "c++ is good, but python - better ;)" %}</pre>
 <pre>{% trans "python is good, but erlang - faster ;)" %}</pre>
 

@@ -120,6 +120,15 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find('Impossible', flat=True)
 
+    def test_find_escape(self):
+        self.go200('index')
+        self.find('Text in "invalid" quotes.', escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_escape_not_found(self):
+        self.go200('index')
+        self.find('Text in "valid" quotes.', escape=True)
+
     def test_follow200(self):
         self.go200('/')
 
