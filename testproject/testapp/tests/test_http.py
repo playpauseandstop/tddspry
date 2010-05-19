@@ -16,6 +16,12 @@ from testproject.testapp.models import UserProfile
 
 
 TEST_BIO = 'Something text %d'
+TEST_POST_DATA = {
+    'hidden_field_1': 'first hidden value',
+    'hidden_field_2': 'second hidden value',
+    'some_field_1': 'first some value',
+    'some_field_2': 'second some value',
+}
 
 
 @show_on_error
@@ -65,13 +71,46 @@ class TestHttp(TestCase):
         self.assert_equal(response.status_code, 200)
 
         # ``POST`` request
-        post = {
-            'hidden_field_1': 'Value',
-            'hidden_field_2': 'Value',
-            'some_field_1': 'Value,'
-        }
-        response = self.client.post('/edit-hidden-fields/', post)
+        response = self.client.post('/edit-hidden-fields/', TEST_POST_DATA)
         self.assert_equal(response.status_code, 200)
+
+    def test_get(self):
+        self.get('/')
+        self.code(200)
+        self.url('/')
+
+        self.find('Index')
+        self.find('c++ is good, but python - better ;)', flat=True)
+
+        self.get(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.code(404)
+
+    def test_get_and_twill(self):
+        self.get('/')
+        self.code(200)
+        self.url('/')
+
+        self.find('Index')
+        self.find('c++ is good, but python - better ;)', flat=True)
+
+        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.code(404)
+
+        self.go200('edit_hidden_fields')
+        self.url('edit_hidden_fields')
+
+        self.find('Form contains hidden fields')
+
+    def test_get200(self):
+        self.get200('/')
+        self.url('/')
+
+        self.find('Index')
+        self.find('c++ is good, but python - better ;)', flat=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_get200_assertion(self):
+        self.get200(settings.MEDIA_URL + 'does_not_exist.exe')
 
     def test_edit_hidden_fields(self):
         self.enable_edit_hidden_fields()
@@ -215,6 +254,58 @@ class TestHttp(TestCase):
             self.find('Username: %s' % user.username)
             self.find('Email: %s' % user.email)
             self.find('Bio: %s' % profile.bio)
+
+    def test_post(self):
+        # POST data for testing
+        data = TEST_POST_DATA
+        empty_data = dict([(k, '') for k in TEST_POST_DATA.keys()])
+
+        # Make POST request without data
+        self.post('edit_hidden_fields', {})
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in empty_data.items():
+            self.notfind("%s: '%s'" % (key, value))
+
+        # Make POST request with empty data
+        self.post('edit_hidden_fields', empty_data)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in empty_data.items():
+            self.find("%s: '%s'" % (key, value))
+
+        # Make POST request with data
+        self.post('edit_hidden_fields', data)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in data.items():
+            self.find("%s: '%s'" % (key, value))
+
+    def test_post_and_twill(self):
+        self.post('edit_hidden_fields', TEST_POST_DATA)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in TEST_POST_DATA.items():
+            self.find("%s: '%s'" % (key, value))
+
+        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.code(404)
+
+        self.go200('/')
+        self.url('/')
+
+        self.find('Index')
+        self.find('c++ is good, but python - better ;)', flat=True)
+
+    def test_post200(self):
+        self.post200('edit_hidden_fields', TEST_POST_DATA)
+        self.url('edit_hidden_fields')
+        for key, value in TEST_POST_DATA.items():
+            self.find("%s: '%s'" % (key, value))
+
+    @TestCase.raises(TwillAssertionError)
+    def test_post200_assertion(self):
+        self.post200(settings.MEDIA_URL + 'does_not_exist.exe', {})
 
     def test_redirect(self):
         self.disable_redirect()
