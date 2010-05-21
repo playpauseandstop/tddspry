@@ -101,6 +101,22 @@ class TestHttp(TestCase):
 
         self.find('Form contains hidden fields')
 
+    def test_get_and_forms(self):
+        self.get('edit_hidden_fields')
+        self.code(200)
+        self.url('edit_hidden_fields')
+
+        self.notfind(TEST_POST_DATA['some_field_1'])
+        self.notfind(TEST_POST_DATA['some_field_2'])
+
+        self.fv(1, 'some_field_1', TEST_POST_DATA['some_field_1'])
+        self.fv(1, 'some_field_2', TEST_POST_DATA['some_field_2'])
+
+        self.submit200(url='edit_hidden_fields')
+
+        self.find(TEST_POST_DATA['some_field_1'])
+        self.find(TEST_POST_DATA['some_field_2'])
+
     def test_get200(self):
         self.get200('/')
         self.url('/')
@@ -288,6 +304,71 @@ class TestHttp(TestCase):
         empty_data = dict([(k, '') for k in TEST_POST_DATA.keys()])
 
         # Make POST request without data
+        self.post('edit_hidden_fields', data={})
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in empty_data.items():
+            self.notfind("%s: '%s'" % (key, value))
+
+        # Make POST request with empty data
+        self.post('edit_hidden_fields', data=empty_data)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in empty_data.items():
+            self.find("%s: '%s'" % (key, value))
+
+        # Make POST request with data
+        self.post('edit_hidden_fields', data=data)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in data.items():
+            self.find("%s: '%s'" % (key, value))
+
+    def test_post_and_forms(self):
+        self.post('edit_hidden_fields', data=TEST_POST_DATA)
+        self.code(200)
+        self.url('edit_hidden_fields')
+
+        self.find(TEST_POST_DATA['some_field_1'])
+        self.notfind(TEST_POST_DATA['some_field_1'][::-1])
+        self.find(TEST_POST_DATA['some_field_2'])
+        self.notfind(TEST_POST_DATA['some_field_2'][::-1])
+
+        self.info()
+        self.showforms()
+
+        self.fv(1, 'some_field_1', TEST_POST_DATA['some_field_1'][::-1])
+        self.fv(1, 'some_field_2', TEST_POST_DATA['some_field_2'][::-1])
+
+        self.submit200(url='edit_hidden_fields')
+
+        self.notfind(TEST_POST_DATA['some_field_1'])
+        self.find(TEST_POST_DATA['some_field_1'][::-1])
+        self.notfind(TEST_POST_DATA['some_field_2'])
+        self.find(TEST_POST_DATA['some_field_2'][::-1])
+
+    def test_post_and_twill(self):
+        self.post('edit_hidden_fields', TEST_POST_DATA)
+        self.code(200)
+        self.url('edit_hidden_fields')
+        for key, value in TEST_POST_DATA.items():
+            self.find("%s: '%s'" % (key, value))
+
+        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.code(404)
+
+        self.go200('/')
+        self.url('/')
+
+        self.find('Index')
+        self.find('c++ is good, but python - better ;)', flat=True)
+
+    def test_post_short_syntax(self):
+        # POST data for testing
+        data = TEST_POST_DATA
+        empty_data = dict([(k, '') for k in TEST_POST_DATA.keys()])
+
+        # Make POST request without data
         self.post('edit_hidden_fields', {})
         self.code(200)
         self.url('edit_hidden_fields')
@@ -308,22 +389,6 @@ class TestHttp(TestCase):
         for key, value in data.items():
             self.find("%s: '%s'" % (key, value))
 
-    def test_post_and_twill(self):
-        self.post('edit_hidden_fields', TEST_POST_DATA)
-        self.code(200)
-        self.url('edit_hidden_fields')
-        for key, value in TEST_POST_DATA.items():
-            self.find("%s: '%s'" % (key, value))
-
-        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
-        self.code(404)
-
-        self.go200('/')
-        self.url('/')
-
-        self.find('Index')
-        self.find('c++ is good, but python - better ;)', flat=True)
-
     def test_post200(self):
         self.post200('edit_hidden_fields', TEST_POST_DATA)
         self.url('edit_hidden_fields')
@@ -332,7 +397,7 @@ class TestHttp(TestCase):
 
     @TestCase.raises(TwillAssertionError)
     def test_post200_assertion(self):
-        self.post200(settings.MEDIA_URL + 'does_not_exist.exe', {})
+        self.post200(settings.MEDIA_URL + 'does_not_exist.exe', data={})
 
     def test_redirect(self):
         self.disable_redirect()
