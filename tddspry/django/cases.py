@@ -1,4 +1,12 @@
+import httplib
 import warnings
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+from urllib import addinfourl
 
 from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
@@ -9,12 +17,14 @@ from django.utils.html import escape as real_escape
 from tddspry.cases import TestCase as NoseTestCase, \
                           TestCaseMetaclass as NoseTestCaseMetaclass
 from tddspry.django import helpers
-from tddspry.django.decorators import show_on_error
+from tddspry.django.decorators import django_request, show_on_error
 from tddspry.django.settings import SITE, DjangoTestCase
 
 from twill import commands
+from twill.commands import browser
 from twill.errors import TwillAssertionError
 from twill.extensions.check_links import check_links
+from twill.utils import ResultWrapper
 
 
 __all__ = ('DatabaseTestCase', 'HttpTestCase', 'TestCase')
@@ -45,6 +55,12 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
 
         attrs.update({'call_command': staticmethod(call_command)})
         attrs.update({'check_links': staticmethod(check_links)})
+
+        # Add ``delete``, ``get``, ``head``, ``options``, ``post``, ``put``
+        # methods from Django test client to ``TestCase``
+        for attr_name in ('delete', 'get', 'head', 'options', 'post', 'put'):
+            attrs.update({attr_name: django_request(attr_name)})
+            attrs.update({'%s200' % attr_name: django_request(attr_name, 200)})
 
         # Dirty hack to convert django testcase camelcase method names to
         # name with underscores
@@ -527,6 +543,32 @@ class TestCase(NoseTestCase, DjangoTestCase):
             raise TwillAssertionError, 'Match to %r' % what
 
         return True
+
+    def response_to_twill(self, response):
+        """
+        Wrap Django response to work with Twill.
+        """
+        path = response.request.get('PATH_INFO')
+        url = path and SITE + path.lstrip('/') or path
+
+        headers_msg = '\n'.join('%s: %s' % (k, v) for k, v in response.items())
+        headers_msg = StringIO(headers_msg)
+        headers = httplib.HTTPMessage(headers_msg)
+
+        io_response = StringIO(response.content)
+        urllib_response = addinfourl(io_response,
+                                     headers,
+                                     url,
+                                     response.status_code)
+        urllib_response._headers = headers
+        urllib_response._url = url
+        urllib_response.msg = u'OK'
+        urllib_response.seek = urllib_response.fp.seek
+
+        browser._browser._factory.set_response(urllib_response)
+        browser.result = ResultWrapper(response.status_code,
+                                       url,
+                                       response.content)
 
     def submit200(self, submit_button=None, url=None, check_links=False):
         """
