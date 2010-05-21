@@ -8,7 +8,67 @@ from twill.errors import TwillAssertionError, TwillException
 from twill.utils import print_form
 
 
-__all__ = ('show_on_error', )
+__all__ = ('django_request', 'show_on_error')
+
+
+def django_request(name, code=None):
+    """
+    Makes a GET, POST, HEAD, OPTIONS, PUT or DELETE request (reads from
+    ``name``) with Django test client on the provided ``url`` and returns a
+    Response object, which is wrapped to work with Twill.
+
+    ``url`` passed to this method auto-builds with ``build_url`` method,
+    so you can to provide ``args`` and ``kwargs`` args to reverse
+    urlpattern name in ``url``.
+
+    Decorator returns Django response.
+    """
+    def decorator(obj, url, args=None, kwargs=None, data=None, follow=False,
+                  **extra):
+        # Make able to use Django syntax for requests with data
+        if isinstance(args, dict) and not data:
+            data = args
+            args = None
+
+        check_links = extra.pop('check_links', False)
+
+        # Build URL
+        url = obj.build_url(url, args, kwargs)
+
+        # Make request
+        data = data or {}
+        request = getattr(obj.client, name)
+        response = request(url, data, follow=follow, **extra)
+
+        # Wrap Django response to work with Twill.
+        obj.response_to_twill(response)
+
+        # Show some debug info
+        print('%s ==> %s') % (name.upper(), browser.get_url())
+
+        # Check for code if needed
+        if code:
+            obj.code(code)
+
+        # Check for links if needed
+        if check_links:
+            obj.check_links()
+
+        return response
+
+    # Add fancy docstring to resulted method
+    allnames = 'GET, POST, HEAD, OPTIONS, PUT or DELETE'
+    deletes = (' (reads from', '``name``) ')
+
+    decorator.__doc__ = django_request.__doc__.replace(allnames, name.upper())
+    decorator.__doc__ = decorator.__doc__.replace('Decorator', 'Method')
+
+    for delete in deletes:
+        decorator.__doc__ = decorator.__doc__.replace(delete, '')
+
+    decorator.__name__ = code and '%s%d' % (name, code) or name
+
+    return decorator
 
 
 def show_on_error(func, clsname=None):
