@@ -408,6 +408,28 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         return True
 
+    def find_url(self, url, args=None, kwargs=None, prepend=False, flags='',
+                 flat=False, count=None, escape=False):
+        """
+        Helper method to build url and find it on current web-page.
+
+        ::
+
+            self.find_url('index')
+
+        equals to::
+
+            self.find(self.build_url('index'))
+
+        You should use all of ``build_url`` and ``find`` keyword arguments,
+        like ``args`` for ``build_url`` or ``count`` for find.
+        """
+        return self.find(self.build_url(url, args, kwargs, prepend),
+                         flags=flags,
+                         flat=flat,
+                         count=count,
+                         escape=escape)
+
     def follow200(self, what, url=None, args=None, kwargs=None,
                   check_links=False):
         """
