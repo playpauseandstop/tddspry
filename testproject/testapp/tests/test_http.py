@@ -268,10 +268,10 @@ class TestHttp(TestCase):
         self.find(user.email)
 
     def test_show_on_error_save_output(self):
-        def check(func):
+        def check(func, dirname=None):
             old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
 
-            dirname = os.path.dirname(os.tempnam())
+            dirname = dirname or os.path.dirname(os.tempnam())
             os.environ['TWILL_ERROR_DIR'] = dirname
 
             try:
@@ -299,6 +299,23 @@ class TestHttp(TestCase):
 
         check(dummy_error)
         check(dummy_field_error)
+
+        dirname = 'errors'
+        full_dirname = os.path.abspath(os.path.join(os.getcwd(), dirname))
+
+        # Remove directory if it still exists
+        if os.path.isdir(full_dirname):
+            shutil.rmtree(full_dirname)
+
+        check(dummy_error, dirname)
+        check(dummy_field_error, dirname)
+
+        # Check that errors dir exists on current work directory
+        if not os.path.isdir(full_dirname):
+            assert False, 'Directory %r does not exists.'
+
+        # Remove directory
+        shutil.rmtree(full_dirname)
 
     def test_static(self):
         self.go(settings.MEDIA_URL)
