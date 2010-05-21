@@ -129,6 +129,24 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find('Text in "valid" quotes.', escape=True)
 
+    def test_find_url(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields')
+
+    def test_find_url_count(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields', count=1)
+
+    @TwillAssertionError
+    def test_find_url_count_error(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields', count=2)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_url_not_found(self):
+        self.go200('index')
+        self.find_url('auth_login')
+
     def test_follow200(self):
         self.go200('/')
 
