@@ -159,6 +159,33 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find('Impossible', flat=True)
 
+    def test_find_escape(self):
+        self.go200('index')
+        self.find('Text in "invalid" quotes.', escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_escape_not_found(self):
+        self.go200('index')
+        self.find('Text in "valid" quotes.', escape=True)
+
+    def test_find_url(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields')
+
+    def test_find_url_count(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields', count=1)
+
+    @TwillAssertionError
+    def test_find_url_count_error(self):
+        self.go200('index')
+        self.find_url('edit_hidden_fields', count=2)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_url_not_found(self):
+        self.go200('index')
+        self.find_url('auth_login')
+
     def test_follow200(self):
         self.go200('/')
 
@@ -332,10 +359,10 @@ class TestHttp(TestCase):
         self.find(user.email)
 
     def test_show_on_error_save_output(self):
-        def check(func):
+        def check(func, dirname=None):
             old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
 
-            dirname = os.path.dirname(os.tempnam())
+            dirname = dirname or os.path.dirname(os.tempnam())
             os.environ['TWILL_ERROR_DIR'] = dirname
 
             try:
@@ -363,6 +390,23 @@ class TestHttp(TestCase):
 
         check(dummy_error)
         check(dummy_field_error)
+
+        dirname = 'errors'
+        full_dirname = os.path.abspath(os.path.join(os.getcwd(), dirname))
+
+        # Remove directory if it still exists
+        if os.path.isdir(full_dirname):
+            shutil.rmtree(full_dirname)
+
+        check(dummy_error, dirname)
+        check(dummy_field_error, dirname)
+
+        # Check that errors dir exists on current work directory
+        if not os.path.isdir(full_dirname):
+            assert False, 'Directory %r does not exists.'
+
+        # Remove directory
+        shutil.rmtree(full_dirname)
 
     def test_static(self):
         self.go(settings.MEDIA_URL)

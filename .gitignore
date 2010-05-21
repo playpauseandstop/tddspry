@@ -1,6 +1,7 @@
 build/*
 dist/*
 docs/_build/*
+errors/*
 tddspry.egg-info/*
 
 *.db-journal

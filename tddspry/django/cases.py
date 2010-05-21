@@ -4,6 +4,7 @@ from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db.models import get_model
 from django.utils.encoding import force_unicode
+from django.utils.html import escape as real_escape
 
 from tddspry.cases import TestCase as NoseTestCase, \
                           TestCaseMetaclass as NoseTestCaseMetaclass
@@ -372,7 +373,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         """
         self.config('acknowledge_equiv_refresh', int(flag))
 
-    def find(self, what, flags='', flat=False, count=None):
+    def find(self, what, flags='', flat=False, count=None, escape=False):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
         to search content on web-page by standart Python ``what in html``
@@ -380,7 +381,19 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         If this expression was not True (was not found on page) it's raises
         ``TwillAssertionError`` as in ``twill.commands.find`` method.
+
+        Specify ``count`` to test that ``what`` occurs ``count`` times in the
+        content of the web-page.
+
+        You could escape ``what`` text by standart ``django.utils.html.escape``
+        function if call method with ``escape=True``, like::
+
+            self.find('Text with "quotes"', escape=True)
+
         """
+        if escape:
+            what = real_escape(what)
+
         if not flat and not count:
             return self._find(what, flags)
 
@@ -394,6 +407,28 @@ class TestCase(NoseTestCase, DjangoTestCase):
             raise TwillAssertionError, 'No match to %r' % what
 
         return True
+
+    def find_url(self, url, args=None, kwargs=None, prepend=False, flags='',
+                 flat=False, count=None, escape=False):
+        """
+        Helper method to build url and find it on current web-page.
+
+        ::
+
+            self.find_url('index')
+
+        equals to::
+
+            self.find(self.build_url('index'))
+
+        You should use all of ``build_url`` and ``find`` keyword arguments,
+        like ``args`` for ``build_url`` or ``count`` for find.
+        """
+        return self.find(self.build_url(url, args, kwargs, prepend),
+                         flags=flags,
+                         flat=flat,
+                         count=count,
+                         escape=escape)
 
     def follow200(self, what, url=None, args=None, kwargs=None,
                   check_links=False):
