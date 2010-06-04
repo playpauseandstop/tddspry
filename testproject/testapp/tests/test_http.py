@@ -170,19 +170,63 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find('python', count=3)
 
-    @TestCase.raises(TwillAssertionError)
-    def test_find_flat_error(self):
-        self.go200('index')
-        self.find('Impossible', flat=True)
-
     def test_find_escape(self):
         self.go200('index')
         self.find('Text in "invalid" quotes.', escape=True)
 
     @TestCase.raises(TwillAssertionError)
-    def test_find_escape_not_found(self):
+    def test_find_escape_error(self):
         self.go200('index')
         self.find('Text in "valid" quotes.', escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_flat_error(self):
+        self.go200('index')
+        self.find('Impossible', flat=True)
+
+    def test_find_in(self):
+        self.find_in('Text', 'Text in "valid" quotes')
+
+    def test_find_in_count(self):
+        self.find_in('in', 'Text in "invalid" quotes', count=2)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_in_count_error(self):
+        self.find_in('Text', 'Text in "valid" quotes', count=2)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_in_error(self):
+        self.find_in('invalid', 'Text in "valid" quotes')
+
+    def test_find_in_escape(self):
+        self.find_in('"valid"',
+                     'Text in &quot;valid&quot; quotes',
+                     escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_in_escape_error(self):
+        self.find_in('"invalid"', 'Text in "invalid" quotes', escape=True)
+
+    def test_find_in_flags(self):
+        self.find_in('text', 'Text in "valid" quotes', flags='i')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_in_flags_error(self):
+        self.find_in('text', 'Text in "valid" quotes', flags='s')
+
+    def test_find_in_flat(self):
+        self.find_in('c++', 'c++ is good, but python is better', flat=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_find_in_flat_error(self):
+        self.find_in('c++', 'python is great, but erlang is faster', flat=True)
+
+    def test_find_in_with_find(self):
+        self.go200('index')
+        self.find('c++', flat=True)
+        self.find_in('c++', 'c++ is good, but python is better', flat=True)
+        self.find('Text in "valid" quotes')
+        self.find('Text in "invalid" quotes', escape=True)
 
     def test_find_url(self):
         self.go200('index')
