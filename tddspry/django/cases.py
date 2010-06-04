@@ -1,4 +1,5 @@
 import httplib
+import re
 import warnings
 
 try:
@@ -21,7 +22,7 @@ from tddspry.django.decorators import django_request, show_on_error
 from tddspry.django.settings import SITE, DjangoTestCase
 
 from twill import commands
-from twill.commands import browser
+from twill.commands import browser, _parseFindFlags
 from twill.errors import TwillAssertionError
 from twill.extensions.check_links import check_links
 from twill.utils import ResultWrapper
@@ -420,7 +421,42 @@ class TestCase(NoseTestCase, DjangoTestCase):
             raise TwillAssertionError('Matched to %r %d times, not %d ' \
                                       'times.' % (what, real_count, count))
         elif real_count == 0:
-            raise TwillAssertionError, 'No match to %r' % what
+            raise TwillAssertionError('No match to %r' % what)
+
+        return True
+
+    def find_in(self, what, where, flags='', flat=False, count=None,
+                escape=False):
+        """
+        Alternate version of ``find`` method that allow to find text in another
+        text, not only in current loaded page.
+
+        ``find_in`` supports all keywords from original ``find`` method.
+
+        If ``what`` not found in ``where``, ``find_in`` raises
+        ``TwillAssertionError``.
+        """
+        if escape:
+            what = real_escape(what)
+
+        if not flat and not count:
+            regexp = re.compile(what, _parseFindFlags(flags))
+
+            if not regexp.search(where):
+                self.text_to_twill(where)
+                raise TwillAssertionError('No match to %r' % what)
+
+            return True
+
+        real_count = where.count(what)
+
+        if count is not None and count != real_count:
+            self.text_to_twill(where)
+            raise TwillAssertionError('Matched to %r %d times, not %d ' \
+                                      'times.' % (what, real_count, count))
+        elif real_count == 0:
+            self.text_to_twill(where)
+            raise TwillAssertionError('No match to %r' % what)
 
         return True
 
@@ -526,7 +562,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         """
         self.go200(url or 'auth_logout')
 
-    def notfind(self, what, flags='', flat=False):
+    def notfind(self, what, flags='', flat=False, escape=False):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
         to search content on web-page by standart Python ``not what in html``
@@ -534,13 +570,50 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         If this expression was not True (was found on page) it's raises
         ``TwillAssertionError`` as in ``twill.commands.notfind`` method.
+
+        You could escape ``what`` text by standart ``django.utils.html.escape``
+        function if call method with ``escape=True``, like::
+
+            self.notfind('Text with "quotes"', escape=True)
+
         """
+        if escape:
+            what = real_escape(what)
+
         if not flat:
             return self._notfind(what, flags)
 
         html = self.get_browser().get_html()
         if what in html:
-            raise TwillAssertionError, 'Match to %r' % what
+            raise TwillAssertionError('Match to %r' % what)
+
+        return True
+
+    def notfind_in(self, what, where, flags='', flat=False, escape=False):
+        """
+        Alternate version of ``notfind`` method that allow to check that text
+        not found in another text, not only in current loaded page.
+
+        ``notfind_in`` supports all keywords from original ``notfind`` method.
+
+        If ``what`` found in ``where``, ``notfind_in`` raises
+        ``TwillAssertionError``.
+        """
+        found = False
+
+        if escape:
+            what = real_escape(what)
+
+        if flat and what in where:
+            found = True
+        elif not flat:
+            regexp = re.compile(what, _parseFindFlags(flags))
+            if regexp.search(where):
+                found = True
+
+        if found:
+            self.text_to_twill(where)
+            raise TwillAssertionError('Match to %r' % what)
 
         return True
 
@@ -582,6 +655,30 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         if check_links:
             self.check_links()
+
+    def text_to_twill(self, text):
+        """
+        Wrap text to work with Twill.
+        """
+        headers_msg = 'Content: text-plain; encoding=utf-8\n'
+        headers_msg = StringIO(headers_msg)
+        headers = httplib.HTTPMessage(headers_msg)
+
+        status_code = 200
+        url = 'text://'
+
+        io_response = StringIO(text)
+        urllib_response = addinfourl(io_response,
+                                     headers,
+                                     url,
+                                     status_code)
+        urllib_response._headers = headers
+        urllib_response._url = url
+        urllib_response.msg = u'OK'
+        urllib_response.seek = urllib_response.fp.seek
+
+        browser._browser._factory.set_response(urllib_response)
+        browser.result = ResultWrapper(status_code, url, text)
 
     def url(self, url, args=None, kwargs=None, regexp=True):
         """
