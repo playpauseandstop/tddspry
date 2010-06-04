@@ -431,7 +431,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         Alternate version of ``find`` method that allow to find text in another
         text, not only in current loaded page.
 
-        ``find_in`` supports all keyforms from original ``find`` method.
+        ``find_in`` supports all keywords from original ``find`` method.
 
         If ``what`` not found in ``where``, ``find_in`` raises
         ``TwillAssertionError``.
@@ -562,7 +562,7 @@ class TestCase(NoseTestCase, DjangoTestCase):
         """
         self.go200(url or 'auth_logout')
 
-    def notfind(self, what, flags='', flat=False):
+    def notfind(self, what, flags='', flat=False, escape=False):
         """
         Twill used regexp for searching content on web-page. Use ``flat=True``
         to search content on web-page by standart Python ``not what in html``
@@ -570,13 +570,50 @@ class TestCase(NoseTestCase, DjangoTestCase):
 
         If this expression was not True (was found on page) it's raises
         ``TwillAssertionError`` as in ``twill.commands.notfind`` method.
+
+        You could escape ``what`` text by standart ``django.utils.html.escape``
+        function if call method with ``escape=True``, like::
+
+            self.notfind('Text with "quotes"', escape=True)
+
         """
+        if escape:
+            what = real_escape(what)
+
         if not flat:
             return self._notfind(what, flags)
 
         html = self.get_browser().get_html()
         if what in html:
-            raise TwillAssertionError, 'Match to %r' % what
+            raise TwillAssertionError('Match to %r' % what)
+
+        return True
+
+    def notfind_in(self, what, where, flags='', flat=False, escape=False):
+        """
+        Alternate version of ``notfind`` method that allow to check that text
+        not found in another text, not only in current loaded page.
+
+        ``notfind_in`` supports all keywords from original ``notfind`` method.
+
+        If ``what`` found in ``where``, ``notfind_in`` raises
+        ``TwillAssertionError``.
+        """
+        found = False
+
+        if escape:
+            what = real_escape(what)
+
+        if flat and what in where:
+            found = True
+        elif not flat:
+            regexp = re.compile(what, _parseFindFlags(flags))
+            if regexp.search(where):
+                found = True
+
+        if found:
+            self.text_to_twill(where)
+            raise TwillAssertionError('Match to %r' % what)
 
         return True
 
