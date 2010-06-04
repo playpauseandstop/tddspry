@@ -315,6 +315,80 @@ class TestHttp(TestCase):
         self.go200('/profile/')
         self.url('/login/\?next=/profile/')
 
+    def test_notfind(self):
+        self.go200('index')
+        self.notfind('Impossible')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_error(self):
+        self.go200('index')
+        self.notfind('tddspry')
+
+    def test_notfind_escape(self):
+        self.go200('index')
+        self.notfind('Text in "valid" quotes', escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_escape_error(self):
+        self.go200('index')
+        self.notfind('Text in "invalid" quotes', escape=True)
+
+    def test_notfind_flags(self):
+        self.go200('index')
+        self.notfind('IMPOSSIBLE', flags='i')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_flags_error(self):
+        self.go200('index')
+        self.notfind('TDDSPRY', flags='i')
+
+    def test_notfind_flat(self):
+        self.go200('index')
+        self.notfind('c#', flat=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_flat_error(self):
+        self.go200('index')
+        self.notfind('c++', flat=True)
+
+    def test_notfind_in(self):
+        self.notfind_in('invalid', 'Text in "valid" quotes')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_in_error(self):
+        self.notfind_in('valid', 'Text in "valid" quotes')
+
+    def test_notfind_in_escape(self):
+        self.notfind_in('"invalid"',
+                        'Text in &quot;valid&quot; quotes',
+                        escape=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_in_escape_error(self):
+        self.notfind_in('"valid"',
+                        'Text in &quot;valid&quot; quotes',
+                        escape=True)
+
+    def test_notfind_in_flags(self):
+        self.notfind_in('text', 'Text in "valid" quotes', flags='s')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_in_flags_error(self):
+        self.notfind_in('text', 'Text in "valid" quotes', flags='i')
+
+    def test_notfind_in_flat(self):
+        self.notfind_in('c#', 'c++ is good, but python is better', flat=True)
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_in_flat_error(self):
+        self.notfind_in('c++', 'c++ is good, but python is better', flat=True)
+
+    def test_notfind_in_with_notfind(self):
+        self.go200('index')
+        self.notfind('Impossible')
+        self.notfind_in('text', 'Text in "valid" quotes')
+        self.notfind('Impossible again')
+
     def test_pages(self):
         profiles, users = [], []
 
