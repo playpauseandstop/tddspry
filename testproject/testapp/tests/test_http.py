@@ -246,6 +246,27 @@ class TestHttp(TestCase):
         self.go200('index')
         self.find_url('auth_login')
 
+    def test_form_id_for_form_functions(self):
+        self.enable_edit_hidden_fields()
+        self.go200('edit_hidden_fields')
+
+        for key, value in TEST_POST_DATA.items():
+            self.fv('hidden-fields-form', key, value)
+
+        self.submit200(url='edit_hidden_fields')
+
+        for key, value in TEST_POST_DATA.items():
+            self.find("%s: '%s'" % (key, value))
+
+        self.disable_edit_hidden_fields()
+
+    @TestCase.raises(TwillAssertionError)
+    def test_form_id_for_form_functions_error(self):
+        self.go200('edit_hidden_fields')
+        self.fv('not-hidden-fields-form',
+                'some_field_1',
+                TEST_POST_DATA['some_field_1'])
+
     def test_follow200(self):
         self.go200('/')
 

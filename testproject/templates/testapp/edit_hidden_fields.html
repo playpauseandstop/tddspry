@@ -7,7 +7,7 @@
 {% if POST %}<pre>{% for name, value in POST.items %}{{ name }}: '{{ value }}'
 {% endfor %}</pre>{% endif %}
 
-<form action="" method="post">
+<form action="" id="hidden-fields-form" method="post">
     <fieldset>
         <legend>{% trans 'Form contains hidden fields' %}</legend>
 
