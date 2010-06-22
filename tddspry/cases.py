@@ -1,3 +1,8 @@
+try:
+    from unittest2 import TestCase as BaseTestCase
+except ImportError:
+    from unittest import TestCase as BaseTestCase
+
 # Dirty hack to prevent ``ImportError`` on installing tddspry via pip
 try:
     from nose import tools
@@ -10,23 +15,31 @@ from tddspry.utils import camelcase_to_underscore, underscore_to_camelcase
 __all__ = ('NoseTestCase', 'TestCase')
 
 
-class BaseTestCase(object):
-
-    pass
-
-
 class TestCaseMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
-        for attr_name, attr_value in attrs.items():
-            if attr_name.startswith('assert'):
-                if attr_name[6] == '_':
-                    new_name = underscore_to_camelcase(attr_name)
-                else:
-                    new_name = camelcase_to_underscore(attr_name)
+        for base in bases:
+            for base_name in dir(base):
+                base_value = getattr(base, base_name)
 
-                if not new_name in attrs:
-                    attrs[new_name] = attr_value
+                if not callable(base_value) or \
+                   not base_name.startswith('assert'):
+                    continue
+
+                if not base_name in attrs:
+                    attrs.update({base_name: base_value})
+
+        for attr_name, attr_value in attrs.items():
+            if not attr_name.startswith('assert') or attr_name == 'assert_':
+                continue
+
+            if attr_name[6] == '_':
+                new_name = underscore_to_camelcase(attr_name)
+            else:
+                new_name = camelcase_to_underscore(attr_name)
+
+            if not new_name in attrs:
+                attrs[new_name] = attr_value
 
         for attr in tools.__all__:
             attrs.update({attr: getattr(tools, attr)})
