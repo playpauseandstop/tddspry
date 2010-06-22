@@ -75,7 +75,7 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
         return super_new(cls, name, bases, attrs)
 
 
-class TestCase(NoseTestCase, DjangoTestCase):
+class TestCase(DjangoTestCase, NoseTestCase):
 
     __metaclass__ = TestCaseMetaclass
 
