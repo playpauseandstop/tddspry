@@ -22,6 +22,8 @@ with `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ and
 Key features
 ============
 
+* Support of assert methods from unittest2_ library (``assertIn``, ``assertIs``
+  and others).
 * Full support of all features from ``django.test.TestCase`` or
   ``django.test.TransationalTestCase`` classes.
 * Run tests for Django projects and applications via ``nosetests`` command
@@ -34,6 +36,8 @@ Key features
   ``django.test.Client``.
 * Helpers for make particular actions in tests (create users or superusers,
   login or logout from projects).
+
+.. _unittest2: http://pypi.python.org/pypi/unittest2
 
 Quick examples
 ==============
