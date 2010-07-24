@@ -305,6 +305,14 @@ class TestHttp(TestCase):
         self.find(user.username)
         self.find(user.email)
 
+    def test_login_and_get(self):
+        user = self.helper('create_user')
+        self.login(USERNAME, PASSWORD)
+
+        self.get200('/profile/')
+        self.find(user.username)
+        self.find(user.email)
+
     def test_login_to_admin_staff(self):
         staff = self.helper('create_staff')
         self.login_to_admin(USERNAME, PASSWORD)
@@ -335,6 +343,22 @@ class TestHttp(TestCase):
 
         self.go200('/profile/')
         self.url('/login/\?next=/profile/')
+
+    def test_logout_and_get(self):
+        user = self.helper('create_user')
+        self.login(USERNAME, PASSWORD)
+
+        self.get200('/profile/')
+        self.find(user.username)
+        self.find(user.email)
+
+        self.logout()
+
+        self.get('/profile/')
+        self.code(302)
+
+        self.get200('/profile/', follow=True)
+        self.url('/login/')
 
     def test_notfind(self):
         self.go200('index')
