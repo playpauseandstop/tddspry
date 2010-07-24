@@ -533,6 +533,8 @@ class TestCase(DjangoTestCase, NoseTestCase):
     def login(self, username, password, url=None, formid=None):
         """
         Login to Django using ``username`` and ``password``.
+
+        Also login to Django test client.
         """
         formid = formid or 1
 
@@ -543,9 +545,13 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         self.submit200()
 
+        self.client.login(username=username, password=password)
+
     def login_to_admin(self, username, password):
         """
         Login to Django admin CRUD using ``username`` and ``password``.
+
+        Also login to Django test client.
         """
         self.go200('/admin/')
 
@@ -556,11 +562,16 @@ class TestCase(DjangoTestCase, NoseTestCase):
         self.notfind('<input type="hidden" name="this_is_the_login_form" ' \
                      'value="1" />')
 
+        self.client.login(username=username, password=password)
+
     def logout(self, url=None):
         """
         Logout from current Django session.
+
+        Also logout from Django test client.
         """
         self.go200(url or 'auth_logout')
+        self.client.logout()
 
     def notfind(self, what, flags='', flat=False, escape=False):
         """
