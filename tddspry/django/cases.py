@@ -79,6 +79,18 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
     __metaclass__ = TestCaseMetaclass
 
+    def activate_form(self, formid):
+        """
+        Set form with ``formid`` as last used by twill. This method useful if
+        you got ``TwillException`` with message: ``"more than one form;
+        you must select one (use 'fv') before submitting"``.
+
+        Method supports both of numerical and string form ID.
+        """
+        browser = self.get_browser()
+        form = browser.get_form(formid)
+        browser._browser.form = form
+
     def assert_count(self, model_or_manager, number, **kwargs):
         """
         Test that number of all ``model_or_manager`` objects equals to given
@@ -355,6 +367,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
             return url
 
         return SITE + url.lstrip('/')
+
+    def deactivate_form(self):
+        """
+        Reset last selected form by Twill.
+        """
+        self.get_browser()._browser.form = None
 
     def disable_edit_hidden_fields(self):
         """

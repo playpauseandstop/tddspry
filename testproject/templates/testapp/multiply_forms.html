@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Multiply forms" %}{% endblock %}
+
+{% block content %}
+
+{% if first_form_submitted or second_form_submitted %}<pre>
+    {% if first_form_submitted %}{% trans "First form was submitted." %}{% endif %}
+    {% if second_form_submitted %}{% trans "Second form was submitted." %}{% endif %}
+</pre>{% endif %}
+
+<form action="" id="first-form" method="post">
+    <fieldset>
+        <legend>{% trans "First form" %}</legend>
+
+        <p><label for="id_first_form_field">{% trans "First form field" %}:</label>
+        <input type="text" name="first_form_field" id="id_first_form_field" /></p>
+
+        <p><input type="submit" value="Submit" /></p>
+    </fieldset>
+</form>
+
+<form action="" id="second-form" method="post">
+    <fieldset>
+        <legend>{% trans "Second form" %}</legend>
+
+        <p><label for="id_second_form_field">{% trans "Second form field" %}:</label>
+        <input type="text" name="second_form_field" id="id_second_form_field" /></p>
+
+        <p><input type="submit" value="Submit" /></p>
+    </fieldset>
+</form>
+
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}
