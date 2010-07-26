@@ -492,7 +492,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
             self.find(self.build_url('index'))
 
         You should use all of ``build_url`` and ``find`` keyword arguments,
-        like ``args`` for ``build_url`` or ``count`` for find.
+        like ``args`` for ``build_url`` or ``count`` for ``find``.
         """
         return self.find(self.build_url(url, args, kwargs, prepend),
                          flags=flags,
@@ -645,6 +645,27 @@ class TestCase(DjangoTestCase, NoseTestCase):
             raise TwillAssertionError('Match to %r' % what)
 
         return True
+
+    def notfind_url(self, url, args=None, kwargs=None, prepend=False, flags='',
+                    flat=False, escape=False):
+        """
+        Helper method to build url and not find it on current web-page.
+
+        ::
+
+            self.notfind_url('index')
+
+        equals to::
+
+            self.notfind(self.build_url('index'))
+
+        You should use all of ``build_url`` and ``notfind`` keyword arguments,
+        like ``args`` for ``build_url`` or ``flat`` for ``notfind``.
+        """
+        return self.notfind(self.build_url(url, args, kwargs, prepend),
+                            flags=flags,
+                            flat=flat,
+                            escape=escape)
 
     def response_to_twill(self, response):
         """

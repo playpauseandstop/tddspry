@@ -478,6 +478,15 @@ class TestHttp(TestCase):
         self.notfind_in('text', 'Text in "valid" quotes')
         self.notfind('Impossible again')
 
+    def test_notfind_url(self):
+        self.go200('edit_hidden_fields')
+        self.notfind_url('multiply_forms')
+
+    @TestCase.raises(TwillAssertionError)
+    def test_notfind_url_found(self):
+        self.go200('index')
+        self.notfind_url('multiply_forms')
+
     def test_pages(self):
         profiles, users = [], []
 
