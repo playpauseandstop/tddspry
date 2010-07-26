@@ -64,6 +64,17 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 
+def multiply_forms(request):
+    first_form_submitted = 'first_form_field' in request.POST
+    second_form_submitted = 'second_form_field' in request.POST
+
+    context = RequestContext(request, {
+        'first_form_submitted': first_form_submitted,
+        'second_form_submitted': second_form_submitted,
+    })
+    return render_to_response('testapp/multiply_forms.html', context)
+
+
 @login_required
 def profile(request):
     context = RequestContext(request, {
