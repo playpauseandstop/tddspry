@@ -91,12 +91,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
         form = browser.get_form(formid)
         browser._browser.form = form
 
-    def assert_count(self, model_or_manager, number, **kwargs):
+    def assert_count(self, model_or_manager, mixed, **kwargs):
         """
         Test that number of all ``model_or_manager`` objects equals to given
-        ``number``.
+        ``mixed`` value.
 
-        You can put ``number`` argument as ``tuple`` or ``list`` and
+        You can put ``mixed`` argument as ``tuple`` or ``list`` and
         ``assert_count`` checks all of its values.
 
         Method supports ``using`` keyword, so you can test count objects not
@@ -106,6 +106,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
         manager, kwargs = self._process_using(manager, kwargs)
 
         counter = manager.count()
+
+        try:
+            manager_from_mixed = self._get_manager(mixed)
+            manager_from_mixed, kwargs = \
+                self._process_using(manager_from_mixed, kwargs)
+
+            number = manager_from_mixed.count()
+        except:
+            number = mixed
 
         if isinstance(number, (list, tuple)):
             equaled = False
@@ -208,12 +217,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
                 assert False, 'Could not delete %r instance with %d pk.' % \
                                (manager.model.__name__, pk)
 
-    def assert_not_count(self, model_or_manager, number, **kwargs):
+    def assert_not_count(self, model_or_manager, mixed, **kwargs):
         """
         Test that number of all ``model_or_manager`` objects not equals to
-        given ``number``.
+        given ``mixed`` value.
 
-        You can put ``number`` argument as ``tuple`` or ``list`` and
+        You can put ``mixed`` argument as ``tuple`` or ``list`` and
         ``assert_count`` checks all of its values.
 
         Method supports ``using`` keyword, so you can test count objects not
@@ -223,6 +232,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
         manager, kwargs = self._process_using(manager, kwargs)
 
         counter = manager.count()
+
+        try:
+            manager_from_mixed = self._get_manager(mixed)
+            manager_from_mixed, kwargs = \
+                self._process_using(manager_from_mixed, kwargs)
+
+            number = manager_from_mixed.count()
+        except:
+            number = mixed
 
         if isinstance(number, (list, tuple)):
             equaled = False
