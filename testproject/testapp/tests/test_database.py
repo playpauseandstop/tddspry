@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.flatpages.models import FlatPage
 from django.db.models import Q
 
-from testproject.testapp.models import UserProfile
+from testproject.testapp.models import Contact, UserProfile
 
 
 TEST_ADDRESS = '221B Baker Street'
@@ -37,6 +37,22 @@ class TestDatabase(TestCase):
         self.assert_count(UserProfile, (0, 1))
         self.assert_count(UserProfile, [0, 1])
 
+    def test_count_model_model(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_count(UserProfile, User)
+
+    def test_count_model_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_count(Contact, profile.contacts)
+
+    def test_count_model_string(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_count(UserProfile, 'auth.User')
+
     def test_count_manager(self):
         profile = self.assert_create(UserProfile, user=self.user)
 
@@ -51,6 +67,26 @@ class TestDatabase(TestCase):
         self.assert_count(profile.contacts, (0, len(TEST_CITIES)))
         self.assert_count(profile.contacts, [0, len(TEST_CITIES)])
 
+    def test_count_manager_model(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_count(profile.contacts, Contact)
+
+    def test_count_manager_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_count(profile.contacts, self.user.groups)
+
+    def test_count_manager_string(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_count(profile.contacts, 'testapp.Contact')
+
     def test_count_string(self):
         self.assert_count('testapp.UserProfile', 0)
         self.assert_count('testapp.UserProfile', (0, 1))
@@ -61,6 +97,22 @@ class TestDatabase(TestCase):
         self.assert_count('testapp.UserProfile', 1)
         self.assert_count('testapp.UserProfile', (0, 1))
         self.assert_count('testapp.UserProfile', [0, 1])
+
+    def test_count_string_model(self):
+        profile = self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_count('testapp.UserProfile', User)
+
+    def test_count_string_manager(self):
+        profile = self.assert_create('testapp.UserProfile', user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_count('testapp.Contact', profile.contacts)
+
+    def test_count_string_string(self):
+        profile = self.assert_create('testapp.UserProfile', user=self.user)
+        self.assert_count('testapp.UserProfile', 'auth.User')
 
     def test_create_model(self):
         self.assert_create(UserProfile, user=self.user)
@@ -115,16 +167,56 @@ class TestDatabase(TestCase):
         self.assert_not_count(UserProfile, (1, 2))
         self.assert_not_count(UserProfile, [1, 2])
 
+    def test_not_count_model_model(self):
+        self.assert_not_count(UserProfile, User)
+
+    def test_not_count_model_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_count(UserProfile, profile.contacts)
+
+    def test_not_count_model_string(self):
+        self.assert_not_count(UserProfile, 'auth.User')
+
     def test_not_count_manager(self):
         profile = self.assert_create(UserProfile, user=self.user)
         self.assert_not_count(profile.contacts, 1)
         self.assert_not_count(profile.contacts, (1, 2))
         self.assert_not_count(profile.contacts, [1, 2])
 
+    def test_not_count_manager_model(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_count(profile.contacts, UserProfile)
+
+    def test_not_count_manager_manager(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_not_count(profile.contacts, self.user.groups)
+
+    def test_not_count_manager_string(self):
+        profile = self.assert_create(UserProfile, user=self.user)
+        self.assert_not_count(profile.contacts, 'testapp.UserProfile')
+
     def test_not_count_string(self):
         self.assert_not_count('testapp.UserProfile', 1)
         self.assert_not_count('testapp.UserProfile', (1, 2))
         self.assert_not_count('testapp.UserProfile', [1, 2])
+
+    def test_not_count_string_model(self):
+        self.assert_not_count('testapp.UserProfile', User)
+
+    def test_not_count_string_manager(self):
+        profile = self.assert_create('testapp.UserProfile', user=self.user)
+
+        for city in TEST_CITIES:
+            self.assert_create(profile.contacts, city=city)
+
+        self.assert_not_count('testapp.UserProfile', profile.contacts)
+
+    def test_not_count_string_string(self):
+        self.assert_not_count('testapp.UserProfile', 'auth.User')
 
     @TestCase.raises(AssertionError)
     def test_not_read_assertion(self):
