@@ -79,12 +79,24 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
     __metaclass__ = TestCaseMetaclass
 
-    def assert_count(self, model_or_manager, number, **kwargs):
+    def activate_form(self, formid):
+        """
+        Set form with ``formid`` as last used by twill. This method useful if
+        you got ``TwillException`` with message: ``"more than one form;
+        you must select one (use 'fv') before submitting"``.
+
+        Method supports both of numerical and string form ID.
+        """
+        browser = self.get_browser()
+        form = browser.get_form(formid)
+        browser._browser.form = form
+
+    def assert_count(self, model_or_manager, mixed, **kwargs):
         """
         Test that number of all ``model_or_manager`` objects equals to given
-        ``number``.
+        ``mixed`` value.
 
-        You can put ``number`` argument as ``tuple`` or ``list`` and
+        You can put ``mixed`` argument as ``tuple`` or ``list`` and
         ``assert_count`` checks all of its values.
 
         Method supports ``using`` keyword, so you can test count objects not
@@ -94,6 +106,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
         manager, kwargs = self._process_using(manager, kwargs)
 
         counter = manager.count()
+
+        try:
+            manager_from_mixed = self._get_manager(mixed)
+            manager_from_mixed, kwargs = \
+                self._process_using(manager_from_mixed, kwargs)
+
+            number = manager_from_mixed.count()
+        except:
+            number = mixed
 
         if isinstance(number, (list, tuple)):
             equaled = False
@@ -196,12 +217,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
                 assert False, 'Could not delete %r instance with %d pk.' % \
                                (manager.model.__name__, pk)
 
-    def assert_not_count(self, model_or_manager, number, **kwargs):
+    def assert_not_count(self, model_or_manager, mixed, **kwargs):
         """
         Test that number of all ``model_or_manager`` objects not equals to
-        given ``number``.
+        given ``mixed`` value.
 
-        You can put ``number`` argument as ``tuple`` or ``list`` and
+        You can put ``mixed`` argument as ``tuple`` or ``list`` and
         ``assert_count`` checks all of its values.
 
         Method supports ``using`` keyword, so you can test count objects not
@@ -211,6 +232,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
         manager, kwargs = self._process_using(manager, kwargs)
 
         counter = manager.count()
+
+        try:
+            manager_from_mixed = self._get_manager(mixed)
+            manager_from_mixed, kwargs = \
+                self._process_using(manager_from_mixed, kwargs)
+
+            number = manager_from_mixed.count()
+        except:
+            number = mixed
 
         if isinstance(number, (list, tuple)):
             equaled = False
@@ -356,6 +386,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         return SITE + url.lstrip('/')
 
+    def deactivate_form(self):
+        """
+        Reset last selected form by Twill.
+        """
+        self.get_browser()._browser.form = None
+
     def disable_edit_hidden_fields(self):
         """
         Disable editing hidden fields (``<input type="hidden" ... />``) by
@@ -474,7 +510,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
             self.find(self.build_url('index'))
 
         You should use all of ``build_url`` and ``find`` keyword arguments,
-        like ``args`` for ``build_url`` or ``count`` for find.
+        like ``args`` for ``build_url`` or ``count`` for ``find``.
         """
         return self.find(self.build_url(url, args, kwargs, prepend),
                          flags=flags,
@@ -627,6 +663,27 @@ class TestCase(DjangoTestCase, NoseTestCase):
             raise TwillAssertionError('Match to %r' % what)
 
         return True
+
+    def notfind_url(self, url, args=None, kwargs=None, prepend=False, flags='',
+                    flat=False, escape=False):
+        """
+        Helper method to build url and not find it on current web-page.
+
+        ::
+
+            self.notfind_url('index')
+
+        equals to::
+
+            self.notfind(self.build_url('index'))
+
+        You should use all of ``build_url`` and ``notfind`` keyword arguments,
+        like ``args`` for ``build_url`` or ``flat`` for ``notfind``.
+        """
+        return self.notfind(self.build_url(url, args, kwargs, prepend),
+                            flags=flags,
+                            flat=flat,
+                            escape=escape)
 
     def response_to_twill(self, response):
         """
