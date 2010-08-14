@@ -23,17 +23,20 @@ readme.close()
 requires = ['Django (>= 1.0)', 'nose (>= 0.11.0)', 'twill (>= 0.9)']
 version = __import__('tddspry').get_version()
 
+if kwargs:
+    install_requires = [r.replace('(', '').replace(')', '') for r in requires \
+                        if not r.startswith('Django')]
+    kwargs.update({'install_requires': install_requires})
+
 setup(name='tddspry',
       version=version,
       description='Collection of test cases and additional helpers to test ' \
                   'Django applications with nose library.',
       long_description=README,
 
-      author='42 Coffee Cups',
-      author_email='talk@42coffeecups.com',
-      maintainer='Igor Davydenko',
-      maintainer_email='playpauseandstop@gmail.com',
-      url='http://github.com/42/tddspry',
+      author='Igor Davydenko',
+      author_email='playpauseandstop@gmail.com',
+      url='http://github.com/playpauseandstop/tddspry',
 
       packages=['tddspry', 'tddspry.django', 'tddspry.django.helpers',
                 'tddspry.noseplugins'],
@@ -48,8 +51,6 @@ setup(name='tddspry',
       ],
       keywords='django nose tdd testing tests twill',
 
-      setup_requires=[r.replace('(', '').replace(')', '') for r in requires \
-                      if not r.startswith('Django')],
       requires=requires,
 
       **kwargs)
