@@ -26,7 +26,8 @@ version = __import__('tddspry').get_version()
 if kwargs:
     install_requires = [r.replace('(', '').replace(')', '') for r in requires \
                         if not r.startswith('Django')]
-    kwargs.update({'install_requires': install_requires})
+    kwargs.update({'install_requires': install_requires,
+                   'setup_requires': install_requires})
 
 setup(name='tddspry',
       version=version,
