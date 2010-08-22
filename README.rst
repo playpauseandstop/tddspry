@@ -112,7 +112,7 @@ logout and profile links exist::
 Running tests
 -------------
 
-There are two ways to run tests in your project.
+There are three ways to run tests in your project.
 
 First, using ``nosetests`` command, e.g.::
 
@@ -121,7 +121,7 @@ First, using ``nosetests`` command, e.g.::
 
 This way requires install ``tddspry`` to your system.
 
-And second, using ``django-nosetests.py`` script, e.g.::
+Second, using ``django-nosetests.py`` script, e.g.::
 
     $ django-nosetests.py --django-settings=project.settings project
     $ DJANGO_SETTINGS_MODULE=project.settings django-nosetests.py project
@@ -131,6 +131,15 @@ with ``--with-django`` option or ``NOSE_WTIH_DJANGO`` environment var), but
 does not require install ``tddspry`` to your system (it's good idea if you want
 use latest development version of ``tddspry``). Script located in ``bin/``
 directory.
+
+Third, using ``TEST_RUNNER`` setting in Django >= 1.2 (requires `django-nose app
+<http://github.com/jbalogh/django-nose>`_ installed)::
+
+    TEST_RUNNER = 'tddspry.runner.TddspryTestSuiteRunner'
+
+Then you can use Django's internal ``test`` manage command to run your tests::
+
+    $ ./manage.py test
 
 Otherwise, you can use all `power of nosetests command
 <http://somethingaboutorange.com/mrl/projects/nose/0.11.0/usage.html>`_ to run
