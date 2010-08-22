@@ -152,6 +152,8 @@ Requirements
 * `Django <http://www.djangoproject.com/>`_ up to trunk
 * `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ 0.11.0 or above
 * `twill <http://twill.idyll.org/>`_ 0.9
+* `django-nose <http://github.com/jbalogh/django-nose>`_ (optional, required
+  by test runner)
 
 Installation
 ============
