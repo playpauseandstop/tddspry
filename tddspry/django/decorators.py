@@ -23,6 +23,7 @@ def django_request(name, code=None):
 
     Decorator returns Django response.
     """
+
     def decorator(obj, url, args=None, kwargs=None, data=None, follow=False,
                   **extra):
         # Make able to use Django syntax for requests with data
@@ -85,6 +86,7 @@ def show_on_error(func, clsname=None):
 
     all output would be stored in ``/tmp/tddspry/`` dir.
     """
+
     def save_forms(filename):
         forms = browser.get_all_forms()
         stream = open(filename, 'w')

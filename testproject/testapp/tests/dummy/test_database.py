@@ -30,4 +30,3 @@ class TestAnotherDummyModel(TestCase):
     def test_update(self):
         dummy = self.assert_create(AnotherDummyModel, field=TEST_FIELD)
         self.assert_update(dummy, field=TEST_FIELD[::-1])
-

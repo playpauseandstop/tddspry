@@ -640,6 +640,7 @@ class TestHttp(TestCase):
         self.find(user.email)
 
     def test_show_on_error_save_output(self):
+
         def check(func, dirname=None):
             old_dirname = os.environ.get('TWILL_ERROR_DIR', None)
 

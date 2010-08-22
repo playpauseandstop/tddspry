@@ -347,6 +347,7 @@ class TestDatabaseDeprecated(DatabaseTestCase):
         """
         self.message = {'big': 'badda boom'}
 
+
 class TestDatabaseUnitTestStyleMethods(TestCase):
 
     def setUp(self):

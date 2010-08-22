@@ -69,7 +69,7 @@ def create_environment():
 
         verbosity = int(kwargs['verbose']) - int(kwargs['quiet'])
         logger = virtualenv.Logger([
-            (virtualenv.Logger.level_for_integer(2 - verbosity), sys.stdout)
+            (virtualenv.Logger.level_for_integer(2 - verbosity), sys.stdout),
         ])
 
         del kwargs['dest_dir'], kwargs['quiet'], kwargs['verbose']
@@ -134,6 +134,7 @@ def install_requirements():
         print('ERROR: Cannot to find requirements file at %r.' % \
               requirements_file)
         sys.exit(1)
+
 
 def main():
     """

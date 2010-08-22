@@ -11,9 +11,8 @@ else:
         'entry_points': """
         [nose.plugins.0.10]
         django = tddspry.noseplugins:DjangoPlugin
-        """
+        """,
     }
-
 
 
 readme = open(os.path.join(os.path.dirname(__file__), 'README.rst'))

@@ -93,8 +93,7 @@ class DjangoPlugin(Plugin):
             sys.stderr.write(
                 "Error: Can't find the module %r in ``sys.path``.\n(If " \
                 "the file settings.py does indeed exist, it's causing an " \
-                "ImportError somehow.)\n" % settings
-            )
+                "ImportError somehow.)\n" % settings)
         else:
             sys.stderr.write(
                 "Error: Can't find the file 'settings.py' in the current " \
@@ -102,8 +101,7 @@ class DjangoPlugin(Plugin):
                 "you've customized things.\nYou'll have to run `nosetests " \
                 "--with-django` passing it your settings module.\n(If the " \
                 "file settings.py does indeed exist, it's causing an " \
-                "ImportError somehow.)\n" % (dirname, subdirs)
-            )
+                "ImportError somehow.)\n" % (dirname, subdirs))
         sys.exit(1)
 
     def ismodule(self, obj):
