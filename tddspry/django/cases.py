@@ -11,6 +11,7 @@ from urllib import addinfourl
 
 from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.conf import settings
 from django.db.models import get_model
 from django.utils.encoding import force_unicode
 from django.utils.html import escape as real_escape
@@ -574,7 +575,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
         """
         formid = formid or 1
 
-        self.go200(url or 'auth_login')
+        self.go200(url or settings.LOGIN_URL)
 
         self.formvalue(formid, 'username', username)
         self.formvalue(formid, 'password', password)
