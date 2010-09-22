@@ -11,7 +11,10 @@ from urllib import addinfourl
 
 from django.core.management import call_command
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.conf import settings
+try:
+    from django.conf import settings
+except ImportError:
+    pass
 from django.db.models import get_model
 from django.utils.encoding import force_unicode
 from django.utils.html import escape as real_escape
@@ -30,6 +33,28 @@ from twill.utils import ResultWrapper
 
 
 __all__ = ('DatabaseTestCase', 'HttpTestCase', 'TestCase')
+
+
+class LoginContext(object):
+    def __init__(self, testcase, username, password, url=None, formid=None):
+
+        self.testcase = testcase
+        formid = formid or 1
+
+        self.testcase.go200(url or settings.LOGIN_URL)
+
+        self.testcase.formvalue(formid, 'username', username)
+        self.testcase.formvalue(formid, 'password', password)
+
+        self.testcase.submit200()
+
+        self.testcase.client.login(username=username, password=password)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        self.testcase.logout()
 
 
 class TestCaseMetaclass(NoseTestCaseMetaclass):
@@ -573,16 +598,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         Also login to Django test client.
         """
-        formid = formid or 1
-
-        self.go200(url or settings.LOGIN_URL)
-
-        self.formvalue(formid, 'username', username)
-        self.formvalue(formid, 'password', password)
-
-        self.submit200()
-
-        self.client.login(username=username, password=password)
+        return LoginContext(self, username, password, url, formid)
 
     def login_to_admin(self, username, password):
         """

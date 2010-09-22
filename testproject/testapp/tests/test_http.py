@@ -349,6 +349,19 @@ class TestHttp(TestCase):
         self.find(user.username)
         self.find(user.email)
 
+    def test_login_context(self):
+        self.go200('/profile/')
+        self.url('/login/\?next=/profile/')
+
+        user = self.helper('create_user')
+        with self.login(USERNAME, PASSWORD):
+            self.go200('/profile/')
+            self.find(user.username)
+            self.find(user.email)
+
+        self.go200('/profile/')
+        self.url('/login/\?next=/profile/')
+
     def test_login_and_get(self):
         user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
