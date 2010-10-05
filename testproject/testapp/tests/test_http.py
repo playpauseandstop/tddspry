@@ -726,6 +726,11 @@ class TestHttp(TestCase):
 
         self.find("request.GET\['query'\] = string")
 
+    def test_info(self):
+        response = self.get200('/')
+        self.info()
+        response = self.post200('/')
+        self.info()
 
 class TestHttpDeprecated(HttpTestCase):
 

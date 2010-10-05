@@ -723,7 +723,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
         urllib_response.msg = u'OK'
         urllib_response.seek = urllib_response.fp.seek
 
-        browser._browser._factory.set_response(urllib_response)
+        browser._browser._set_response(urllib_response, False)
         browser.result = ResultWrapper(response.status_code,
                                        url,
                                        response.content)
