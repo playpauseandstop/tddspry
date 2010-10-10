@@ -18,6 +18,12 @@ def edit_hidden_fields(request):
     return render_to_response('testapp/edit_hidden_fields.html', context)
 
 
+def error(request):
+    """
+    If view does not return ``HttpResponse`` Django raises an error.
+    """
+
+
 def fast_redirect(request):
     next = request.GET.get('next', '/')
     permanent = strtobool(request.GET.get('permanent', 'no'))
