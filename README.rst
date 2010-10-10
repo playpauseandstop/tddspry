@@ -195,8 +195,8 @@ Sending bugs and feature requests
 =================================
 
 Found a bug? Have a good idea for improving tddspry? Head over to `tddspry's
-trac <http://trac.khavr.com/project/tddspry>`_ to create a new ticket or to
-`GitHub`_ to create a new fork.
+trac <http://trac.khavr.com/agiloprojects/tddspry>`_ to create a new ticket or
+to `GitHub`_ to create a new fork.
 
 Contacts
 ========

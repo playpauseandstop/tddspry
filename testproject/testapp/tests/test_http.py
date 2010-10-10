@@ -118,6 +118,40 @@ class TestHttp(TestCase):
 
         self.submit200(url='multiply_forms')
 
+    def test_disable_debug(self):
+        self.disable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.find('<p>Custom error page</p>')
+
+    def test_disable_enable_debug(self):
+        self.disable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.find('<p>Custom error page</p>')
+
+        self.enable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.notfind('<p>Custom error page</p>')
+
+    def test_enable_debug(self):
+        self.enable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.notfind('<p>Custom error page</p>')
+
+    def test_enable_disable_debug(self):
+        self.enable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.notfind('<p>Custom error page</p>')
+
+        self.disable_debug()
+        self.go('server_error')
+        self.code(500)
+        self.find('<p>Custom error page</p>')
+
     def test_get(self):
         self.get('/')
         self.code(200)

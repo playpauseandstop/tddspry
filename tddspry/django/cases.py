@@ -418,12 +418,21 @@ class TestCase(DjangoTestCase, NoseTestCase):
         """
         self.get_browser()._browser.form = None
 
+    def disable_debug(self):
+        """
+        Disable ``DEBUG`` mode for Django project (set ``settings.DEBUG`` var
+        to ``False``).
+
+        To enable use ``TestCase.enable_debug`` method.
+        """
+        self.enable_debug(False)
+
     def disable_edit_hidden_fields(self):
         """
         Disable editing hidden fields (``<input type="hidden" ... />``) by
         Twill browser (as by default in twill).
 
-        To enable use ``HttpTestCase.enable_edit_hidden_fields`` method.
+        To enable use ``TestCase.enable_edit_hidden_fields`` method.
         """
         self.enable_edit_hidden_fields(False)
 
@@ -431,16 +440,26 @@ class TestCase(DjangoTestCase, NoseTestCase):
         """
         Disable auto-redirects in Twill tests.
 
-        To enable use ``HttpTestCase.enable_redirect`` method.
+        To enable use ``TestCase.enable_redirect`` method.
         """
         self.enable_redirect(False)
+
+    def enable_debug(self, flag=True):
+        """
+        Enable ``DEBUG`` mode for Django project (set ``settings.DEBUG`` var
+        to ``True``).
+
+        To disable use ``TestCase.disable_debug`` method.
+        """
+        self.old_DEBUG = settings.DEBUG
+        settings.DEBUG = flag
 
     def enable_edit_hidden_fields(self, flag=True):
         """
         Enable editing hidden fields (``<input type="hidden" ... />``) by
         Twill browser.
 
-        To disable use ``HttpTestCase.disable_edit_hidden_fields`` method.
+        To disable use ``TestCase.disable_edit_hidden_fields`` method.
         """
         self.config('readonly_controls_writeable', flag)
 
@@ -448,7 +467,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
         """
         Enable auto-redirects in Twill tests (as by default in twill).
 
-        To disable use ``HttpTestCase.disable_redirect`` method.
+        To disable use ``TestCase.disable_redirect`` method.
         """
         self.config('acknowledge_equiv_refresh', int(flag))
 
@@ -803,6 +822,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
             return model_or_manager._default_manager
 
         return model_or_manager
+
+    def _post_teardown(self):
+        """
+        Renew ``settings.DEBUG`` value if needed.
+        """
+        super(TestCase, self)._post_teardown()
+
+        if hasattr(self, 'old_DEBUG'):
+            settings.DEBUG = self.old_DEBUG
 
     def _process_using(self, manager, kwargs):
         """
