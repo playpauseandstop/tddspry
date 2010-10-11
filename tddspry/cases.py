@@ -1,3 +1,5 @@
+import re
+
 try:
     from unittest2 import TestCase as BaseTestCase
 except ImportError:
@@ -9,7 +11,7 @@ try:
 except ImportError:
     tools = type('FakeNoseToolsModule', (object, ), {'__all__': []})
 
-from tddspry.utils import camelcase_to_underscore, underscore_to_camelcase
+from tddspry.utils import *
 
 
 __all__ = ('NoseTestCase', 'TestCase')
@@ -116,6 +118,83 @@ class TestCase(BaseTestCase):
         make this in place of you.
         """
         return self.assert_equal(unicode(first), unicode(second), message)
+
+    def find_in(self, what, where, flags=None, count=None, escape=False,
+                flat=False):
+        """
+        Try to find ``what`` text in ``where``.
+
+        Method supports both of regular expression matching (with
+        ``re.finditer`` function) and ``flat`` string matching (with ``what in
+        where`` expression) modes. To enable flat mode call ``find_in`` with
+        ``flat=True``.
+
+        If ``what`` string not found, ``AssertionError`` would be raised.
+
+        Specify ``count`` to test that ``what`` occurs ``count`` times in the
+        ``where`` text.
+
+        In regular expression mode you can specify ``flags`` supported by
+        ``re`` module in text format, like ``'i'`` or ``'s'`` instead of
+        ``re.I`` or ``re.S``. If multiple ``flags`` specified they would
+        connected with ``|`` (unary OR), e.g. ``flags='iu'`` would be sent to
+        ``re.finditer`` as ``flags=re.I | re.U``.
+
+        In reqular expression mode you also can escape ``what`` text with
+        ``re.escape`` method. It's useful if your search string contains of
+        regular expression metacharacters.
+
+        All non-overlapping matches of ``what`` in ``where`` would be stored
+        as list of ``MatchObject`` instances in ``_found`` private var.
+        """
+        if flat:
+            found = None
+            real_count = where.count(what)
+        else:
+            if escape:
+                what = re.escape(what)
+
+            regexp = re.compile(what, process_re_flags(flags))
+            found = filter(lambda matched: matched, regexp.finditer(where))
+            real_count = len(found)
+
+        if found:
+            setattr(self, '_found', found)
+        elif not found and hasattr(self, '_found'):
+            delattr(self, '_found')
+
+        if count is not None:
+            assert count == real_count, 'Matched to %r %d times, not %d ' \
+                                        'times. Text to search: %r' % \
+                                        (what, real_count, count, where)
+        else:
+            assert real_count, 'No match to %r in %r' % (what, where)
+
+        return True
+
+    def notfind_in(self, what, where, flags=None, escape=False, flat=False):
+        """
+        Assert that ``what`` not found in ``where``.
+
+        This method is negate version of ``TestCase.find_in`` and supports
+        all keywords and modes from it exclude of ``count``. Also in regular
+        expression mode ``re.search`` function used instead of ``re.finditer``
+        cause we don't need to store matched groups.
+
+        If ``what`` string found, ``AssertionError`` would be raised.
+        """
+        message = 'Matched %r in %r' % (what, where)
+
+        if not flat:
+            if escape:
+                what = re.escape(what)
+
+            regexp = re.compile(what, process_re_flags(flags))
+            assert not regexp.search(where), message
+        else:
+            assert not what in where, message
+
+        return True
 
 
 NoseTestCase = TestCase
