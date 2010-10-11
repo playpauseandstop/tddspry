@@ -36,6 +36,9 @@ def raise_exception():
 
 class TestNose(TestCase):
 
+    def setup(self):
+        self.has_setup = True
+
     def test_find_in(self):
         self.find_in('Text', 'Text in (valid) parentheses')
 
@@ -179,6 +182,9 @@ class TestNose(TestCase):
     @TestCase.raises(ValueError)
     def test_raises_failed(self):
         raise_exception()
+
+    def test_setup(self):
+        self.assert_true(hasattr(self, 'has_setup'))
 
     @TestCase.timed(10)
     def test_timed(self):
