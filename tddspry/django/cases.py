@@ -64,13 +64,6 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
             if 'test' in attr_name and callable(attr_value):
                 attrs[attr_name] = show_on_error(attr_value, clsname=name)
 
-            # Add nose styled names of setup and teardown methods to cls attrs
-            if attr_name == 'setup' and not 'setUp' in attrs:
-                attrs['setUp'] = attr_value
-
-            if attr_name == 'teardown' and not 'tearDown' in attrs:
-                attrs['tearDown'] = attr_value
-
         # Add twill commands to testcase as staticmethods
         for attr in commands.__all__:
             if attr in ('find', 'go', 'notfind', 'run', 'url'):
