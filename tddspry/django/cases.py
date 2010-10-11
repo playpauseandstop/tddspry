@@ -36,8 +36,8 @@ __all__ = ('DatabaseTestCase', 'HttpTestCase', 'TestCase')
 
 
 class LoginContext(object):
-    def __init__(self, testcase, username, password, url=None, formid=None):
 
+    def __init__(self, testcase, username, password, url=None, formid=None):
         self.testcase = testcase
         formid = formid or 1
 
