@@ -17,7 +17,7 @@ from tddspry.utils import *
 __all__ = ('NoseTestCase', 'TestCase')
 
 
-class TestCaseMetaclass(type):
+class BaseTestCaseMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         for base in bases:
@@ -48,6 +48,20 @@ class TestCaseMetaclass(type):
             attrs[attr] = staticmethod(attrs[attr])
 
         return type.__new__(cls, name, bases, attrs)
+
+
+class TestCaseMetaclass(BaseTestCaseMetaclass):
+
+    def __new__(cls, name, bases, attrs):
+        for attr_name, attr_value in attrs.items():
+            # Add nose styled names of setup and teardown methods to cls attrs
+            if attr_name == 'setup' and not 'setUp' in attrs:
+                attrs['setUp'] = attr_value
+
+            if attr_name == 'teardown' and not 'tearDown' in attrs:
+                attrs['tearDown'] = attr_value
+
+        return super(TestCaseMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
 class TestCase(BaseTestCase):
