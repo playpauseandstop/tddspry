@@ -132,10 +132,10 @@ does not require install ``tddspry`` to your system (it's good idea if you want
 use latest development version of ``tddspry``). Script located in ``bin/``
 directory.
 
-Third, using ``TEST_RUNNER`` setting in Django >= 1.2 (requires `django-nose app
-<http://github.com/jbalogh/django-nose>`_ installed)::
+Third, using ``TEST_RUNNER`` setting in Django >= 1.2 (requires `django-nose
+app <http://github.com/jbalogh/django-nose>`_ installed)::
 
-    TEST_RUNNER = 'tddspry.runner.TddspryTestSuiteRunner'
+    TEST_RUNNER = 'tddspry.django.runner.TestSuiteRunner'
 
 Then you can use Django's internal ``test`` manage command to run your tests::
 
@@ -152,7 +152,7 @@ Requirements
 * `Django <http://www.djangoproject.com/>`_ up to trunk
 * `nose <http://somethingaboutorange.com/mrl/projects/nose/>`_ 0.11.0 or above
 * `twill <http://twill.idyll.org/>`_ 0.9
-* `django-nose <http://github.com/jbalogh/django-nose>`_ (optional, required
+* `django-nose <http://github.com/jbalogh/django-nose>`_ (*optional*, required
   by test runner)
 
 Installation
