@@ -64,15 +64,15 @@ Check that ``username`` field of standart ``auth.User`` model is unique::
 
         def test_unique(self):
             self.assert_create(User,
-                            username=TEST_USERNAME,
-                            password=TEST_PASSWORD,
-                            email=TEST_EMAIL)
+                               username=TEST_USERNAME,
+                               password=TEST_PASSWORD,
+                               email=TEST_EMAIL)
             self.assert_raises(Exception,
-                            self.assert_create,
-                            User,
-                            username=TEST_USERNAME,
-                            password=TEST_PASSWORD,
-                            email=TEST_EMAIL)
+                               self.assert_create,
+                               User,
+                               username=TEST_USERNAME,
+                               password=TEST_PASSWORD,
+                               email=TEST_EMAIL)
 
 Http (twill) test
 ~~~~~~~~~~~~~~~~~
