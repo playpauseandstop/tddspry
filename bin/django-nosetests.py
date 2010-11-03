@@ -5,6 +5,7 @@ Django projects without installed ``setuptools``.
 """
 
 import os
+import sys
 
 import nose
 from nose.plugins.manager import EntryPointPluginManager
@@ -12,7 +13,13 @@ from nose.plugins.manager import EntryPointPluginManager
 from tddspry.noseplugins import DjangoPlugin
 
 
-if __name__ == '__main__':
+def main():
+    # First of all add current work directory to ``sys.path`` if it not there
+    cwd = os.getcwd()
+
+    if not cwd in sys.path:
+        sys.path.append(cwd)
+
     # Try to find that DjangoPlugin loaded from entry_points or not
     found, kwargs = False, {}
 
@@ -33,3 +40,7 @@ if __name__ == '__main__':
 
     # Run ``nosetests``
     nose.main(**kwargs)
+
+
+if __name__ == '__main__':
+    main()
