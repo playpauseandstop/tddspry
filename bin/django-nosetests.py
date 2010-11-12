@@ -17,7 +17,7 @@ def main():
     # First of all add current work directory to ``sys.path`` if it not there
     cwd = os.getcwd()
 
-    if not cwd in sys.path:
+    if not cwd in sys.path or not cwd.strip(os.sep) in sys.path:
         sys.path.append(cwd)
 
     # Try to find that DjangoPlugin loaded from entry_points or not
