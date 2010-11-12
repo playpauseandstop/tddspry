@@ -812,6 +812,29 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         return self._url(should_be)
 
+    def _apply_disabled_apps(self):
+        """
+        Remove apps from ``disabled_apps`` attribute and/or from
+        ``TEST_DISABLED_APPS`` settings var.
+        """
+        disabled_apps = getattr(settings, 'TEST_DISABLED_APPS', [])
+
+        if not hasattr(self, 'disabled_apps'):
+            self.disabled_apps = disabled_apps
+        else:
+            self.disabled_apps = list(self.disabled_apps)
+            self.disabled_apps.extend(disabled_apps)
+
+        if not self.disabled_apps:
+            return
+
+        self.old_INSTALLED_APPS = settings.INSTALLED_APPS
+        settings.INSTALLED_APPS = []
+
+        for app in self.old_INSTALLED_APPS:
+            if not app in self.disabled_apps:
+                settings.INSTALLED_APPS.append(app)
+
     def _apply_xhtml(self):
         """
         Apply html mode for default Twill browser only if needed.
@@ -854,10 +877,15 @@ class TestCase(DjangoTestCase, NoseTestCase):
         if hasattr(self, 'old_DEBUG'):
             settings.DEBUG = self.old_DEBUG
 
+        if hasattr(self, 'old_INSTALLED_APPS'):
+            settings.INSTALLED_APPS = self.old_INSTALLED_APPS
+
     def _pre_setup(self):
         """
-        Enable html mode for default Twill browser if needed.
+        Remove disabled apps from project installed and enable html mode for
+        default Twill browser if needed.
         """
+        self._apply_disabled_apps()
         super(TestCase, self)._pre_setup()
         self._apply_xhtml()
 
