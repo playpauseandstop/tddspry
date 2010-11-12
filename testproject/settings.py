@@ -10,9 +10,6 @@ sys.path.append(DIRNAME)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-# Test settings
-TDDSPRY_TEST_CASE = 'django.test.TestCase'
-
 # Authentication settings
 AUTH_PROFILE_MODULE = 'testapp.UserProfile'
 LOGIN_URL = '/login/'
@@ -41,6 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 
     'registration',
+
+    'testproject.disabled.attr',
+    'testproject.disabled.setting',
 
     'testproject.testapp',
 )
@@ -74,6 +74,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 TEMPLATE_DIRS = (
     os.path.join(DIRNAME, 'templates'),
 )
+
+# Test settings
+TDDSPRY_TEST_CASE = 'django.test.TestCase'
+TEST_DISABLED_APPS = ('testproject.disabled.setting', )
 
 # Other **Django** settings
 ROOT_URLCONF = 'testproject.urls'
