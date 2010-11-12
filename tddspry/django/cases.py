@@ -26,7 +26,7 @@ from tddspry.django.decorators import django_request, show_on_error
 from tddspry.django.settings import SITE, DjangoTestCase
 
 from twill import commands
-from twill.commands import browser, _parseFindFlags
+from twill.commands import _parseFindFlags
 from twill.errors import TwillAssertionError
 from twill.extensions.check_links import check_links
 from twill.utils import ResultWrapper
@@ -47,7 +47,6 @@ class LoginContext(object):
         self.testcase.formvalue(formid, 'password', password)
 
         self.testcase.submit200()
-
         self.testcase.client.login(username=username, password=password)
 
     def __enter__(self):
@@ -556,6 +555,24 @@ class TestCase(DjangoTestCase, NoseTestCase):
                          count=count,
                          escape=escape)
 
+    def fix_xhtml(self):
+        """
+        If Twill fails when there is xhtml output, call these method before
+        first Twill function, say in ``TestCase.setup``.
+
+        Alternate, you should enable ``xhtml`` attribute of your inherited
+        ``TestCase``, e.g.::
+
+            class TestHttp(TestCase):
+
+                xhtml = True
+
+                ...
+
+        This also enables html mode for default Twill browser.
+        """
+        self.get_browser()._browser._factory.is_html = True
+
     def follow200(self, what, url=None, args=None, kwargs=None,
                   check_links=False):
         """
@@ -602,6 +619,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
     def _get_helpers(self):
         return helpers
+
     helpers = property(_get_helpers)
 
     def login(self, username, password, url=None, formid=None):
@@ -735,10 +753,12 @@ class TestCase(DjangoTestCase, NoseTestCase):
         urllib_response.msg = u'OK'
         urllib_response.seek = urllib_response.fp.seek
 
-        browser._browser._set_response(urllib_response, False)
-        browser.result = ResultWrapper(response.status_code,
-                                       url,
-                                       response.content)
+        self.get_browser()._browser._set_response(urllib_response, False)
+        self.get_browser().result = ResultWrapper(response.status_code,
+                                                  url,
+                                                  response.content)
+
+        self._apply_xhtml()
 
     def submit200(self, submit_button=None, url=None, check_links=False):
         """
@@ -774,8 +794,10 @@ class TestCase(DjangoTestCase, NoseTestCase):
         urllib_response.msg = u'OK'
         urllib_response.seek = urllib_response.fp.seek
 
-        browser._browser._factory.set_response(urllib_response)
-        browser.result = ResultWrapper(status_code, url, text)
+        self.get_browser()._browser._factory.set_response(urllib_response)
+        self.get_browser().result = ResultWrapper(status_code, url, text)
+
+        self._apply_xhtml()
 
     def url(self, url, args=None, kwargs=None, regexp=True):
         """
@@ -789,6 +811,36 @@ class TestCase(DjangoTestCase, NoseTestCase):
             should_be += '$'
 
         return self._url(should_be)
+
+    def _apply_disabled_apps(self):
+        """
+        Remove apps from ``disabled_apps`` attribute and/or from
+        ``TEST_DISABLED_APPS`` settings var.
+        """
+        disabled_apps = getattr(settings, 'TEST_DISABLED_APPS', [])
+
+        if not hasattr(self, 'disabled_apps'):
+            self.disabled_apps = disabled_apps
+        else:
+            self.disabled_apps = list(self.disabled_apps)
+            self.disabled_apps.extend(disabled_apps)
+
+        if not self.disabled_apps:
+            return
+
+        self.old_INSTALLED_APPS = settings.INSTALLED_APPS
+        settings.INSTALLED_APPS = []
+
+        for app in self.old_INSTALLED_APPS:
+            if not app in self.disabled_apps:
+                settings.INSTALLED_APPS.append(app)
+
+    def _apply_xhtml(self):
+        """
+        Apply html mode for default Twill browser only if needed.
+        """
+        if hasattr(self, 'xhtml') and self.xhtml:
+            self.fix_xhtml()
 
     def _get_instance_and_pk(self, mixed):
         """
@@ -824,6 +876,18 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         if hasattr(self, 'old_DEBUG'):
             settings.DEBUG = self.old_DEBUG
+
+        if hasattr(self, 'old_INSTALLED_APPS'):
+            settings.INSTALLED_APPS = self.old_INSTALLED_APPS
+
+    def _pre_setup(self):
+        """
+        Remove disabled apps from project installed and enable html mode for
+        default Twill browser if needed.
+        """
+        self._apply_disabled_apps()
+        super(TestCase, self)._pre_setup()
+        self._apply_xhtml()
 
     def _process_using(self, manager, kwargs):
         """
