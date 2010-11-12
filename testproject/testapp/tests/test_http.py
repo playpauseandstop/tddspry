@@ -876,3 +876,11 @@ class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
         response = self.client.get('/')
         self.assert_template_used(response, 'base.html')
         self.assert_template_used(response, 'testapp/index.html')
+
+
+class TestXhtmlOutput(TestCase):
+
+    xhtml = True
+
+    def test_page(self):
+        self.assert_true(self.get_browser()._browser._factory.is_html)
