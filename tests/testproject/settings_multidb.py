@@ -15,10 +15,7 @@ INSTALLED_APPS += (
 )
 
 
-# Try to loading settings from ``settings_mysql_local.py`` file
 try:
-    from settings_mysql_local import *
+    from settings_multidb_local import *
 except ImportError, e:
-    sys.stderr.write('settings_mysql_local.py not found. Using MySQL ' \
-                     'default settings\n')
-    sys.stderr.write('%s: %s\n\n' % (e.__class__.__name__, e))
+    pass

@@ -13,6 +13,9 @@ This project bootstraped with virtualenv_ and pip_ by::
 
 You need to have virtualenv_ and pip_ both installed on your system.
 
+Also you need to have GCC and MySQL devel pacakage installed on your system to
+compile and install ``MySQL-python`` package.
+
 .. note:: All project requirements, such as nose_ or twill_ would be
    downloaded on project bootstrap, tddspry would be installed from temporary
    archive ``sdist``'ed before bootstrap from actual repo.
