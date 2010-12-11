@@ -13,7 +13,7 @@ tddspry.egg-info/*
 MANIFEST
 pip-log.txt
 
-testproject/env/*
-testproject/env*/*
-testproject/bootstrap.cfg
-testproject/settings_*local.py
+tests/bootstrap.cfg
+tests/env/*
+tests/env*/*
+tests/testproject/settings_*local.py
