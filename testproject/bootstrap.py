@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """
 Bootstrap project using virtualenv_ and pip_. This script will create new
-virtual environment if needed and will install all requirements there. Also
-generates ``Makefile`` from template.
+virtual environment if needed and will install all requirements there.
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _pip: http://pypi.python.org/pypi/pip
@@ -37,12 +36,12 @@ except ImportError, e:
 # Default configuration for bootstrap script. You may override configuration
 # in ``bootstrap.cfg`` file.
 CONFIG = {
-    'main': {
-        'makefile_template': 'Makefile.template',
-    },
     'pip': {
         'download_cache': '%(DEST_DIR)s/src',
         'requirements': 'requirements.txt',
+        'quiet': False,
+        'upgrade': True,
+        'verbose': False,
     },
     'virtualenv': {
         'clear': False,
@@ -81,34 +80,6 @@ def create_environment():
               CONFIG['virtualenv']['dest_dir'])
 
 
-def create_makefile():
-    print('\nStep 3. Create Makefile from template')
-
-    template = os.path.join(DIRNAME, CONFIG['main']['makefile_template'])
-
-    if os.path.isfile(template):
-        handler = open(template, 'r')
-        content = handler.read()
-        handler.close()
-
-        makefile = os.path.join(DIRNAME, 'Makefile')
-
-        try:
-            handler = open(makefile, 'w')
-        except IOError, e:
-            print('ERROR: %s' % e)
-            print('ERROR: Cannot to write into %r. Please, check ' \
-                  'permissions to write in %r.' % (makefile, DIRNAME))
-        else:
-            handler.write(content % template_context())
-            handler.close()
-
-        print('Makefile successfully created.')
-    else:
-        print('ERROR: Cannot to find makefile at %r.' % makefile)
-        sys.exit(1)
-
-
 def install_requirements():
     print('\nStep 2. Install requirements')
 
@@ -124,6 +95,10 @@ def install_requirements():
             download_cache = \
                 CONFIG['pip']['download_cache'] % template_context()
             args.extend(['--download-cache', download_cache])
+
+        for name in ('quiet', 'upgrade', 'verbose'):
+            if CONFIG['pip'][name]:
+                args.append('--' + name)
 
         try:
             pip.main(args)
@@ -152,9 +127,6 @@ def main():
     # Install all requirements to this virtual environment if possible
     install_requirements()
 
-    # Create Makefile from template if possible
-    create_makefile()
-
 
 def read_config(config_file):
     global CONFIG
@@ -171,7 +143,10 @@ def read_config(config_file):
     print('Load bootstrap configuration from %r.' % config_file)
 
     for section in ('pip', 'virtualenv'):
-        items = config.items(section)
+        try:
+            items = config.items(section)
+        except ConfigParser.NoSectionError:
+            continue
 
         for key in CONFIG[section].keys():
             if key in items:
