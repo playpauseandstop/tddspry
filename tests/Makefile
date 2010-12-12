@@ -11,7 +11,7 @@ manage=$(python) $(project)/manage.py
 settings=$(project).settings
 
 # Settings for ``distclean`` target
-ENV?=env
+VENV?=env*
 
 # Settings for ``runserver`` target
 IP?=0.0.0.0
@@ -25,14 +25,13 @@ TEST_SETTINGS?=$(settings)
 TWILL_ERROR_DIR?=$(errors)
 
 all: test
-alltest: smarttest test test_multidb test_mysql test_sqlite
 
 clean:
 	find . -name '*.pyc' -delete
 
-fullclean: clean
+distclean: clean
 	find . -name 'pip-log.txt' -delete
-	rm -rf $(ENV)/
+	rm -rf $(VENV)/
 	rm -f $(project).db
 
 manage:

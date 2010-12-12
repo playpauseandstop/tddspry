@@ -11,10 +11,8 @@ virtual environment if needed and will install all requirements there.
 import ConfigParser
 import copy
 import os
-import shutil
+import re
 import sys
-
-from distutils.core import run_setup
 
 
 try:
@@ -38,7 +36,6 @@ except ImportError, e:
 CONFIG = {
     'pip': {
         'download_cache': '%(DEST_DIR)s/src',
-        'requirements': 'requirements.txt',
         'quiet': False,
         'upgrade': True,
         'verbose': False,
@@ -52,68 +49,112 @@ CONFIG = {
         'verbose': 0,
     },
 }
+
+# Default requirements file and pattern to match all requirements files
+REQUIREMENTS_FILE = 'requirements.txt'
+REQUIREMENTS_REGEXP = re.compile(r'^requirements(?P<suffix>.*).txt$')
+
+# Convert relative path to absolute
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
+rel = lambda *x: os.path.abspath(os.path.join(DIRNAME, *x))
 
 
-def create_environment():
-    dest_dir = os.path.join(DIRNAME, CONFIG['virtualenv']['dest_dir'])
-    dest_dir = os.path.abspath(dest_dir)
+class Environment(object):
+    """
+    Cumulative class to create new virtual environment and install all
+    requirements there.
+    """
+    def __init__(self, suffix=None, filename=None):
+        # Initialize environment
+        self.suffix = suffix is None and self.suffix_from_filename(filename) \
+                                     or suffix
+        print('Working environment is %r' % os.path.basename(self.dest_dir))
 
-    # Create new virtual environment
-    print('Step 1. Create new virtual environment')
+    def create(self):
+        # Create new virtual environment
+        print('\nStep 1. Create new virtual environment')
 
-    if not os.path.isdir(dest_dir) or CONFIG['virtualenv']['clear']:
-        kwargs = copy.copy(CONFIG['virtualenv'])
-        kwargs['home_dir'] = kwargs['dest_dir']
+        if not os.path.isdir(self.dest_dir) or CONFIG['virtualenv']['clear']:
+            kwargs = copy.copy(CONFIG['virtualenv'])
+            kwargs['home_dir'] = self.dest_dir
 
-        verbosity = int(kwargs['verbose']) - int(kwargs['quiet'])
-        logger = virtualenv.Logger([
-            (virtualenv.Logger.level_for_integer(2 - verbosity), sys.stdout),
-        ])
+            verbosity = int(kwargs['verbose']) - int(kwargs['quiet'])
+            logger = virtualenv.Logger([
+                (virtualenv.Logger.level_for_integer(2 - verbosity),
+                 sys.stdout),
+            ])
 
-        del kwargs['dest_dir'], kwargs['quiet'], kwargs['verbose']
+            del kwargs['dest_dir'], kwargs['quiet'], kwargs['verbose']
 
-        virtualenv.logger = logger
-        virtualenv.create_environment(**kwargs)
-    else:
-        print('Virtual environment %r already exists.' % \
-              CONFIG['virtualenv']['dest_dir'])
+            virtualenv.logger = logger
+            virtualenv.create_environment(**kwargs)
+        else:
+            print('Virtual environment %r already exists.' % self.dest_dir)
 
+    @property
+    def dest_dir(self):
+        if not hasattr(self, '_dest_dir'):
+            dest_dir = CONFIG['virtualenv']['dest_dir']
+            if self.suffix:
+                dest_dir += self.suffix
+            setattr(self, '_dest_dir', rel(dest_dir))
+        return getattr(self, '_dest_dir')
 
-def install_requirements():
-    print('\nStep 2. Install requirements')
+    def install_requirements(self):
+        print('\nStep 2. Install requirements')
 
-    # Install requirements from ``requirements.txt`` file
-    requirements_file = os.path.join(DIRNAME, CONFIG['pip']['requirements'])
+        # Install requirements from necessary requirements file
+        if os.path.isfile(self.requirements_file):
+            args = ['install',
+                    '-E', os.path.basename(self.dest_dir),
+                    '-r', os.path.basename(self.requirements_file)]
 
-    if os.path.isfile(requirements_file):
-        args = ['install',
-                '-E', CONFIG['virtualenv']['dest_dir'],
-                '-r', CONFIG['pip']['requirements']]
+            if CONFIG['pip']['download_cache']:
+                download_cache = \
+                    CONFIG['pip']['download_cache'] % self.template_context
+                args.extend(['--download-cache', download_cache])
 
-        if CONFIG['pip']['download_cache']:
-            download_cache = \
-                CONFIG['pip']['download_cache'] % template_context()
-            args.extend(['--download-cache', download_cache])
+            for name in ('quiet', 'upgrade', 'verbose'):
+                if CONFIG['pip'][name]:
+                    args.append('--' + name)
 
-        for name in ('quiet', 'upgrade', 'verbose'):
-            if CONFIG['pip'][name]:
-                args.append('--' + name)
+            try:
+                pip.main(args)
+            except SystemExit, e:
+                if e.code:
+                    raise e
+        else:
+            print('ERROR: Cannot to find requirements file at %r.' % \
+                  self.requirements_file)
+            sys.exit(1)
 
+    @property
+    def requirements_file(self):
+        if not hasattr(self, '_requirements_file'):
+            requirements_file, ext = os.path.splitext(REQUIREMENTS_FILE)
+            if self.suffix:
+                requirements_file += self.suffix
+            requirements_file += ext
+            setattr(self, '_requirements_file', rel(requirements_file))
+        return getattr(self, '_requirements_file')
+
+    def suffix_from_filename(self, filename):
+        if filename is None:
+            return u''
         try:
-            pip.main(args)
-        except SystemExit, e:
-            if e.code:
-                raise e
-    else:
-        print('ERROR: Cannot to find requirements file at %r.' % \
-              requirements_file)
-        sys.exit(1)
+            return REQUIREMENTS_REGEXP.findall(filename)[0]
+        except IndexError:
+            print('Cannot init new environment using %r filename.' % filename)
+            sys.exit(1)
+
+    @property
+    def template_context(self):
+        return {'DEST_DIR': self.dest_dir}
 
 
 def main():
     """
-    Create new virtualenv and install all pip requirements there.
+    Create new virtual environments and install pip requirements there.
     """
     # Change directory to current
     os.chdir(DIRNAME)
@@ -121,18 +162,32 @@ def main():
     # Read configuration values from ``bootstrap.cfg`` file if possible
     read_config('bootstrap.cfg')
 
-    # Parse destination directory for new virtual environment
-    create_environment()
+    # Search over current directory files
+    filenames = sorted(os.listdir(DIRNAME))
+    env = None
 
-    # Install all requirements to this virtual environment if possible
-    install_requirements()
+    for filename in filenames:
+        if not REQUIREMENTS_REGEXP.match(filename):
+            continue
+
+        if env is not None:
+            print('\n%s\n') % '-' * 79
+
+        # Initialize environment
+        env = Environment(filename=filename)
+
+        # Try to create new virtual environment
+        env.create()
+
+        # Install all requirements to this virtual environment if possible
+        env.install_requirements()
 
 
 def read_config(config_file):
     global CONFIG
 
     if not config_file.startswith(DIRNAME):
-        config_file = os.path.abspath(os.path.join(DIRNAME, config_file))
+        config_file = rel(config_file)
 
     if not os.path.isfile(config_file):
         return
@@ -151,10 +206,6 @@ def read_config(config_file):
         for key in CONFIG[section].keys():
             if key in items:
                 CONFIG[section][key] = items[key]
-
-
-def template_context():
-    return {'DEST_DIR': CONFIG['virtualenv']['dest_dir']}
 
 
 if __name__ == '__main__':
