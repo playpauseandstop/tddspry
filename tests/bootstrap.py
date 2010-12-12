@@ -203,10 +203,9 @@ def read_config(config_file):
         except ConfigParser.NoSectionError:
             continue
 
-        for key in CONFIG[section].keys():
-            if key in items:
-                CONFIG[section][key] = items[key]
-
+        for key, value in items:
+            if key in CONFIG[section]:
+                CONFIG[section][key] = value
 
 if __name__ == '__main__':
     main()

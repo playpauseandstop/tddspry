@@ -6,9 +6,9 @@
 #
 
 DIRNAME=`dirname $(readlink -f $0)`
-target=$1
+target="$1"
 
-if [ -z $target ]
+if [ -z "$target" ]
 then
     target=test
 fi
@@ -21,5 +21,5 @@ do
     fi
 
     source "$dir/bin/activate"
-    make $target
+    make -C "$DIRNAME" "$target"
 done
