@@ -6,18 +6,28 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    (r'^accounts/', include('registration.backends.default.urls')),
+try:
+    import registration.backends
+except ImportError:
+    urlpatterns = patterns('',
+        (r'^accounts/', include('registration.urls')),
+    )
+else:
+    urlpatterns = patterns('',
+        (r'^accounts/', include('registration.backends.default.urls')),
+    )
+
+urlpatterns += patterns('',
     (r'^', include('testproject.testapp.urls')),
 )
 
 if VERSION >= (1, 1):
     urlpatterns += patterns('',
-        (r'^admin/*', include(admin.site.urls)),
+        (r'^admin/', include(admin.site.urls)),
     )
 else:
     urlpatterns += patterns('',
-        (r'^admin/*', admin.site.root),
+        (r'^admin/(.*)', admin.site.root),
     )
 
 if settings.DEBUG:

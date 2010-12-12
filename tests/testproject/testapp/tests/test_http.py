@@ -403,9 +403,13 @@ class TestHttp(TestCase):
         user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
 
-        self.get200('/profile/')
-        self.find(user.username)
-        self.find(user.email)
+        if VERSION >= (1, 1):
+            self.get200('/profile/')
+            self.find(user.username)
+            self.find(user.email)
+        else:
+            self.get('/profile/')
+            self.code(302)
 
     def test_login_to_admin_staff(self):
         staff = self.helper('create_staff')
@@ -442,17 +446,22 @@ class TestHttp(TestCase):
         user = self.helper('create_user')
         self.login(USERNAME, PASSWORD)
 
-        self.get200('/profile/')
-        self.find(user.username)
-        self.find(user.email)
+        if VERSION >= (1, 1):
+            self.get200('/profile/')
+            self.find(user.username)
+            self.find(user.email)
+        else:
+            self.get('/profile/')
+            self.code(302)
 
         self.logout()
 
         self.get('/profile/')
         self.code(302)
 
-        self.get200('/profile/', follow=True)
-        self.url('/login/')
+        if VERSION >= (1, 1):
+            self.get200('/profile/', follow=True)
+            self.url('/login/')
 
     def test_notfind(self):
         self.go200('index')
@@ -813,14 +822,26 @@ class TestHttpDjangoAssertMethods(TestCase):
         response = self.client.get('/fast-redirect/')
         self.assertRedirects(response, '/')
 
-        response = self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        if VERSION >= (1, 1):
+            response = \
+                self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        else:
+            response = self.client.get('/fast-redirect/',
+                                       {'next': '/edit-hidden-fields/'})
         self.assertRedirects(response, '/edit-hidden-fields/')
 
-        response = self.client.get('/fast-redirect/?permanent=yes')
+        if VERSION >= (1, 1):
+            response = self.client.get('/fast-redirect/?permanent=yes')
+        else:
+            response = self.client.get('/fast-redirect/', {'permanent': 'yes'})
         self.assertRedirects(response, '/', 301)
 
         url = STATIC_URL + 'does_not_exist.exe'
-        response = self.client.get('/fast-redirect/?next=%s' % url)
+        if VERSION >= (1, 1):
+            response = self.client.get('/fast-redirect/?next=%s' % url)
+        else:
+            response = self.client.get('/fast-redirect/',
+                                       {'next': url})
         self.assertRedirects(response, url, 302, 404)
 
     def testTemplateNotUsed(self):
@@ -861,14 +882,25 @@ class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
         response = self.client.get('/fast-redirect/')
         self.assert_redirects(response, '/')
 
-        response = self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        if VERSION >= (1, 1):
+            response = \
+                self.client.get('/fast-redirect/?next=/edit-hidden-fields/')
+        else:
+            response = self.client.get('/fast-redirect/',
+                                       {'next': '/edit-hidden-fields/'})
         self.assert_redirects(response, '/edit-hidden-fields/')
 
-        response = self.client.get('/fast-redirect/?permanent=yes')
+        if VERSION >= (1, 1):
+            response = self.client.get('/fast-redirect/?permanent=yes')
+        else:
+            response = self.client.get('/fast-redirect/', {'permanent': 'yes'})
         self.assert_redirects(response, '/', 301)
 
         url = STATIC_URL + 'does_not_exist.exe'
-        response = self.client.get('/fast-redirect/?next=%s' % url)
+        if VERSION >= (1, 1):
+            response = self.client.get('/fast-redirect/?next=%s' % url)
+        else:
+            response = self.client.get('/fast-redirect/', {'next': url})
         self.assert_redirects(response, url, 302, 404)
 
     def test_template_not_used(self):
