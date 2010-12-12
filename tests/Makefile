@@ -19,11 +19,10 @@ PORT?=8191
 
 # Settings for ``test`` target
 TEST?=$(project)
-TEST_ARGS?=-xv
+TEST_ARGS?=-x
 TEST_ARGS_MULTIDB?=-e multidb
 TEST_SETTINGS?=$(settings)
 TWILL_ERROR_DIR?=$(errors)
-test_args=$(TEST_ARGS) $(TEST_ARGS_MULTIDB) --django-settings=$(TEST_SETTINGS) --twill-error-dir=$(TWILL_ERROR_DIR)
 
 all: test
 alltest: smarttest test test_multidb test_mysql test_sqlite
@@ -45,17 +44,17 @@ runserver:
 shell:
 	COMMAND=shell $(MAKE) manage
 
-smarttest:
-	TEST_ARGS=-xv --twill-error-dir=$(TWILL_ERROR_DIR) $(MAKE) test
+smarttest: clean
+	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_MULTIDB) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
 
 syncdb:
 	$(manage) syncdb --noinput
 
 test: clean
-	$(nosetests) $(test_args) $(TEST)
+	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_MULTIDB) --django-settings=$(TEST_SETTINGS) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
 
 test_multidb:
-	TEST_ARGS_MULTIDB= $(MAKE) test
+	TEST_ARGS_MULTIDB= TEST_SETTINGS=$(settings)_multidb $(MAKE) test
 
 test_mysql: clean
 	TEST_SETTINGS=$(settings)_mysql $(MAKE) test
