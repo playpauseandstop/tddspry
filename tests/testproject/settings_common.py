@@ -68,7 +68,7 @@ LOGGING = {
 }
 
 # Media files settings
-if VERSION > (1, 2):
+if VERSION >= (1, 3):
     STATIC_ROOT = rel('static')
     STATIC_URL = '/static/'
 else:

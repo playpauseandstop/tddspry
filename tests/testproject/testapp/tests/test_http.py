@@ -16,7 +16,7 @@ from testproject.testapp.forms import LoginForm
 from testproject.testapp.models import UserProfile
 
 
-STATIC_URL = VERSION > (1, 2) and settings.STATIC_URL or settings.MEDIA_URL
+STATIC_URL = VERSION >= (1, 3) and settings.STATIC_URL or settings.MEDIA_URL
 
 TEST_BIO = 'Something text %d'
 TEST_POST_DATA = {
