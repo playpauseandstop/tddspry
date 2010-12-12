@@ -1,7 +1,6 @@
 build/*
 dist/*
 docs/_build/*
-errors/*
 tddspry.egg-info/*
 
 *.db
@@ -16,4 +15,5 @@ pip-log.txt
 tests/bootstrap.cfg
 tests/env/*
 tests/env*/*
+tests/errors/*
 tests/testproject/settings_*local.py
