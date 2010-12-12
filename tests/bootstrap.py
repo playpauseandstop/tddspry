@@ -171,7 +171,7 @@ def main():
             continue
 
         if env is not None:
-            print('\n%s\n') % '-' * 79
+            print('\n%s\n') % ('-' * 79)
 
         # Initialize environment
         env = Environment(filename=filename)
