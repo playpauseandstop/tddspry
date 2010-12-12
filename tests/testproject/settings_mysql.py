@@ -1,4 +1,4 @@
-from settings_common import *
+from settings import *
 
 
 # MySQL database engine settings for tddspry test project

@@ -6,6 +6,7 @@ from tddspry.django import HttpTestCase, TestCase
 from tddspry.django.decorators import show_on_error
 from tddspry.django.helpers import PASSWORD, USERNAME
 
+from django import VERSION
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -14,6 +15,8 @@ from twill.errors import TwillAssertionError, TwillException
 from testproject.testapp.forms import LoginForm
 from testproject.testapp.models import UserProfile
 
+
+STATIC_URL = VERSION > (1, 2) and settings.STATIC_URL or settings.MEDIA_URL
 
 TEST_BIO = 'Something text %d'
 TEST_POST_DATA = {
@@ -160,7 +163,7 @@ class TestHttp(TestCase):
         self.find('Index')
         self.find('c++ is good, but python - better ;)', flat=True)
 
-        self.get(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.get(STATIC_URL + 'does_not_exist.exe')
         self.code(404)
 
     def test_get_and_twill(self):
@@ -171,7 +174,7 @@ class TestHttp(TestCase):
         self.find('Index')
         self.find('c++ is good, but python - better ;)', flat=True)
 
-        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.go(STATIC_URL + 'does_not_exist.exe')
         self.code(404)
 
         self.go200('edit_hidden_fields')
@@ -204,7 +207,7 @@ class TestHttp(TestCase):
 
     @TestCase.raises(TwillAssertionError)
     def test_get200_assertion(self):
-        self.get200(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.get200(STATIC_URL + 'does_not_exist.exe')
 
     def test_edit_hidden_fields(self):
         self.enable_edit_hidden_fields()
@@ -614,10 +617,11 @@ class TestHttp(TestCase):
         self.post('edit_hidden_fields', TEST_POST_DATA)
         self.code(200)
         self.url('edit_hidden_fields')
+
         for key, value in TEST_POST_DATA.items():
             self.find("%s: '%s'" % (key, value))
 
-        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.go(STATIC_URL + 'does_not_exist.exe')
         self.code(404)
 
         self.go200('/')
@@ -660,7 +664,7 @@ class TestHttp(TestCase):
 
     @TestCase.raises(TwillAssertionError)
     def test_post200_assertion(self):
-        self.post200(settings.MEDIA_URL + 'does_not_exist.exe', data={})
+        self.post200(STATIC_URL + 'does_not_exist.exe', data={})
 
     def test_redirect(self):
         self.disable_redirect()
@@ -738,13 +742,13 @@ class TestHttp(TestCase):
         shutil.rmtree(full_dirname)
 
     def test_static(self):
-        self.go(settings.MEDIA_URL)
+        self.go(STATIC_URL)
         self.code(404)
 
-        self.go(settings.MEDIA_URL + 'does_not_exist.exe')
+        self.go(STATIC_URL + 'does_not_exist.exe')
         self.code(404)
 
-        self.go(settings.MEDIA_URL + 'css/screen.css')
+        self.go(STATIC_URL + 'css/screen.css')
         self.code(200)
 
     def test_url_regexp(self):
@@ -815,7 +819,7 @@ class TestHttpDjangoAssertMethods(TestCase):
         response = self.client.get('/fast-redirect/?permanent=yes')
         self.assertRedirects(response, '/', 301)
 
-        url = settings.MEDIA_URL + 'does_not_exist.exe'
+        url = STATIC_URL + 'does_not_exist.exe'
         response = self.client.get('/fast-redirect/?next=%s' % url)
         self.assertRedirects(response, url, 302, 404)
 
@@ -863,7 +867,7 @@ class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
         response = self.client.get('/fast-redirect/?permanent=yes')
         self.assert_redirects(response, '/', 301)
 
-        url = settings.MEDIA_URL + 'does_not_exist.exe'
+        url = STATIC_URL + 'does_not_exist.exe'
         response = self.client.get('/fast-redirect/?next=%s' % url)
         self.assert_redirects(response, url, 302, 404)
 

@@ -43,6 +43,30 @@ FIXTURE_DIRS = (
     rel('fixtures'),
 )
 
+# Logging settings
+LOGGING = {
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s %(levelname)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'level': 'DEBUG',
+        },
+        'null': {
+            'class': 'django.utils.log.NullHandler',
+            'level': 'DEBUG',
+        }
+    },
+    'loggers': {
+    },
+    'version': 1,
+}
+
 # Media files settings
 if VERSION > (1, 2):
     STATIC_ROOT = rel('static')
@@ -63,17 +87,36 @@ MIDDLEWARE_CLASSES = [
 SESSION_COOKIE_NAME = 'testproject_sid'
 
 # Template settings
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-)
+]
+
+if VERSION >= (1, 2):
+    TEMPLATE_CONTEXT_PROCESSORS.extend([
+        'django.contrib.auth.context_processors.auth',
+        'django.contrib.messages.context_processors.messages',
+    ])
+
+    if VERSION >= (1, 3):
+        TEMPLATE_CONTEXT_PROCESSORS.extend([
+            'django.core.context_processors.static',
+        ])
+    else:
+        TEMPLATE_CONTEXT_PROCESSORS.extend([
+            'django.core.context_processors.media',
+        ])
+else:
+    TEMPLATE_CONTEXT_PROCESSORS.extend([
+        'django.core.context_processors.auth',
+        'django.core.context_processors.media',
+    ])
+
 TEMPLATE_DIRS = (
     rel('templates'),
 )
 
 # Test settings
-TEST_DISABLED_APPS = ('testproject.disabled.setting', )
+TDDSPRY_DISABLED_APPS = ('testproject.disabled.setting', )
 
 # Other **Django** settings
 ROOT_URLCONF = 'testproject.urls'
