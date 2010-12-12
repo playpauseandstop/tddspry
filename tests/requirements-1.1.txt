@@ -1,9 +1,8 @@
 Django==1.1.2
-MySQL-python
-
+MySQL-python==1.2.3
 coverage==2.8
 nose==0.11.0
-twill
+twill==0.9
+unittest2==0.5.1
 
 -e hg+http://bitbucket.org/ubernostrum/django-registration#egg=django-registration
--e hg+http://hg.python.org/unittest2#egg=unittest2
