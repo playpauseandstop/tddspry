@@ -1,5 +1,5 @@
 # Targets
-.PHONY: alltest clean distclean manage runserver shell test test_multidb test_mysql test_sqlite
+.PHONY: alltest clean distclean manage runserver shell smarttest syncdb test test_multidb test_mysql test_sqlite
 
 # Initial vars
 errors=errors
@@ -25,6 +25,7 @@ TEST_SETTINGS?=$(settings)
 TWILL_ERROR_DIR?=$(errors)
 
 all: test
+alltest: smarttest test test_multidb test_mysql test_sqlite
 
 clean:
 	find . -name '*.pyc' -delete
