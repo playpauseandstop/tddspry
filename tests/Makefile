@@ -2,9 +2,10 @@
 .PHONY: alltest clean distclean manage runserver shell smarttest syncdb test test_multidb test_mysql test_sqlite
 
 # Initial vars
+python=PYTHONPATH=.. python -W ignore::DeprecationWarning
+
 errors=errors
-nosetests=PYTHONPATH=.. `pwd`/../bin/django-nosetests.py
-python=PYTHONPATH=.. python
+nosetests=$(python) `pwd`/../bin/django-nosetests.py
 project=testproject
 
 manage=$(python) $(project)/manage.py
