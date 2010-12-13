@@ -42,4 +42,4 @@ ghdocs:
 	rm -rf $(tmp_docs_dir)
 
 test:
-	$(MAKE) -C $(tests_dir) test
+	./$(tests_dir)/runtests.sh $(TEST)
