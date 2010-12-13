@@ -6,7 +6,7 @@
 #
 
 DIRNAME=`dirname $(readlink -f $0)`
-target="$1"
+target="$@"
 
 if [ -z "$target" ]
 then
