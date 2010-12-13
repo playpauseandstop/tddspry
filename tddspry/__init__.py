@@ -9,7 +9,7 @@
 from tddspry.cases import *
 
 
-VERSION = (0, 4, 'alpha')
+VERSION = (0, 4, 'beta')
 
 
 def get_version():
