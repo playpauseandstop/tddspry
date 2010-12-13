@@ -1,7 +1,0 @@
-http://pypi.python.org/packages/source/M/MySQL-python/MySQL-python-1.2.3c1.tar.gz
-http://nedbatchelder.com/code/modules/coverage-2.8.tar.gz
-http://pypi.python.org/packages/source/n/nose/nose-0.11.0.tar.gz
-http://darcs.idyll.org/~t/projects/twill-0.9.tar.gz
-
--e hg+http://hg.python.org/unittest2#egg=unittest2
--e svn+http://code.djangoproject.com/svn/django/trunk/#egg=Django

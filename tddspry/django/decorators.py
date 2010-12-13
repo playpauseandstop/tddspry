@@ -140,7 +140,7 @@ def show_on_error(func, clsname=None):
 
                     format = field_error and 'txt' or 'html'
                     filename = '%s-%d.%s' % (filename, timestamp, format)
-                    filename = os.path.join(dirname, filename)
+                    filename = os.path.abspath(os.path.join(dirname, filename))
 
                     try:
                         if field_error:

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Activation complete' %}{% endblock %}
+
+{% block content %}
+
+<h2>{% trans 'Thank you!' %}</h2>
+<p>{% trans 'Your activation complete! Now you can log in to site using entered creditenials.' %}</p>
+
+<p><small><a href="{% url auth_login %}">{% trans 'Login' %}</a></small></p>
+<p><small><a href="{% url index %}">{% trans 'To index page' %}</a></small></p>
+
+{% endblock %}

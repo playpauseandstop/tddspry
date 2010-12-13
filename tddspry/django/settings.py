@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from nose.util import resolve_name
 
@@ -11,7 +11,7 @@ IP = getattr(settings, 'TDDSPRY_IP', '127.0.0.1')
 PORT = getattr(settings, 'TDDSPRY_PORT', 8088)
 SITE = 'http://%s:%s/' % (IP, PORT)
 
-DjangoTestCase = getattr(settings, 'TDDSPRY_TEST_CASE', TransactionTestCase)
+DjangoTestCase = getattr(settings, 'TDDSPRY_TEST_CASE', TestCase)
 
 if isinstance(DjangoTestCase, basestring):
     DjangoTestCase = resolve_name(DjangoTestCase)

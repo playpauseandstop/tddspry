@@ -653,7 +653,7 @@ class TestCase(DjangoTestCase, NoseTestCase):
 
         Also logout from Django test client.
         """
-        self.go200(url or 'auth_logout')
+        self.go200(url or settings.LOGOUT_URL)
         self.client.logout()
 
     def notfind(self, what, flags='', flat=False, escape=False):
@@ -815,9 +815,13 @@ class TestCase(DjangoTestCase, NoseTestCase):
     def _apply_disabled_apps(self):
         """
         Remove apps from ``disabled_apps`` attribute and/or from
-        ``TEST_DISABLED_APPS`` settings var.
+        ``TDDSPRY_DISABLED_APPS`` settings var.
         """
-        disabled_apps = getattr(settings, 'TEST_DISABLED_APPS', [])
+        disabled_apps = getattr(settings, 'TDDSPRY_DISABLED_APPS', None)
+
+        # Backward compatible version
+        if disabled_apps is None:
+            disabled_apps = getattr(settings, 'TEST_DISABLED_APPS', [])
 
         if not hasattr(self, 'disabled_apps'):
             self.disabled_apps = disabled_apps

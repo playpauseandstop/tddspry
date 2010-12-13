@@ -1,0 +1,17 @@
+<html>
+{% load i18n %}
+<head>
+    <title>{% trans 'tddspry test project' %} &bull; {% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{% if MEDIA_URL %}{{ MEDIA_URL }}{% else %}{{ STATIC_URL }}{% endif %}css/screen.css" media="screen,projection,tv" />
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <h1>{% trans 'tddspry' %}</h1>
+    <div id="content">{% block content %}{% endblock %}</div>
+
+</body>
+
+</html>

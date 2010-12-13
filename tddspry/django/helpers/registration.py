@@ -32,7 +32,7 @@ def registration(obj, username=None, email=None, password=None,
                  registration_tos=False,
                  activate_word='activate',
                  activation_url='registration_activate',
-                 login_url='auth_login',
+                 login_url=None,
                  login_formid=1):
     """
     Register new user, activate it and login. Registers new user, activates it

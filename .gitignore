@@ -1,22 +1,19 @@
 build/*
 dist/*
 docs/_build/*
-errors/*
 tddspry.egg-info/*
 
+*.db
 *.db-journal
 *.pyc
 *.pyo
 
 .coverage
-Makefile.def
 MANIFEST
 pip-log.txt
-test.db
-testproject/Makefile
-testproject/env/
-testproject/bootstrap.cfg
-testproject/settings_local.py
-testproject/settings_mysql_local.py
-testproject/settings_sqlite_local.py
-testproject.db
+
+tests/bootstrap.cfg
+tests/env/*
+tests/env*/*
+tests/errors/*
+tests/testproject/settings_*local.py
