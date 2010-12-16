@@ -22,7 +22,7 @@ TEMPLATE_DEBUG = DEBUG
 TIME_ZONE = time.tzname[0]
 
 # Installed applications
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,7 +37,11 @@ INSTALLED_APPS = (
     'testproject.disabled.setting',
 
     'testproject.testapp',
-)
+]
+
+# Remove ``django_nose`` for Django < 1.2
+if VERSION < (1, 2):
+    INSTALLED_APPS.remove('django_nose')
 
 # Fixture directories
 FIXTURE_DIRS = (
