@@ -1,5 +1,5 @@
 # Targets
-.PHONY: alltest clean distclean manage runserver shell smarttest syncdb test test_multidb test_mysql test_sqlite
+.PHONY: alltest clean distclean manage runserver shell smarttest syncdb test test_django_nose test_multidb test_mysql test_sqlite
 
 # Initial vars
 python=PYTHONPATH=.. python -W ignore::DeprecationWarning
@@ -10,6 +10,11 @@ project=testproject
 
 manage=$(python) $(project)/manage.py
 settings=$(project).settings
+
+# Read Django and tddspry versions
+DJANGO_VERSION=`$(python) -c 'import django; print(django.get_version());'`
+DJANGO_VERSION_SHORT=`$(python) -c 'import django; print(django.get_version());' | cut -b 1-3`
+TDDSPRY_VERSION=`$(python) -c 'import tddspry; print(tddspry.get_version());'`
 
 # Settings for ``distclean`` target
 VENV?=env*
@@ -26,7 +31,7 @@ TEST_SETTINGS?=$(settings)
 TWILL_ERROR_DIR?=$(errors)
 
 all: test
-alltest: smarttest test test_multidb test_mysql test_sqlite
+alltest: smarttest test test_django_nose test_multidb test_mysql test_sqlite
 
 clean:
 	find . -name '*.pyc' -delete
@@ -53,6 +58,9 @@ syncdb:
 
 test: clean
 	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_MULTIDB) --django-settings=$(TEST_SETTINGS) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
+
+test_django_nose: clean
+	RUNNING_TEST=yes test $(DJANGO_VERSION_SHORT) = "1.0" -o $(DJANGO_VERSION_SHORT) = "1.1" && echo "Django $(DJANGO_VERSION_SHORT) does not support testing via django-nose test suite runner." || $(manage) test $(TEST_ARGS) $(TEST)
 
 test_multidb:
 	TEST_ARGS_MULTIDB= TEST_SETTINGS=$(settings)_multidb $(MAKE) test

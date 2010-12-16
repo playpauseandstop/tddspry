@@ -22,7 +22,7 @@ TEMPLATE_DEBUG = DEBUG
 TIME_ZONE = time.tzname[0]
 
 # Installed applications
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,13 +30,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
 
+    'django_nose',
     'registration',
 
     'testproject.disabled.attr',
     'testproject.disabled.setting',
 
     'testproject.testapp',
-)
+]
+
+# Remove ``django_nose`` for Django < 1.2
+if VERSION < (1, 2):
+    INSTALLED_APPS.remove('django_nose')
 
 # Fixture directories
 FIXTURE_DIRS = (
@@ -116,7 +121,9 @@ TEMPLATE_DIRS = (
 )
 
 # Test settings
+NOSE_ARGS = ('-e', 'multidb')
 TDDSPRY_DISABLED_APPS = ('testproject.disabled.setting', )
+TEST_RUNNER = 'tddspry.django.TestSuiteRunner'
 
 # Other **Django** settings
 ROOT_URLCONF = 'testproject.urls'

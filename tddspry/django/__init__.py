@@ -119,3 +119,8 @@ test-case::
 """
 
 from tddspry.django.cases import *
+
+try:
+    from tddspry.django.runner import *
+except ImportError:
+    pass
