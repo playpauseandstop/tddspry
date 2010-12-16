@@ -21,5 +21,9 @@ do
     fi
 
     source "$dir/bin/activate"
-    make -C "$DIRNAME" "$target"
+
+    for subtarget in $target
+    do
+        make -C "$DIRNAME" "$subtarget"
+    done
 done
