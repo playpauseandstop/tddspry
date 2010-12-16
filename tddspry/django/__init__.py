@@ -119,3 +119,4 @@ test-case::
 """
 
 from tddspry.django.cases import *
+from tddspry.django.runner import *
