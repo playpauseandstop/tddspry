@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
 
+    'django_nose',
     'registration',
 
     'testproject.disabled.attr',
@@ -116,7 +117,9 @@ TEMPLATE_DIRS = (
 )
 
 # Test settings
+NOSE_ARGS = ('-e', 'multidb')
 TDDSPRY_DISABLED_APPS = ('testproject.disabled.setting', )
+TEST_RUNNER = 'tddspry.django.TestSuiteRunner'
 
 # Other **Django** settings
 ROOT_URLCONF = 'testproject.urls'
