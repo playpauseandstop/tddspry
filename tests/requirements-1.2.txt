@@ -1,4 +1,4 @@
-Django==1.2.3
+Django==1.2.4
 MySQL-python==1.2.3
 coverage==2.8
 django-nose
