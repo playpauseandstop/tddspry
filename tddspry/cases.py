@@ -1,9 +1,17 @@
 import re
+import warnings
 
+# If possible use ``unittest2.TestCase`` as base test class
 try:
     from unittest2 import TestCase as BaseTestCase
 except ImportError:
     from unittest import TestCase as BaseTestCase
+
+# Try to load ``datadiff`` library to use its ``assert_equal``
+try:
+    from datadiff.tools import assert_equal as datadiff_assert_equal
+except ImportError:
+    datadiff_assert_equal = None
 
 # Dirty hack to prevent ``ImportError`` on installing tddspry via pip
 try:
@@ -46,6 +54,17 @@ class BaseTestCaseMetaclass(type):
         for attr in tools.__all__:
             attrs.update({attr: getattr(tools, attr)})
             attrs[attr] = staticmethod(attrs[attr])
+
+        if datadiff_assert_equal:
+            key = 'use_datadiff' in attrs and 'assert_equal' \
+                                          or 'datadiff_assert_equal'
+
+            attrs.update({key: datadiff_assert_equal})
+            attrs[key] = staticmethod(attrs[key])
+        else:
+            warnings.warn('You enabled ``datadiff.tools.assert_equal``, but ' \
+                          'looks like you have not ``datadiff`` library ' \
+                          'installed in your system.')
 
         return type.__new__(cls, name, bases, attrs)
 

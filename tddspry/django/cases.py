@@ -81,6 +81,11 @@ class TestCaseMetaclass(NoseTestCaseMetaclass):
             attrs.update({attr_name: django_request(attr_name)})
             attrs.update({'%s200' % attr_name: django_request(attr_name, 200)})
 
+        # Use ``datadiff_assert_equal`` instead of ``assert_equal`` function
+        # if necessary
+        if getattr(settings, 'TDDSPRY_USE_DATADIFF', False):
+            attrs['use_datadiff'] = True
+
         # Dirty hack to convert django testcase camelcase method names to
         # name with underscores
         attr_names = filter(lambda item: item.startswith('assert'),
