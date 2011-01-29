@@ -52,7 +52,7 @@ shell:
 	COMMAND=shell $(MAKE) manage
 
 smarttest: clean
-	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_MULTIDB) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
+	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_DATADIFF) $(TEST_ARGS_MULTIDB) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
 
 syncdb:
 	$(manage) syncdb --noinput
