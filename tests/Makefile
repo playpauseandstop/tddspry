@@ -29,7 +29,7 @@ TEST_ARGS?=-x
 TEST_ARGS_DATADIFF?=-e datadiff
 TEST_ARGS_MULTIDB?=-e multidb
 TEST_SETTINGS?=$(settings)
-TWILL_ERROR_DIR?=$(errors)
+export TWILL_ERROR_DIR?=$(errors)
 
 all: test
 alltest: smarttest test test_datadiff test_django_nose test_multidb test_mysql test_sqlite
@@ -58,7 +58,7 @@ syncdb:
 	$(manage) syncdb --noinput
 
 test: clean
-	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_DATADIFF) $(TEST_ARGS_MULTIDB) --django-settings=$(TEST_SETTINGS) --twill-error-dir=$(TWILL_ERROR_DIR) $(TEST)
+	$(nosetests) $(TEST_ARGS) $(TEST_ARGS_DATADIFF) $(TEST_ARGS_MULTIDB) --django-settings=$(TEST_SETTINGS) $(TEST)
 
 test_datadiff: clean
 	TEST_ARGS_DATADIFF= TEST_SETTINGS=$(settings)_datadiff $(MAKE) test
@@ -67,7 +67,7 @@ test_django_nose: clean
 	RUNNING_TEST=yes test $(DJANGO_VERSION_SHORT) = "1.0" -o $(DJANGO_VERSION_SHORT) = "1.1" && echo "Django $(DJANGO_VERSION_SHORT) does not support testing via django-nose test suite runner." || $(manage) test $(TEST_ARGS) $(TEST)
 
 test_multidb:
-	TEST_ARGS_MULTIDB= TEST_SETTINGS=$(settings)_multidb $(MAKE) test
+	test $(DJANGO_VERSION_SHORT) = "1.0" -o $(DJANGO_VERSION_SHORT) = "1.1" && echo "Django $(DJANGO_VERSION_SHORT) does not support multi database testing." || TEST_ARGS_MULTIDB= TEST_SETTINGS=$(settings)_multidb $(MAKE) test
 
 test_mysql: clean
 	TEST_SETTINGS=$(settings)_mysql $(MAKE) test
