@@ -37,7 +37,7 @@ CONFIG = {
     'pip': {
         'download_cache': '%(DEST_DIR)s/src',
         'quiet': False,
-        'upgrade': True,
+        'upgrade': False,
         'verbose': False,
     },
     'virtualenv': {
