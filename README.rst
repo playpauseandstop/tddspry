@@ -154,6 +154,8 @@ Requirements
 * `twill <http://twill.idyll.org/>`_ 0.9
 * `django-nose <http://github.com/jbalogh/django-nose>`_ (*optional*, required
   by test runner)
+* `datadiff <http://pypi.python.org/pypi/datadiff>`_ (*optional*, required by
+  ``TDDSPRY_USE_DATADIFF`` setting)
 
 Installation
 ============
