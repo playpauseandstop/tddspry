@@ -121,7 +121,7 @@ TEMPLATE_DIRS = (
 )
 
 # Test settings
-NOSE_ARGS = ('-e', 'multidb')
+NOSE_ARGS = ('-e', 'datadiff', '-e', 'multidb')
 TDDSPRY_DISABLED_APPS = ('testproject.disabled.setting', )
 TEST_RUNNER = 'tddspry.django.TestSuiteRunner'
 
