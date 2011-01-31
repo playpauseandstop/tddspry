@@ -10,6 +10,7 @@ from django import VERSION
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from twill import namespaces
 from twill.errors import TwillAssertionError, TwillException
 
 from testproject.testapp.forms import LoginForm
@@ -374,6 +375,12 @@ class TestHttp(TestCase):
             self.notfind('c++ is good, but python - better ;)', flat=True)
         except TwillAssertionError:
             pass
+
+    def test_info(self):
+        response = self.get200('/')
+        self.info()
+        response = self.post200('/')
+        self.info()
 
     def test_login(self):
         self.go200('/profile/')
@@ -773,11 +780,6 @@ class TestHttp(TestCase):
 
         self.find("request.GET\['query'\] = string")
 
-    def test_info(self):
-        response = self.get200('/')
-        self.info()
-        response = self.post200('/')
-        self.info()
 
 class TestHttpDeprecated(HttpTestCase):
 
@@ -912,6 +914,29 @@ class TestHttpDjangoAssertMethodsWithUnderscores(TestCase):
         response = self.client.get('/')
         self.assert_template_used(response, 'base.html')
         self.assert_template_used(response, 'testapp/index.html')
+
+
+class TestTwillGlocals(TestCase):
+
+    def setup(self):
+        namespaces.global_dict = {}
+        namespaces._local_dict_stack = []
+
+    def test_twill_glocals(self):
+        self.assert_true(hasattr(self, 'twill_glocals'))
+        self.assert_equal(self.twill_glocals, {})
+
+        self.go200('/')
+        self.find('(\w+) is good, but erlang - faster \;\)')
+        self.assert_true('__match__' in self.twill_glocals)
+
+    def test_twill_match(self):
+        self.assert_true(hasattr(self, 'twill_match'))
+        self.assert_equal(self.twill_match, None)
+
+        self.go200('/')
+        self.find('(\w+) is good, but erlang - faster \;\)')
+        self.assert_equal(self.twill_match, 'python')
 
 
 class TestXhtmlOutput(TestCase):
