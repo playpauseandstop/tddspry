@@ -29,6 +29,7 @@ from twill import commands
 from twill.commands import _parseFindFlags
 from twill.errors import TwillAssertionError
 from twill.extensions.check_links import check_links
+from twill.namespaces import get_twill_glocals
 from twill.utils import ResultWrapper
 
 
@@ -803,6 +804,23 @@ class TestCase(DjangoTestCase, NoseTestCase):
         self.get_browser().result = ResultWrapper(status_code, url, text)
 
         self._apply_xhtml()
+
+    @property
+    def twill_glocals(self):
+        """
+        Shortcut to get fast access to twill glocals dict.
+        """
+        _, glocals = get_twill_glocals()
+        return glocals
+
+    @property
+    def twill_match(self):
+        """
+        Shortcut to get access of last matched regexp group by twill.
+
+        If no regexp matched by twill exists, attribute returns ``None``.
+        """
+        return self.twill_glocals.get('__match__', None)
 
     def url(self, url, args=None, kwargs=None, regexp=True):
         """
