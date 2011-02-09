@@ -56,12 +56,12 @@ class BaseTestCaseMetaclass(type):
             attrs[attr] = staticmethod(attrs[attr])
 
         if datadiff_assert_equal:
-            key = 'use_datadiff' in attrs and 'assert_equal' \
-                                          or 'datadiff_assert_equal'
+            key = attrs.get('use_datadiff', False) and 'assert_equal' \
+                                                   or 'datadiff_assert_equal'
 
             attrs.update({key: datadiff_assert_equal})
             attrs[key] = staticmethod(attrs[key])
-        else:
+        elif attrs.get('use_datadiff', False):
             warnings.warn('You enabled ``datadiff.tools.assert_equal``, but ' \
                           'looks like you have not ``datadiff`` library ' \
                           'installed in your system.')
