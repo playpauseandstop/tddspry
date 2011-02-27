@@ -30,6 +30,11 @@ class DjangoPlugin(Plugin):
     settings = None
     verbosity = 1
 
+    def __init__(self, runner=None):
+        super(DjangoPlugin, self).__init__()
+        if runner:
+            self.interactive = runner.interactive
+
     def begin(self):
         from django.conf import settings
         from django.core.handlers.wsgi import WSGIHandler
@@ -217,7 +222,7 @@ class DjangoPlugin(Plugin):
             from django.test.simple import DjangoTestSuiteRunner
 
             # Initialize Django tests runner
-            runner = DjangoTestSuiteRunner(verbosity=self.verbosity)
+            runner = DjangoTestSuiteRunner(verbosity=self.verbosity, interactive=self.interactive)
 
             # New Django tests runner set ``DEBUG`` to False on setup test
             # environment, so we need to store real ``DEBUG`` value

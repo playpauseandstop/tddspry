@@ -18,7 +18,7 @@ class TestSuiteRunner(NoseTestSuiteRunner):
     """
     def run_suite(self, nose_argv):
         # Install necessary plugins
-        django_plugin = DjangoPlugin()
+        django_plugin = DjangoPlugin(self)
         result_plugin = ResultPlugin()
 
         plugins_to_add = [django_plugin, result_plugin]
